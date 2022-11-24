@@ -1,0 +1,128 @@
+.layout {
+  display: flex;
+  user-select: none;
+
+  .left {
+    width: 15%;
+    min-width: 50px;
+    background: gold;
+
+    .list-tag{
+      margin-left: 10px;
+    }
+  }
+
+  .middle {
+    width: 15%;
+    min-width: 50px;
+    background: indianred;
+
+    .list-item {
+      .active {
+        background: darkgrey;
+      }
+    }
+
+    .load-more{
+      background: gold;
+    }
+  }
+
+  .right {
+    width: 70%;
+    background: greenyellow;
+
+    .note-title {
+      .info {
+        display: flex;
+
+        span {
+          padding: 5px;
+        }
+
+        .active {
+          background: darkgrey;
+        }
+      }
+    }
+
+    .note-toolbar {
+      display: flex;
+
+      span {
+        padding: 0 5px;
+      }
+    }
+  }
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hide {
+  display: none;
+}
+
+button {
+  border-radius: 0;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+#popup, #contextmenu {
+  position: absolute;
+}
+
+.szh-menu__item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: .375rem 1.5rem;
+}
+
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  color: #212529;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.rc-dialog-footer .btn + .btn {
+  margin-left: 5px;
+  margin-bottom: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root, .layout {
+  margin: 0 auto;
+  height: 100%;
+}
+
+#root, .layout {
+  width: 100%;
+}
+
+
