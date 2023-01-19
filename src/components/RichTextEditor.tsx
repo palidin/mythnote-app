@@ -2,7 +2,7 @@ import ClassicEditor from '@palidin/ckeditor5-markdown-build'
 import {useEffect, useState} from "react";
 import {markdownConfig} from "../ckeditor/markdownPlugin";
 import LocalFileUploadAdapter from "../ckeditor/localFileUploadAdapter";
-import {flexHeight, replaceRemoteHostImage} from "../utils/utils2";
+import {replaceRemoteHostImage} from "../utils/utils2";
 import {sharedVariables} from "../state";
 import {useMount} from "../utils/HookUtils";
 
@@ -10,12 +10,12 @@ import {useMount} from "../utils/HookUtils";
 export function RichTextEditor({content, updateBody}) {
 
     const [editor, setEditor] = useState(null);
-
     const [sourceEditing, setSourceEditing] = useState();
+
 
     useMount(() => {
         ClassicEditor
-            .create(document.getElementById('ckeditor-counter'), {
+            .create(document.getElementById('ckeditor-box'), {
                 htmlEscaper: markdownConfig,
                 simpleUpload: {
                     adapter: LocalFileUploadAdapter,
@@ -35,28 +35,14 @@ export function RichTextEditor({content, updateBody}) {
             })
     })
 
-    useMount(() => {
-        window.addEventListener('resize', flexHeight, true);
-        return () => {
-            window.removeEventListener('resize', flexHeight, true)
-        }
-    });
-
-    useEffect(() => {
-        if (!editor) {
-            return;
-        }
-        flexHeight();
-    }, [editor, content]);
-
     useEffect(() => {
         if (!editor) return
         editor.setData(content)
-    }, [content, editor])
+    }, [content])
 
 
     function onDataChange(data: string) {
-        updateBody(data)
+        updateBody.current(data)
     }
 
     function initEditor(editor) {
@@ -80,10 +66,8 @@ export function RichTextEditor({content, updateBody}) {
 
         const sourceEditingPlugin = editor.plugins.get('SourceEditing');
         sourceEditingPlugin.on('change:isSourceEditingMode', (evt, name, isSourceEditingMode) => {
+            console.log(isSourceEditingMode)
             setSourceEditing(isSourceEditingMode)
-            if (isSourceEditingMode) {
-                flexHeight();
-            }
         });
 
         const wordCountPlugin = editor.plugins.get('WordCount');
@@ -92,9 +76,9 @@ export function RichTextEditor({content, updateBody}) {
 
 
     return (
-        <div>
-            <div id={'ckeditor-counter'}></div>
+        <>
+            <div id={'ckeditor-box'}></div>
             <div id={'ckeditor-word-counter'} className={sourceEditing ? 'hide' : ''}></div>
-        </div>
+        </>
     )
 }

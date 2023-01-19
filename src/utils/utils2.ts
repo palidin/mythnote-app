@@ -37,35 +37,3 @@ export function replaceRemoteHostImage(text) {
         }
     }
 }
-
-
-export function flexHeight() {
-    let editor = sharedVariables.editor
-    if (!editor) {
-        return;
-    }
-    editor.editing.view.change(writer => {
-        let rootEl = select('#root');
-
-        let titleEl = select('.right .note-title');
-
-        let toolbarEl = select('.right .note-toolbar');
-        let editorToolbarEl = select('.right .note-content .ck-editor__top');
-        let wordCountWrapperEl = select('.right .note-content  .ck-word-count');
-        let sourceEditor = select('.right .note-content .ck-source-editing-area')
-
-
-
-        let editorHeight = rootEl.offsetHeight
-            - titleEl.offsetHeight
-            - toolbarEl.offsetHeight
-            - editorToolbarEl.offsetHeight
-            - 5
-
-        if (sourceEditor) {
-            sourceEditor.style.setProperty('height', (editorHeight) + 'px', 'important');
-        }
-        writer.setStyle('height', (editorHeight - wordCountWrapperEl.offsetHeight) + 'px', editor.editing.view.document.getRoot());
-    });
-}
-

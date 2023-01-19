@@ -1,10 +1,13 @@
+// @no-check
 import {FileItem, FolderItem, FolderListRequest, NativeInterface} from "./agentType";
+import {appConfig} from "../config/app";
 
 export class FakeImpl implements NativeInterface {
 
     getFormData(obj) {
         let formData = new FormData();
         for (const [k, v] of Object.entries(obj)) {
+            // @ts-ignore
             formData.set(k, v)
         }
         return formData;
@@ -22,23 +25,25 @@ export class FakeImpl implements NativeInterface {
         return this.sendRequest('/file/list', params);
     }
 
-    sendRequest(url, params) {
-        url = 'http://k-mythnote-api.cn' + url
+    sendRequest(url, params):any {
+        url = appConfig.serverUrl + url
         let formdata = this.getFormData(params)
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: 'post',
                 body: formdata
-            }).then(async res => {
-                let data = await res.json()
-                if (!('status' in data)) {
-                    reject('服务器连接失败')
-                }
-                if (data.status !== 0) {
-                    reject(data.msg)
-                }
-                resolve(data.data);
             })
+                .then(async res => {
+                    let data = await res.json()
+                    if (!('status' in data)) {
+                        reject('服务器连接失败')
+                    }
+                    if (data.status !== 0) {
+                        reject(data.msg)
+                    }
+                    resolve(data.data);
+                })
+                .catch(e => reject(e))
         })
     }
 

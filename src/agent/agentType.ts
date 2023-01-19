@@ -7,7 +7,8 @@ export interface NativeInterface {
 export interface FileItem {
     name: string;
     path: string;
-    pined: boolean;
+    pined?: boolean;
+    isNew?: boolean;
 }
 
 export interface FolderItem {
