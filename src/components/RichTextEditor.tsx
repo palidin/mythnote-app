@@ -2,8 +2,8 @@ import ClassicEditor from '@palidin/ckeditor5-markdown-build'
 import {useEffect, useState} from "react";
 import {markdownConfig} from "../ckeditor/markdownPlugin";
 import LocalFileUploadAdapter from "../ckeditor/localFileUploadAdapter";
-import {replaceRemoteHostImage} from "../utils/utils2";
-import {sharedVariables} from "../state";
+import {replaceRemoteHostImage} from "../utils/CkEditorUtils";
+import {sharedVariables} from "../store/state";
 import {useMount} from "../utils/HookUtils";
 
 
@@ -29,9 +29,6 @@ export function RichTextEditor({content, updateBody}) {
                 setEditor(ins)
                 initEditor(ins);
 
-            })
-            .catch(e => {
-                console.log(e)
             })
     })
 
@@ -66,7 +63,6 @@ export function RichTextEditor({content, updateBody}) {
 
         const sourceEditingPlugin = editor.plugins.get('SourceEditing');
         sourceEditingPlugin.on('change:isSourceEditingMode', (evt, name, isSourceEditingMode) => {
-            console.log(isSourceEditingMode)
             setSourceEditing(isSourceEditingMode)
         });
 

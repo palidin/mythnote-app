@@ -2,8 +2,9 @@ import {v4 as uuidv4} from 'uuid';
 import * as debounce1 from "lodash/debounce";
 import * as throttle1 from "lodash/throttle";
 import * as ReactDOM from "react-dom/client";
-import {sharedVariables} from "../state";
+import {sharedVariables} from "../store/state";
 import moment from "moment";
+import {store} from "../store/store";
 
 export function debounce(fn, wait) {
     return debounce1(fn, wait);
@@ -62,4 +63,50 @@ export function formatDisplayTime(time: string) {
 
 export function deepCopy(obj) {
     return JSON.parse(JSON.stringify(obj));
+}
+
+export function substrTitle(body) {
+    let text = body.substring(0, 30)
+
+    let items = text.split("\n")
+    for (const item of items) {
+        if (!item.match(/^\s*$/)) {
+            return item;
+        }
+    }
+
+    return text;
+}
+
+
+export function selectStart(i) {
+    store.startIndex = i;
+    store.selectIndexes = [i];
+}
+
+export function selectEnd(i) {
+    let start = store.startIndex;
+    let end = i;
+    if (start == -1) {
+        return;
+    }
+
+    if (start > end) {
+        let t = start;
+        start = end;
+        end = t;
+    }
+
+    let indexes = [];
+
+    for (let i = start; i <= end; i++) {
+        indexes.push(i);
+    }
+
+    store.selectIndexes = indexes;
+}
+
+export function selectRestore() {
+    store.startIndex = -1;
+    store.selectIndexes = [];
 }

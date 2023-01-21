@@ -1,100 +1,116 @@
 import classNames from "classnames";
-import {formatDisplayTime, openContextMenu} from "../../utils/utils";
+import {formatDisplayTime, openContextMenu, substrTitle} from "../../utils/utils";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {RichTextEditor} from "../RichTextEditor";
-import {FileItem, myAgent} from "../../agent/agentType";
-import {FileData, readContentFrontMatter} from "../../utils/utils4";
+import {myAgent} from "../../agent/agentType";
+import {FileData, readContentFrontMatter, writeFile} from "../../utils/FileUtils";
 import {useDebounce} from "../../utils/HookUtils";
-import {sharedVariables} from "../../state";
-import {showConfirmModal, showInputModal} from "../../utils/utils3";
+import {sharedVariables} from "../../store/state";
+import {showConfirmModal, showInputModal} from "../../utils/MessageUtils";
 import {MyContextMenu} from "../MyContextMenu";
-import {writeFile} from "../../utils/NoteUtils";
 import {useAtom} from "jotai";
-import {isAtBottomAtom, itemIndexAtom, itemListAtom, searchDataAtom} from "../../store/app";
+import {itemIndexAtom, itemListAtom, searchDataAtom} from "../../store/app";
+import {store} from "../../store/store";
 
-export function Right(){
+export function Right() {
 
     const EMPTY_FILE = {
         body: '',
         props: {},
-        __hidden: true
     }
 
     const [currentFile, setCurrentFile] = useState<FileData>(EMPTY_FILE);
     const [content, setContent] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
 
-    const[searchData,setSearchData] = useAtom(searchDataAtom);
-    const[itemList,setItemList] = useAtom(itemListAtom);
-    const[itemIndex,setItemIndex] = useAtom(itemIndexAtom);
-    const[isAtBottom,setIsAtBottom] = useAtom(isAtBottomAtom);
+    const [searchData] = useAtom(searchDataAtom);
+    const [itemList, setItemList] = useAtom(itemListAtom);
+    const [itemIndex] = useAtom(itemIndexAtom);
 
 
     const path = useMemo(() => {
         return itemList[itemIndex]?.path;
     }, [itemList, itemIndex]);
 
-
-    useEffect(() => {
-        fetchItemList(searchData, itemList);
-    }, [searchData])
-
-    useEffect(() => {
-        setIsLoading('__hide' in currentFile);
-    }, [currentFile])
+    const isEmpty = useMemo(() => {
+        return itemList.length <= 0;
+    }, [itemList])
 
 
     useEffect(() => {
         if (!path) {
             return;
         }
-        myAgent.read(path)
-            .then(res => {
-                let matter
-                if (!res) {
-                    matter = EMPTY_FILE
-                } else {
-                    matter = readContentFrontMatter(res)
-                }
+        getPathMatter(path)
+            .then((matter) => {
                 setCurrentFile(matter)
                 setContent(matter.body)
-
                 sharedVariables.path = path;
+                sharedVariables.currentListItems = itemList
+                sharedVariables.currentListIndex = itemIndex
                 sharedVariables.currentFile = {...matter};
                 sharedVariables.fileDataCache[path] = matter;
             })
     }, [path]);
 
-
-    useEffect(() => {
-        let newItem = {...itemList[itemIndex]};
-        if (currentFile.props.title) {
-            newItem.name = currentFile.props.title;
+    function getPathMatter(path) {
+        let item = itemList.find(v => v.path == path);
+        if (item.isNew) {
+            let matter = {...EMPTY_FILE};
+            if (item.props) {
+                matter.props = {...item.props};
+            }
+            return Promise.resolve(matter)
         }
 
-        let copyItemList = [...itemList]
-        copyItemList.splice(itemIndex, 1, newItem);
-        setItemList(copyItemList)
-    }, [isLoading, currentFile])
-
-
-    const wrapWriteFileProps = useDebounce(writeFile);
-
-    function fetchItemList(searchData, itemList) {
-        myAgent.fileList(searchData)
+        return myAgent.read(path)
             .then(res => {
-                setIsAtBottom(!res.items.length || res.pages == searchData.page);
-                if (res.items.length && !itemList.length) {
-                    setItemIndex(0)
-                }
-                setItemList([...itemList, ...res.items])
+                return Promise.resolve(readContentFrontMatter(res))
             })
     }
 
 
+    const wrapWriteFileProps = useDebounce((...args) => {
+
+        const [currentFile, path] = args;
+
+        let itemList = sharedVariables.currentListItems;
+        let parentTag = store.focusTag;
+        let activeIndex = itemList.findIndex(v => v.path == path);
+        let isNew = itemList[activeIndex].isNew;
+
+        let title = currentFile.props.title;
+        let substringTitle = substrTitle(currentFile.body);
+        if (!title || substringTitle.startsWith(title)) {
+            title = substringTitle;
+
+            currentFile.props.title = title;
+
+            titleChangeHandler(itemList, activeIndex, title)
+        }
+
+        setCurrentFile({
+            ...currentFile,
+        })
+
+        if (isNew && parentTag) {
+            currentFile.props.tags = [parentTag];
+        }
+
+        writeFile(currentFile, path)
+            .then((res) => {
+                if (isNew && res === 0) {
+                    itemList.splice(activeIndex, 1, {
+                        ...itemList[activeIndex],
+                        isNew: false,
+                    })
+                    setItemList([...itemList])
+                }
+
+            })
+    });
+
     function updateCurrentFile(file, path) {
         if (!path) return;
-        if (sharedVariables.saveFilePath && sharedVariables.saveFilePath !== path) return;
         setCurrentFile(file)
         wrapWriteFileProps(file, path);
     }
@@ -119,17 +135,23 @@ export function Right(){
         }, path)
     }
 
-    function onClickItem(i) {
-        if (itemIndex === i) {
-            return;
-        }
-        setItemIndex(i);
+    function onTitleChange(e) {
+        titleChangeHandler(itemList, itemIndex, e.target.value, true)
     }
 
-    function onTitleChange(e) {
-        let title = e.target.value;
-        updateProps({title})
+    function titleChangeHandler(itemList, itemIndex, title, save = false) {
+        if (save) {
+            updateProps({title})
+        }
+
+        itemList.splice(itemIndex, 1, {
+            ...itemList[itemIndex],
+            title,
+        })
+
+        setItemList([...itemList])
     }
+
 
     function openAddTagModal() {
         showInputModal('添加标签')
@@ -144,7 +166,7 @@ export function Right(){
 
     function removeTagModal(tag) {
         showConfirmModal('确认删除"' + tag + '"标签吗？')
-            .then(res => {
+            .then(() => {
                 let tags = currentFile.props.tags ?? [];
                 tags = tags.filter(v => v !== tag)
                 updateProps({tags})
@@ -176,12 +198,12 @@ export function Right(){
 
     return (
         <div className="right flex-col">
-            <div className={classNames('note-detail full-fill flex-col', {'hide': isLoading})}>
+            <div className={classNames('note-detail auto-stretch flex-col', {'hide': isEmpty})}>
 
                 <div className={"note-title"}>
                     <div>
                         <input type="text" onInput={onTitleChange}
-                               value={currentFile.props.title || ''}/>
+                               value={itemList[itemIndex]?.title || ''}/>
                     </div>
                     <div className={'info'}>
                         <span>{formatDisplayTime(currentFile.props.created)}</span>
@@ -189,14 +211,14 @@ export function Right(){
                         {currentFile.props.source_url ? `<span><a href="${currentFile.props.source_url}">${currentFile.props.source_url}</a></span>` : ''}
                     </div>
 
-                    <div className={'info'}>
+                    <div className={'info note-tags'}>
                         {
                             currentFile.props.tags?.length
                                 ? <> {
                                     currentFile.props.tags.map((v, k) => {
                                         return <span key={k}
                                                      onContextMenu={(e) => openTagManageContextMenu(e, v)}
-                                                     className={v === searchData.currentFolder ? 'active' : ''}>{v}</span>;
+                                                     className={v === searchData.folder ? 'active' : ''}>{v}</span>;
                                     })
                                 }</>
                                 : ''
@@ -209,11 +231,11 @@ export function Right(){
                     <span onClick={openAddTagModal}>增加标签</span>
                 </div>
 
-                <div className={"note-content flex-col full-fill"}>
+                <div className={"note-content flex-col auto-stretch"}>
                     <TextEditor {...{content, updateBody}}></TextEditor>
                 </div>
             </div>
-            <div className={classNames('mask full-fill', {'hide': !isLoading})}></div>
+            <div className={classNames('mask auto-stretch', {'hide': !isEmpty})}></div>
         </div>
     )
 }

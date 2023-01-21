@@ -1,4 +1,4 @@
-import {state} from "./state.js";
+import {state} from "./store/state.tsx";
 
 function Hello({count}) {
     return <div>

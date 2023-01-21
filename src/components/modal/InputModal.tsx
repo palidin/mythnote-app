@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {useAutoFocusInput} from "root@/utils/HookUtils";
+import {useAutoFocusInput} from "../../utils/HookUtils";
 
 export function InputModal({title, value, updateValue, closeModal}) {
 

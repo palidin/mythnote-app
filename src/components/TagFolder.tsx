@@ -1,0 +1,56 @@
+import classNames from "classnames";
+import {store} from "../store/store";
+import {openContextMenu} from "../utils/utils";
+import {MyContextMenu} from "./MyContextMenu";
+import React, {useEffect, useState} from "react";
+import {showInputModal} from "../utils/MessageUtils";
+import {myAgent} from "../agent/agentType";
+
+export function TagFolder({folders, onTagClick, keys = []}) {
+
+    function openFileManageContextMenu(e, value) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (keys.length == 0) return;
+        let items = [
+            {'title': '重命名', onClick: () => openAddTagModal(value)},
+        ]
+        openContextMenu(<MyContextMenu e={e} items={items}></MyContextMenu>)
+    }
+
+    function openAddTagModal(item) {
+        showInputModal('重命名标签', item.fullname)
+            .then(res => {
+                myAgent.categoryRename(item.fullname, res)
+            })
+    }
+
+    const [focusTag, setFocusTag] = useState('');
+
+    useEffect(() => {
+        setFocusTag(store.focusTag)
+    }, [store.focusTag])
+
+    return (
+        <>
+            <ul className={'list-tag'}>
+                {folders.map((v, k) => (
+                    <li key={k} className={classNames('tag-item', {
+                        folder: v.children && v.children.length,
+                        expand: v.expand,
+                        active: v.fullname == focusTag,
+                    })}>
+                        <div
+                            onContextMenu={(e) => openFileManageContextMenu(e, v)}
+                            className='name text-title'
+                            title={v.name}
+                            onClick={() => onTagClick(v.fullname, [...keys, k])}>{v.name}</div>
+                        {v.children && v.children.length && v.expand ?
+                            <TagFolder folders={v.children} onTagClick={onTagClick}
+                                       keys={[...keys, k]}></TagFolder> : ''}
+                    </li>
+                ))}
+            </ul>
+        </>
+    );
+}

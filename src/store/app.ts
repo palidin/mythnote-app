@@ -4,9 +4,9 @@ import {atom} from "jotai";
 const app = {
     searchData: {
         page: 1,
-        limit: 10,
+        limit: 18,
         keywords: '',
-        currentFolder: '',
+        folder: '',
     },
     itemList: [],
     itemIndex: -1,

@@ -1,30 +1,39 @@
 import {TagFolder} from "../TagFolder";
-import React from "react";
-import {resetSearchCondition} from "../../utils/NoteUtils";
-import {useAtom} from "jotai";
-import {itemListAtom, searchDataAtom} from "../../store/app";
+import React, {useState} from "react";
+import {store} from "../../store/store";
+import {useMount} from "../../utils/HookUtils";
+import {myAgent} from "../../agent/agentType";
 
 export function Left() {
 
-    const [searchData, setSearchData] = useAtom(searchDataAtom);
-    const [, setItemList] = useAtom(itemListAtom);
+    const [folders, setFolders] = useState([]);
 
-    const folders = [
-        {
-            'name': 'a', 'fullname': 'a', children: [
-                {
-                    'name': '张三', 'fullname': 'a/张三', children: [
-                        {'name': '张三1', 'fullname': 'a/张三/张三1'},
-                        {'name': '张三2', 'fullname': 'a/张三/张三2'},
-                    ]
-                },
-                {'name': '李四', 'fullname': 'a/李四'},
-            ]
+    useMount(() => {
+        myAgent.categoryList()
+            .then(res => setFolders(res))
+    })
+
+    function onTagClick(folder, keys) {
+        let current: any = folders;
+
+        let index = 0;
+        for (let key of keys) {
+            if (index++ == 0) {
+                current = current[key];
+            } else {
+                current = current.children[key];
+            }
         }
-    ];
 
-    function onTagClick(folder) {
-        resetSearchCondition(setItemList, searchData, setSearchData, {folder})
+        if (!(current.fullname == '' && current.expand && !!store.focusTag)) {
+            current.expand = !current.expand;
+        }
+
+        store.focusTag = current.fullname;
+
+        console.log(current.fullname)
+
+        setFolders([...folders])
     }
 
     return (

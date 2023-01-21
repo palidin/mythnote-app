@@ -8,8 +8,12 @@
   flex-direction: row;
 }
 
-.full-fill {
+.auto-stretch {
   flex: 1;
+}
+
+%active-style {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .layout {
@@ -23,17 +27,53 @@
 
     .list-tag {
       margin-left: 10px;
+
+      .tag-item {
+        &.active > .name {
+          @extend %active-style;
+        }
+
+        &.folder {
+          & > .name::after {
+            line-height: 1em;
+            content: '〉';
+          }
+
+          &.expand {
+            & > .name::after {
+              content: '⌄';
+              line-height: 1em;
+            }
+          }
+        }
+      }
     }
   }
 
   .middle {
+    position: relative;
     width: 15%;
     min-width: 50px;
     background: indianred;
 
+    .search-wrapper {
+      height: fit-content;
+    }
+
+    .list-item-box {
+      overflow-y: hidden;
+      position: relative;
+    }
+
     .list-item {
+      overflow-y: auto;
+
       .active {
-        background: darkgrey;
+        @extend %active-style;
+      }
+
+      .selected {
+        @extend %active-style;
       }
 
       .list-item-title {
@@ -44,7 +84,7 @@
     }
 
     .load-more {
-      background: gold;
+      background: skyblue;
     }
   }
 
@@ -57,11 +97,8 @@
         display: flex;
 
         span {
+          user-select: text;
           padding: 5px;
-        }
-
-        .active {
-          background: darkgrey;
         }
       }
     }
@@ -73,7 +110,21 @@
         padding: 0 5px;
       }
     }
+
+    .note-tags {
+      flex-wrap: wrap;
+
+      .active {
+        background: moccasin;
+      }
+    }
   }
+}
+
+.text-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 ul {
@@ -145,8 +196,19 @@ html, body, #root, .layout {
   width: 100%;
 }
 
+.fill-box {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
 
 .note-content {
+
+  p {
+    margin-block-start: 0;
+    margin-block-end: 0;
+  }
 
   #ckeditor-word-counter {
     width: fit-content;
@@ -163,13 +225,11 @@ html, body, #root, .layout {
 
 
       .ck-content {
-        position: absolute;
-        width: 100%;
-        height: 100%;
+        @extend .fill-box;
       }
 
       .ck-source-editing-area {
-        @extend .ck-content;
+        @extend .fill-box;
 
         textarea {
           overflow-y: auto;

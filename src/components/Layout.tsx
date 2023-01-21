@@ -13,13 +13,15 @@ export function Layout() {
         document.oncontextmenu = () => {
             return false;
         }
+
+        return () => document.oncontextmenu = null;
     });
 
     return (
         <div className={"layout"}>
-            <Left />
-            <Middle />
-            <Right />
+            <Left/>
+            <Middle/>
+            <Right/>
             <div id={'popup'}></div>
             <div id={'contextmenu'}></div>
         </div>

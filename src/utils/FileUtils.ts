@@ -1,5 +1,5 @@
 import moment from "moment";
-import {sharedVariables} from "../state";
+import {sharedVariables} from "../store/state";
 import {myAgent} from "../agent/agentType";
 import * as graymatter from 'gray-matter-browser'
 
@@ -77,20 +77,14 @@ async function putFileContents(file: WaitingWriteFileData) {
 
 
 export function updateFileBodyWithProps(path: string, body: string, props: object) {
-
-    // sharedVariables.saveFilePath = path;
+    body = body.replaceAll("\r\n", "\n");
     return putFileContents({
         path,
         data: {body, props},
         createTime: new Date().getTime(),
     })
-        .then(res => {
-            sharedVariables.saveFilePath = null;
-            console.log(res)
-        })
-        .catch(e => {
-            sharedVariables.saveFilePath = null;
-        })
+        .finally(() => {
+        });
 }
 
 function getMergedProps(oldAttrs: Record<string, any>, props: Record<string, any>) {
@@ -137,4 +131,19 @@ async function readFileProps(file: string) {
 
 async function readFileBody(file: string) {
     return (await readFileFrontMatter(file))?.props;
+}
+
+export function resetSearchCondition(setItemList, searchData, setSearchData, obj) {
+
+    let page = 1;
+    setItemList([]);
+    setSearchData({
+        ...searchData,
+        ...obj,
+        page,
+    });
+}
+
+export function writeFile(currentFile, path) {
+    return updateFileBodyWithProps(path, currentFile.body, currentFile.props)
 }

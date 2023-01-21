@@ -5,6 +5,19 @@ import {appConfig} from "../config/app";
 export class FakeImpl implements NativeInterface {
 
     getFormData(obj) {
+        let formData = [];
+        for (const [k, v] of Object.entries(obj)) {
+            let value = v;
+            if (typeof v == 'object') {
+                value = JSON.stringify(v);
+            }
+            // @ts-ignore
+            formData.push(k + '=' + encodeURIComponent(value));
+        }
+        return formData.join('&');
+    }
+
+    getUploadData(obj) {
         let formData = new FormData();
         for (const [k, v] of Object.entries(obj)) {
             // @ts-ignore
@@ -25,13 +38,35 @@ export class FakeImpl implements NativeInterface {
         return this.sendRequest('/file/list', params);
     }
 
-    sendRequest(url, params):any {
+    fileDelete(paths: string[], deleted) {
+        return this.sendRequest('/file/delete', {paths, deleted})
+    }
+
+    categoryList() {
+        return this.sendRequest('/category/list', {})
+    }
+
+    categoryRename(old, name) {
+        return this.sendRequest('/category/rename', {old, 'new': name})
+    }
+
+    sendRequest(url: string, params): any {
         url = appConfig.serverUrl + url
-        let formdata = this.getFormData(params)
+        let formdata
+        let headers = {};
+        if (url.includes('upload')) {
+            formdata = this.getUploadData(params)
+        } else {
+            formdata = this.getFormData(params)
+            headers = new Headers({
+                'content-type': 'application/x-www-form-urlencoded'
+            })
+        }
         return new Promise((resolve, reject) => {
             fetch(url, {
                 method: 'post',
-                body: formdata
+                body: formdata,
+                headers
             })
                 .then(async res => {
                     let data = await res.json()
@@ -47,12 +82,12 @@ export class FakeImpl implements NativeInterface {
         })
     }
 
-    async uploadImage(data: any, path: string): Promise<string> {
+    async uploadImage(data: any): Promise<string> {
         let res = await this.sendRequest('/upload/image', {file: data})
         return res.url;
     }
 
-    async uploadImageUrl(url: string, path: string): Promise<string> {
+    async uploadImageUrl(url: string): Promise<string> {
         let res = await this.sendRequest('/upload/image/url', {url})
         return res.url;
     }

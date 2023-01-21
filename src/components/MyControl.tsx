@@ -3,13 +3,6 @@ import 'rc-dialog/assets/index.css';
 import Dialog from "rc-dialog/es/Dialog";
 import {destroyModal} from "../utils/utils";
 
-// Check for memo update should work
-const InnerRender = () => {
-    console.log('Updated...', Date.now());
-    return null;
-};
-
-
 const MyControl = ({children, onUpdateValue}) => {
     const [visible, setVisible] = React.useState(true);
     const [destroyOnClose, setDestroyOnClose] = React.useState(false);

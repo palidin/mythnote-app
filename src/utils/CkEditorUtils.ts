@@ -1,8 +1,7 @@
 import * as cheerio from "cheerio";
 import {isRemoteUrl} from "./utils";
 import imageCrawler from "../ckeditor/imageCrawler";
-import select from "select-dom";
-import {sharedVariables} from "../state";
+import {sharedVariables} from "../store/state";
 
 interface ImageModel {
     html: string,
