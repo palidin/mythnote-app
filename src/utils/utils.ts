@@ -5,6 +5,7 @@ import * as ReactDOM from "react-dom/client";
 import {sharedVariables} from "../store/state";
 import moment from "moment";
 import {store} from "../store/store";
+import {myAgent} from "../agent/agentType";
 
 export function debounce(fn, wait) {
     return debounce1(fn, wait);
@@ -109,4 +110,22 @@ export function selectEnd(i) {
 export function selectRestore() {
     store.startIndex = -1;
     store.selectIndexes = [];
+}
+
+export function delayRun(timeout = 1000) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, timeout)
+    })
+}
+
+export function checkStatusTask() {
+    return new Promise(resolve => {
+        myAgent.status()
+            .then(res => {
+                if (!res.lock) {
+                    return resolve(true);
+                }
+                return resolve(false)
+            })
+    })
 }

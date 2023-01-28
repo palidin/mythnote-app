@@ -8,9 +8,19 @@
   flex-direction: row;
 }
 
+.align-center {
+  align-items: center;
+}
+
+.align-end {
+  align-items: end;
+}
+
 .auto-stretch {
   flex: 1;
 }
+
+$bg-color: hsl(0deg 0% 98%);
 
 %active-style {
   background: rgba(0, 0, 0, 0.2);
@@ -23,14 +33,36 @@
   .left {
     width: 15%;
     min-width: 50px;
-    background: gold;
+    background: hsl(200deg 16% 15%);
+    color: white;
+
+    position: relative;
+
+    .operation-bar {
+      padding: 5px 10px;
+
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+
+      width: 100%;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
 
     .list-tag {
       margin-left: 10px;
 
       .tag-item {
         &.active > .name {
-          @extend %active-style;
+          background: hsl(202deg 10% 21%);
         }
 
         &.folder {
@@ -54,7 +86,9 @@
     position: relative;
     width: 15%;
     min-width: 50px;
-    background: indianred;
+    background: $bg-color;
+
+    padding: 10px 5px;
 
     .search-wrapper {
       height: fit-content;
@@ -90,7 +124,10 @@
 
   .right {
     width: 70%;
-    background: greenyellow;
+    background: $bg-color;
+
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 
     .note-title {
       .info {
@@ -127,11 +164,6 @@
   white-space: nowrap;
 }
 
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
 
 .hide {
   display: none;
@@ -205,9 +237,18 @@ html, body, #root, .layout {
 
 .note-content {
 
-  p {
+  %no-indent-style {
     margin-block-start: 0;
     margin-block-end: 0;
+  }
+
+  p {
+    @extend %no-indent-style;
+  }
+
+  ul {
+    padding-inline-start: 2em;
+    @extend %no-indent-style;
   }
 
   #ckeditor-word-counter {
@@ -237,4 +278,8 @@ html, body, #root, .layout {
       }
     }
   }
+}
+
+* {
+  box-sizing: border-box;
 }

@@ -3,7 +3,7 @@ import {formatDisplayTime, openContextMenu, substrTitle} from "../../utils/utils
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {RichTextEditor} from "../RichTextEditor";
 import {myAgent} from "../../agent/agentType";
-import {FileData, readContentFrontMatter, writeFile} from "../../utils/FileUtils";
+import {diffSecondsFromNow, FileData, readContentFrontMatter, writeFile} from "../../utils/FileUtils";
 import {useDebounce} from "../../utils/HookUtils";
 import {sharedVariables} from "../../store/state";
 import {showConfirmModal, showInputModal} from "../../utils/MessageUtils";
@@ -76,11 +76,15 @@ export function Right() {
         let itemList = sharedVariables.currentListItems;
         let parentTag = store.focusTag;
         let activeIndex = itemList.findIndex(v => v.path == path);
-        let isNew = itemList[activeIndex].isNew;
+        let activeItem = itemList[activeIndex];
+        let isNew = activeItem.isNew;
 
-        let title = currentFile.props.title;
+        let title = activeItem.title;
         let substringTitle = substrTitle(currentFile.body);
-        if (!title || substringTitle.startsWith(title)) {
+
+
+        if (!title ||
+            (substringTitle.startsWith(title) && diffSecondsFromNow(currentFile.props.created) < 600)) {
             title = substringTitle;
 
             currentFile.props.title = title;
@@ -136,7 +140,7 @@ export function Right() {
     }
 
     function onTitleChange(e) {
-        titleChangeHandler(itemList, itemIndex, e.target.value, true)
+        titleChangeHandler(itemList, itemIndex, e.target.value, !itemList[itemIndex].isNew)
     }
 
     function titleChangeHandler(itemList, itemIndex, title, save = false) {
@@ -148,6 +152,8 @@ export function Right() {
             ...itemList[itemIndex],
             title,
         })
+
+        sharedVariables.currentListItems = itemList;
 
         setItemList([...itemList])
     }

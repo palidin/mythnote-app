@@ -21,7 +21,10 @@ export function TagFolder({folders, onTagClick, keys = []}) {
     function openAddTagModal(item) {
         showInputModal('重命名标签', item.fullname)
             .then(res => {
-                myAgent.categoryRename(item.fullname, res)
+                return myAgent.categoryRename(item.fullname, res)
+            })
+            .then(() => {
+                location.reload();
             })
     }
 

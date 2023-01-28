@@ -3,6 +3,8 @@ import React, {useState} from "react";
 import {store} from "../../store/store";
 import {useMount} from "../../utils/HookUtils";
 import {myAgent} from "../../agent/agentType";
+import {checkStatusTask, delayRun} from "../../utils/utils";
+import {showConfirmModal} from "../../utils/MessageUtils";
 
 export function Left() {
 
@@ -31,14 +33,40 @@ export function Left() {
 
         store.focusTag = current.fullname;
 
-        console.log(current.fullname)
-
         setFolders([...folders])
     }
+
+    function cleanup() {
+
+        showConfirmModal('确认要重建数据索引吗？')
+            .then(() => {
+                store.dataRebuilding = true;
+                myAgent.cleanup()
+                    .then(() => {
+                        return checkStatus();
+                    })
+            })
+
+    }
+
+    async function checkStatus() {
+        let res = await checkStatusTask();
+        if (res) {
+            store.dataRebuilding = false;
+            return Promise.resolve();
+        }
+        return delayRun(3000)
+            .then(() => checkStatus())
+    }
+
 
     return (
         <div className={"left"}>
             <TagFolder folders={folders} onTagClick={onTagClick}></TagFolder>
+
+            <div className='operation-bar'>
+                <button onClick={cleanup}>清空缓存</button>
+            </div>
         </div>
     );
 }

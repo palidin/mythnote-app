@@ -65,9 +65,6 @@ export function RichTextEditor({content, updateBody}) {
         sourceEditingPlugin.on('change:isSourceEditingMode', (evt, name, isSourceEditingMode) => {
             setSourceEditing(isSourceEditingMode)
         });
-
-        const wordCountPlugin = editor.plugins.get('WordCount');
-        document.getElementById('ckeditor-word-counter').appendChild(wordCountPlugin.wordCountContainer);
     }
 
 

@@ -30,6 +30,14 @@ function getNowDateString() {
     return moment().format();
 }
 
+export function diffSecondsFromNow(target: string) {
+
+    let now = new Date().getTime();
+    let timestamps = moment(target).toDate().getTime();
+    let diff = now - timestamps;
+    return Math.floor(diff / 1000);
+}
+
 function stringifyYaml(obj: any) {
     let header = '';
     if (obj && Object.keys(obj).length) {
@@ -124,17 +132,11 @@ export function readContentFrontMatter(text: string): FileData {
     return metadata;
 }
 
-
-async function readFileProps(file: string) {
-    return (await readFileFrontMatter(file))?.props;
-}
-
-async function readFileBody(file: string) {
-    return (await readFileFrontMatter(file))?.props;
-}
-
 export function resetSearchCondition(setItemList, searchData, setSearchData, obj) {
 
+    console.log(searchData)
+    console.log(obj)
+    console.log(1111)
     let page = 1;
     setItemList([]);
     setSearchData({

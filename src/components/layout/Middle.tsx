@@ -26,13 +26,8 @@ export function Middle() {
     }, [itemIndex])
 
     useEffect(() => {
-        console.log(store.focusTag)
-        setItemList([]);
-        setSearchData({
-            ...searchData,
-            folder: store.focusTag,
-            page: 1,
-        })
+        if (store.focusTag == searchData.folder) return;
+        resetSearchCondition(setItemList, searchData, setSearchData, {folder: store.focusTag})
     }, [store.focusTag])
 
     useEffect(() => {
@@ -49,7 +44,6 @@ export function Middle() {
                 setItemList([...itemList, ...res.items])
             })
     }
-
 
     function onKeywordsChange(e) {
         let keywords = e.target.value;
@@ -105,7 +99,7 @@ export function Middle() {
             <div className={"search-wrapper"}>
                 <input type="text" ref={keywordsRef} value={keywords} onChange={onKeywordsChange}/>
                 <button onClick={onConfirmKeywordsChange}>Search</button>
-                <button onClick={onCreateNewNote}>New</button>
+                <button onClick={onCreateNewNote} disabled={store.focusTag.startsWith('//')}>New</button>
             </div>
 
             <div className={"list-item-box auto-stretch"}>
@@ -144,7 +138,6 @@ function ListItem({index, item}) {
         if (store.focusTag && store.focusTag.startsWith('//')) {
             deleted = false;
         }
-
 
         let items = [
             {'title': '置顶/取消置顶', onClick: () => updateNotePined(value.path, !value.pined)},
