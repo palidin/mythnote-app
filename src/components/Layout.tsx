@@ -26,7 +26,7 @@ export function Layout() {
     });
 
     if (store.dataRebuilding) {
-        return '数据索引中...';
+        return <div>数据索引中...</div>;
     }
 
     return (

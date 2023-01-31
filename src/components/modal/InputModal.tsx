@@ -16,7 +16,6 @@ export function InputModal({title, value, updateValue, closeModal}) {
 
     function onKeyDown(e) {
         if (e.key === 'Enter') {
-            console.log('do validate')
             closeModal();
         }
     }

@@ -133,10 +133,6 @@ export function readContentFrontMatter(text: string): FileData {
 }
 
 export function resetSearchCondition(setItemList, searchData, setSearchData, obj) {
-
-    console.log(searchData)
-    console.log(obj)
-    console.log(1111)
     let page = 1;
     setItemList([]);
     setSearchData({

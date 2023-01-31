@@ -13,11 +13,12 @@ import {showConfirmModal} from "../../utils/MessageUtils";
 
 export function Middle() {
 
-
     const [searchData, setSearchData] = useAtom(searchDataAtom);
     const [itemList, setItemList] = useAtom(itemListAtom);
     const [itemIndex, setItemIndex] = useAtom(itemIndexAtom);
     const [isAtBottom, setIsAtBottom] = useAtom(isAtBottomAtom);
+
+    const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {
         if (itemIndex == 0) {
@@ -42,6 +43,7 @@ export function Middle() {
                     setItemIndex(0)
                 }
                 setItemList([...itemList, ...res.items])
+                setIsFetching(false);
             })
     }
 
@@ -66,11 +68,29 @@ export function Middle() {
     }
 
     function onClickLoadMore() {
+        if (isAtBottom) {
+            return;
+        }
+        if (isFetching) {
+            return;
+        }
+        setIsFetching(true);
+
         let page = searchData.page + 1;
         setSearchData({
             ...searchData,
             page,
         });
+    }
+
+    function onScroll() {
+        const scrollDiv = listItemBoxRef.current;
+        const windowHeight = scrollDiv.clientHeight;
+        let height = parseInt(scrollDiv.scrollTop + windowHeight);
+        let totalHeight = parseInt(scrollDiv.scrollHeight);
+        if (height > totalHeight - 2) {
+            onClickLoadMore();
+        }
     }
 
     const keywordsRef = useRef(null);
@@ -93,6 +113,15 @@ export function Middle() {
         setItemIndex(0);
     }
 
+    const listItemBoxRef = useRef(null);
+
+    useEffect(() => {
+        const scrollDiv = listItemBoxRef.current;
+        scrollDiv.addEventListener('scroll', onScroll);
+        return () => {
+            scrollDiv.removeEventListener('scroll', onScroll);
+        }
+    }, [onScroll])
 
     return (
         <div className={"middle flex-col"}>
@@ -103,7 +132,7 @@ export function Middle() {
             </div>
 
             <div className={"list-item-box auto-stretch"}>
-                <div className="list-item fill-box">
+                <div className="list-item fill-box" ref={listItemBoxRef}>
                     {itemList.map((item, index) => {
                         return <ListItem key={item.path} index={index} item={item}></ListItem>
                     })}

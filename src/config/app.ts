@@ -1,3 +1,6 @@
+
+
 export const appConfig = {
-    serverUrl: 'http://myth-note.dk.cn',
+    // @ts-ignore
+    serverUrl: window.__APP_ENV__.API_HOST,
 }

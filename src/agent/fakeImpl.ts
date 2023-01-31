@@ -123,7 +123,6 @@ function sendRequest(path: string, params, withToken = true): any {
                             return sendRequest(path, params)
                         })
                         .then((proxyData) => {
-                            console.log(proxyData)
                             resolve(proxyData)
                         })
                 }
