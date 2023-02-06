@@ -44,6 +44,8 @@ export function Middle() {
                 }
                 setItemList([...itemList, ...res.items])
                 setIsFetching(false);
+
+                autoScroll()
             })
     }
 
@@ -85,10 +87,21 @@ export function Middle() {
 
     function onScroll() {
         const scrollDiv = listItemBoxRef.current;
-        const windowHeight = scrollDiv.clientHeight;
-        let height = parseInt(scrollDiv.scrollTop + windowHeight);
-        let totalHeight = parseInt(scrollDiv.scrollHeight);
+        const clientHeight = scrollDiv.clientHeight;
+        let height = scrollDiv.scrollTop + clientHeight;
+        let totalHeight = scrollDiv.scrollHeight;
         if (height > totalHeight - 2) {
+            onClickLoadMore();
+        }
+    }
+
+    function autoScroll() {
+        const scrollDiv = listItemBoxRef.current;
+        const clientHeight = scrollDiv.clientHeight;
+        let totalHeight = scrollDiv.scrollHeight;
+
+        let hasScrollBar = totalHeight > clientHeight;
+        if (!scrollDiv.scrollTop && !hasScrollBar) {
             onClickLoadMore();
         }
     }
