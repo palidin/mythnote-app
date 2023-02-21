@@ -8,124 +8,135 @@ import {store} from "../store/store";
 import {myAgent} from "../agent/agentType";
 
 export function debounce(fn, wait) {
-    return debounce1(fn, wait);
+  return debounce1(fn, wait);
 }
 
 export function throttle(fn, wait) {
-    return throttle1(fn, wait);
+  return throttle1(fn, wait);
 }
 
 export function isRemoteUrl(url) {
-    return url && url.startsWith('http');
+  return url && url.startsWith('http');
 }
 
 export function getUUid() {
-    return uuidv4();
+  return uuidv4();
 }
 
 
 export function openNewModal(component) {
-    let ele = document.getElementById('popup') as HTMLElement;
-    let root;
-    if (!sharedVariables.popup) {
-        root = ReactDOM.createRoot(ele);
-        sharedVariables.popup = root;
-    } else {
-        root = sharedVariables.popup;
-    }
+  let ele = document.getElementById('popup') as HTMLElement;
+  let root;
+  if (!sharedVariables.popup) {
+    root = ReactDOM.createRoot(ele);
+    sharedVariables.popup = root;
+  } else {
+    root = sharedVariables.popup;
+  }
 
-    root.render(
-        component
-    )
+  root.render(
+    component
+  )
 }
 
 export function destroyModal() {
-    sharedVariables.popup.unmount();
-    sharedVariables.popup = null;
+  sharedVariables.popup.unmount();
+  sharedVariables.popup = null;
 }
 
 export function openContextMenu(component) {
-    let ele = document.getElementById('contextmenu') as HTMLElement;
-    let root = sharedVariables.contextmenu
-    if (!root) {
-        root = ReactDOM.createRoot(ele);
-        sharedVariables.contextmenu = root;
-    }
+  let ele = document.getElementById('contextmenu') as HTMLElement;
+  let root = sharedVariables.contextmenu
+  if (!root) {
+    root = ReactDOM.createRoot(ele);
+    sharedVariables.contextmenu = root;
+  }
 
-    root.render(
-        component
-    )
+  root.render(
+    component
+  )
 }
 
 export function formatDisplayTime(time: string) {
-    let fmt = 'YYYY/MM/DD HH:mm:ss'
-    return moment(time).format(fmt);
+  let fmt = 'YYYY/MM/DD HH:mm:ss'
+  return moment(time).format(fmt);
 }
 
 export function deepCopy(obj) {
-    return JSON.parse(JSON.stringify(obj));
+  return JSON.parse(JSON.stringify(obj));
 }
 
 export function substrTitle(body) {
-    let text = body.substring(0, 30)
+  let text = body.substring(0, 30)
 
-    let items = text.split("\n")
-    for (const item of items) {
-        if (!item.match(/^\s*$/)) {
-            return item;
-        }
+  let items = text.split("\n")
+  for (const item of items) {
+    if (!item.match(/^\s*$/)) {
+      return item;
     }
+  }
 
-    return text;
+  return text;
 }
 
 
 export function selectStart(i) {
-    store.startIndex = i;
-    store.selectIndexes = [i];
+  store.startIndex = i;
+  store.selectIndexes = [i];
 }
 
 export function selectEnd(i) {
-    let start = store.startIndex;
-    let end = i;
-    if (start == -1) {
-        return;
-    }
+  let start = store.startIndex;
+  let end = i;
+  if (start == -1) {
+    return;
+  }
 
-    if (start > end) {
-        let t = start;
-        start = end;
-        end = t;
-    }
+  if (start > end) {
+    let t = start;
+    start = end;
+    end = t;
+  }
 
-    let indexes = [];
+  let indexes = [];
 
-    for (let i = start; i <= end; i++) {
-        indexes.push(i);
-    }
+  for (let i = start; i <= end; i++) {
+    indexes.push(i);
+  }
 
-    store.selectIndexes = indexes;
+  store.selectIndexes = indexes;
 }
 
 export function selectRestore() {
-    store.startIndex = -1;
-    store.selectIndexes = [];
+  store.startIndex = -1;
+  store.selectIndexes = [];
 }
 
 export function delayRun(timeout = 1000) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, timeout)
-    })
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout)
+  })
 }
 
 export function checkStatusTask() {
-    return new Promise(resolve => {
-        myAgent.status()
-            .then(res => {
-                if (!res.lock) {
-                    return resolve(true);
-                }
-                return resolve(false)
-            })
-    })
+  return new Promise(resolve => {
+    myAgent.status()
+      .then(res => {
+        if (!res.lock) {
+          return resolve(true);
+        }
+        return resolve(false)
+      })
+  })
+}
+
+export function isCopyable(e: any) {
+  for (const paths of e.path) {
+    if (paths instanceof HTMLElement) {
+      if (paths.classList.contains('allow-copy')) {
+        return true;
+      }
+    }
+  }
+  return false;
 }

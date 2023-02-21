@@ -3,26 +3,26 @@ import {useAutoFocusInput} from "../../utils/HookUtils";
 
 export function InputModal({title, value, updateValue, closeModal}) {
 
-    const [bindValue, setBindValue] = useState(value);
+  const [bindValue, setBindValue] = useState(value);
 
-    const ref = useAutoFocusInput();
+  const ref = useAutoFocusInput();
 
 
-    function onChange(e) {
-        let targetValue = e.target.value;
-        setBindValue(targetValue)
-        updateValue(targetValue)
+  function onChange(e) {
+    let targetValue = e.target.value;
+    setBindValue(targetValue)
+    updateValue(targetValue)
+  }
+
+  function onKeyDown(e) {
+    if (e.key === 'Enter') {
+      closeModal();
     }
+  }
 
-    function onKeyDown(e) {
-        if (e.key === 'Enter') {
-            closeModal();
-        }
-    }
-
-    return (
-        <>
-            {title}: <input type="text" value={bindValue} onInput={onChange} onKeyDown={onKeyDown} ref={ref}/>
-        </>
-    )
+  return (
+    <>
+      {title}: <input type="text" value={bindValue} onInput={onChange} onKeyDown={onKeyDown} ref={ref}/>
+    </>
+  )
 }

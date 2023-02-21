@@ -2,15 +2,15 @@ import {atom} from "jotai";
 
 
 const app = {
-    searchData: {
-        page: 1,
-        limit: 18,
-        keywords: '',
-        folder: '',
-    },
-    itemList: [],
-    itemIndex: -1,
-    isAtBottom: false,
+  searchData: {
+    page: 1,
+    limit: 20,
+    keywords: '',
+    folder: '',
+  },
+  itemList: [],
+  itemIndex: -1,
+  isAtBottom: false,
 };
 
 export const searchDataAtom = atom(app.searchData);

@@ -7,71 +7,95 @@ import {sharedVariables} from "../store/state";
 import {useMount} from "../utils/HookUtils";
 
 
-export function RichTextEditor({content, updateBody}) {
+export function RichTextEditor({content, updateBody, seed = 0}) {
 
-    const [editor, setEditor] = useState(null);
-    const [sourceEditing, setSourceEditing] = useState();
+  const [editor, setEditor] = useState(null);
+  const [sourceEditing, setSourceEditing] = useState();
+
+  useMount(() => {
+    ClassicEditor
+      .create(document.getElementById('ckeditor-box'), {
+        htmlEscaper: markdownConfig,
+        simpleUpload: {
+          adapter: LocalFileUploadAdapter,
+          settings: {
+            uploadUrl: 'http://demo.com/upload',
+          },
+        },
+        codeBlock: {
+          languages: [
+            {language: 'plaintext', label: 'TXT'},
+            {language: 'rust', label: 'Rust'},
+            {language: 'javascript', label: 'Javascript'},
+            {language: 'c', label: 'C'},
+            {language: 'cpp', label: 'C++'},
+            {language: 'json', label: 'Json'},
+            {language: 'css', label: 'CSS'},
+            {language: 'java', label: 'Java'},
+            {language: 'php', label: 'PHP'},
+            {language: 'xml', label: 'XML'},
+            {language: 'sql', label: 'SQL'},
+          ]
+        }
+      })
+      .then(ins => {
+        sharedVariables.editor = ins;
+        setEditor(ins)
+        initEditor(ins);
+      })
 
 
-    useMount(() => {
-        ClassicEditor
-            .create(document.getElementById('ckeditor-box'), {
-                htmlEscaper: markdownConfig,
-                simpleUpload: {
-                    adapter: LocalFileUploadAdapter,
-                    settings: {
-                        uploadUrl: 'http://demo.com/upload',
-                    },
-                },
-            })
-            .then(ins => {
-                sharedVariables.editor = ins;
-                setEditor(ins)
-                initEditor(ins);
-
-            })
-    })
-
-    useEffect(() => {
-        if (!editor) return
-        editor.setData(content)
-    }, [content])
-
-
-    function onDataChange(data: string) {
-        updateBody.current(data)
+    return () => {
+      // @ts-ignore
+      document.querySelector('.ck-editor__editable').ckeditorInstance.destroy()
     }
+  })
 
-    function initEditor(editor) {
+  useEffect(() => {
+    if (!editor) return
+    editor.setData(content)
+  }, [content, editor])
 
-        editor.editing.view.change(writer => {
-            writer.setAttribute('spellcheck', 'false', editor.editing.view.document.getRoot());
-        });
+  useEffect(() => {
+    if (!seed) return;
+    if (!editor) return;
+    onDataChange(editor.getData())
+  }, [seed, editor])
 
-        editor.model.document.on('change:data', () => {
-            onDataChange(editor.getData())
-        });
+  function onDataChange(data: string) {
+    updateBody(data)
+  }
 
-        editor.editing.view.document.on('clipboardInput', (evt, data) => {
-            const dataTransfer = data.dataTransfer;
-            let content = dataTransfer.getData('text/html');
-            if (content) {
-                replaceRemoteHostImage(content)
-            }
-        }, {level: 'high'});
+  function initEditor(editor) {
+
+    editor.editing.view.change(writer => {
+      writer.setAttribute('spellcheck', 'false', editor.editing.view.document.getRoot());
+    });
+
+    editor.model.document.on('change:data', () => {
+      onDataChange(editor.getData())
+    });
+
+    editor.editing.view.document.on('clipboardInput', (evt, data) => {
+      const dataTransfer = data.dataTransfer;
+      let content = dataTransfer.getData('text/html');
+      if (content) {
+        replaceRemoteHostImage(content)
+      }
+    }, {level: 'high'});
 
 
-        const sourceEditingPlugin = editor.plugins.get('SourceEditing');
-        sourceEditingPlugin.on('change:isSourceEditingMode', (evt, name, isSourceEditingMode) => {
-            setSourceEditing(isSourceEditingMode)
-        });
-    }
+    const sourceEditingPlugin = editor.plugins.get('SourceEditing');
+    sourceEditingPlugin.on('change:isSourceEditingMode', (evt, name, isSourceEditingMode) => {
+      setSourceEditing(isSourceEditingMode)
+    });
+  }
 
 
-    return (
-        <>
-            <div id={'ckeditor-box'}></div>
-            <div id={'ckeditor-word-counter'} className={sourceEditing ? 'hide' : ''}></div>
-        </>
-    )
+  return (
+    <>
+      <div id={'ckeditor-box'}></div>
+      <div id={'ckeditor-word-counter'} className={sourceEditing ? 'hide' : ''}></div>
+    </>
+  )
 }

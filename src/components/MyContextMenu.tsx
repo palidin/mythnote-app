@@ -4,23 +4,23 @@ import {useEffect} from "react";
 
 
 export function MyContextMenu({e, items}) {
-    const [menuProps, toggleMenu] = useMenuState();
+  const [menuProps, toggleMenu] = useMenuState();
 
-    useEffect(() => {
-        toggleMenu(true)
-    }, [e, items]);
+  useEffect(() => {
+    toggleMenu(true)
+  }, [e, items]);
 
 
-    function onClose() {
-        toggleMenu(false)
-    }
+  function onClose() {
+    toggleMenu(false)
+  }
 
-    return <div>
-        <ControlledMenu menuClassName="my-menu" {...menuProps} anchorPoint={{x: e.clientX, y: e.clientY}}
-                        onClose={onClose}>
-            {items.map((v,k) => {
-                return <MenuItem key={k} onClick={v.onClick}>{v.title}</MenuItem>
-            })}
-        </ControlledMenu>
-    </div>
+  return <div>
+    <ControlledMenu menuClassName="my-menu" {...menuProps} anchorPoint={{x: e.clientX, y: e.clientY}}
+                    onClose={onClose}>
+      {items.map((v, k) => {
+        return <MenuItem key={k} onClick={v.onClick}>{v.title}</MenuItem>
+      })}
+    </ControlledMenu>
+  </div>
 }

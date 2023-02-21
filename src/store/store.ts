@@ -1,12 +1,12 @@
 import resso from "resso";
 
 export const store = resso({
-    focusTag: '',
+  focusTag: '',
 
-    tokenRefreshing: false,
+  tokenRefreshing: false,
 
-    dataRebuilding: true,
+  dataRebuilding: true,
 
-    startIndex: -1,
-    selectIndexes: [],
+  startIndex: -1,
+  selectIndexes: [],
 });

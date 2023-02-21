@@ -26,29 +26,37 @@ $bg-color: hsl(0deg 0% 98%);
   background: rgba(0, 0, 0, 0.2);
 }
 
+.allow-copy {
+  user-select: text !important;
+}
+
 .layout {
+  overflow: hidden;
   display: flex;
   user-select: none;
 
   .left {
-    width: 15%;
-    min-width: 50px;
+    min-width: 200px;
     background: hsl(200deg 16% 15%);
     color: white;
+    height: 100vh;
+
+    overflow-y: auto;
 
     position: relative;
 
     .operation-bar {
+      position: fixed;
+      left: 80px;
+      bottom: 0;
+
       padding: 5px 10px;
 
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
 
-      width: 100%;
-      position: absolute;
-      left: 0;
-      bottom: 0;
+      width: 100px;
     }
 
     ul {
@@ -66,16 +74,12 @@ $bg-color: hsl(0deg 0% 98%);
         }
 
         &.folder {
-          & > .name::after {
-            line-height: 1em;
-            content: '〉';
+          & > .name .icon {
+            display: inline-block;
           }
 
-          &.expand {
-            & > .name::after {
-              content: '⌄';
-              line-height: 1em;
-            }
+          &.expand > .name .icon {
+            transform: rotate(90deg);
           }
         }
       }
@@ -134,7 +138,6 @@ $bg-color: hsl(0deg 0% 98%);
         display: flex;
 
         span {
-          user-select: text;
           padding: 5px;
         }
       }
@@ -152,7 +155,7 @@ $bg-color: hsl(0deg 0% 98%);
       flex-wrap: wrap;
 
       .active {
-        background: moccasin;
+        background: lightblue;
       }
     }
   }
@@ -194,7 +197,6 @@ button:hover {
   color: #212529;
   text-align: center;
   vertical-align: middle;
-  user-select: none;
   background-color: transparent;
   border: 1px solid transparent;
   padding: .375rem .75rem;
@@ -232,6 +234,14 @@ html, body, #root, .layout {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.note-viewbar, .note-toolbar {
+  padding-bottom: 10px;
+}
+
+.note-title {
+  padding-bottom: 10px;
 }
 
 
@@ -287,3 +297,94 @@ html, body, #root, .layout {
 button {
   border: 1px solid black;
 }
+
+.html-painter-box {
+  background: blanchedalmond;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  position: relative;
+}
+
+.html-painter {
+  @extend .fill-box;
+
+  border: 1px solid #bbbbbb;
+  box-sizing: border-box;
+  padding: 10px;
+
+
+  overflow-y: auto;
+
+  table {
+    border: 1px double #b3b3b3;
+    border-collapse: collapse;
+    border-spacing: 0;
+    height: 100%;
+    width: 100%;
+
+    th {
+      background: rgba(0, 0, 0, .1);
+      font-weight: 700;
+      border: 1px solid #bfbfbf;
+      min-width: 2em;
+      padding: 0.4em;
+    }
+
+    td {
+      border: 1px solid #bfbfbf;
+      min-width: 2em;
+      padding: 0.4em;
+    }
+  }
+
+
+  /* The "copy" box container */
+  .code-badge {
+    @extend .allow-copy;
+    background: #555 !important;
+    padding: 8px !important;
+    opacity: 0.5 !important;
+    transition: opacity linear 0.5s !important;
+  }
+
+  /* The "copy" button */
+  .code-badge-copy-icon {
+    font-size: 1.3em !important;
+  }
+
+  /* The "copy" button, after clicked */
+  .text-success {
+    color: #b6ff00;
+  }
+
+  /* The text in the container */
+  .code-badge-language {
+    margin-right: 10px;
+    font-weight: 700 !important;
+    color: #ffafaf !important;
+    transition: color linear 0.5s !important;
+  }
+
+  /* The "copy" box container, at mouse hover */
+  .code-badge:hover {
+    opacity: 1 !important;
+    background: #4f4f4f !important;
+  }
+
+  /* The text in the container, at mouse hover */
+  .code-badge:hover .code-badge-language {
+    color: #ff4343 !important;
+  }
+
+
+  pre, code.hljs {
+    font-family: "Consolas", monospace;
+    font-size: 11pt;
+    line-height: 1.4em;
+  }
+
+}
+
+

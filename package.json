@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-markdown-gfm": "^36.0.1",
     "@palidin/ckeditor5-markdown-build": "git+https://palidin@git.palidin.io/palidin/ckeditor5-markdown-build.git",
     "@rollup/plugin-inject": "^4.0.4",
     "@szhsin/react-menu": "^3.2.0",
@@ -19,6 +20,8 @@
     "classnames": "^2.3.2",
     "escape-string-regexp": "^5.0.0",
     "gray-matter-browser": "^4.0.4",
+    "highlight.js": "^11.7.0",
+    "highlightjs-badge": "^0.1.9",
     "hotkeys-js": "^3.9.4",
     "jotai": "^1.13.1",
     "lodash": "^4.17.21",
