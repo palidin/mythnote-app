@@ -15,8 +15,8 @@ export class FakeImpl {
     return sendRequest('/file/read', {path});
   }
 
-  write(path: string, content: string) {
-    return sendRequest('/file/write', {path, content})
+  write(path: string, content: string, props: Record<string, any>) {
+    return sendRequest('/file/write', {path, content, props})
   }
 
   fileList(params: FolderListRequest) {
@@ -27,6 +27,10 @@ export class FakeImpl {
     return sendRequest('/file/delete', {paths, deleted})
   }
 
+  xxx() {
+    return sendRequest('/file/cleanup', {})
+  }
+
   categoryList() {
     return sendRequest('/category/list', {})
   }
@@ -34,7 +38,6 @@ export class FakeImpl {
   categoryRename(old, name) {
     return sendRequest('/category/rename', {old, 'new': name})
   }
-
 
   async uploadImage(data: any): Promise<string> {
     let res = await sendRequest('/upload/image', {file: data})

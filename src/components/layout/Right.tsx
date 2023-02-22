@@ -2,8 +2,7 @@ import classNames from "classnames";
 import {formatDisplayTime, openContextMenu, substrTitle} from "../../utils/utils";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {RichTextEditor} from "../RichTextEditor";
-import {myAgent} from "../../agent/agentType";
-import {diffSecondsFromNow, FileData, readContentFrontMatter, writeFile} from "../../utils/FileUtils";
+import {diffSecondsFromNow, FileData, readOnlineFileFrontMatter, writeFile} from "../../utils/FileUtils";
 import {useDebounce} from "../../utils/HookUtils";
 import {sharedVariables} from "../../store/state";
 import {showConfirmModal, showInputModal} from "../../utils/MessageUtils";
@@ -79,11 +78,7 @@ export function Right() {
       }
       return Promise.resolve(matter)
     }
-
-    return myAgent.read(path)
-      .then(res => {
-        return Promise.resolve(readContentFrontMatter(res))
-      })
+    return readOnlineFileFrontMatter(path);
   }
 
 

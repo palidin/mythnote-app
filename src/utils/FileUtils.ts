@@ -1,7 +1,6 @@
 import moment from "moment";
 import {sharedVariables} from "../store/state";
 import {myAgent} from "../agent/agentType";
-import * as graymatter from 'gray-matter-browser'
 
 
 interface Props {
@@ -38,15 +37,17 @@ export function diffSecondsFromNow(target: string) {
   return Math.floor(diff / 1000);
 }
 
-function stringifyYaml(obj: any) {
-  let header = '';
-  if (obj && Object.keys(obj).length) {
-    header = graymatter.stringify('', obj);
-    header = header.replace(/\s+$/, '')
-  }
-  return header;
+function toHash(obj) {
+  return JSON.stringify(obj);
 }
 
+function isPropsEquals(left, right) {
+  return toHash(left) === toHash(right);
+}
+
+function isTextEquals(left, right) {
+  return left === right;
+}
 
 async function putFileContents(file: WaitingWriteFileData) {
   let lastUpdateTime = sharedVariables.updateTimestamps[file.path];
@@ -60,7 +61,7 @@ async function putFileContents(file: WaitingWriteFileData) {
   let newData = getMergedProps(fileMatter.props, props);
   let newBody = body ?? fileMatter.body;
 
-  if (newBody === fileMatter.body && stringifyYaml(newData) === stringifyYaml(fileMatter.props)) {
+  if (isTextEquals(fileMatter.body, newBody) && isPropsEquals(newData, fileMatter.props)) {
     return Promise.resolve(1);
   }
 
@@ -69,10 +70,8 @@ async function putFileContents(file: WaitingWriteFileData) {
   if (!newData['created']) {
     newData['created'] = now;
   }
-  let header = stringifyYaml(newData);
-  let content = header + '\n' + newBody;
 
-  return myAgent.write(file.path, content)
+  return myAgent.write(file.path, newBody, newData)
     .then(() => {
       sharedVariables.updateTimestamps[file.path] = file.createTime;
       sharedVariables.fileDataCache[file.path] = {body: newBody, props: newData};
@@ -117,19 +116,11 @@ function readFileFrontMatter(file: string): FileData {
   return sharedVariables.fileDataCache[file];
 }
 
-export function readContentFrontMatter(text: string): FileData {
-  text = text || '';
-  let metadata = {props: {}, body: text};
-  if (!text) {
-    return metadata;
-  }
-  try {
-    let matter = graymatter({content: text});
-    metadata = {props: matter.data, body: matter.content};
-  } catch (e) {
-    console.log(e);
-  }
-  return metadata;
+export async function readOnlineFileFrontMatter(path: string): Promise<FileData> {
+  return myAgent.read(path)
+    .then((res: any) => {
+      return Promise.resolve({props: res.props, body: res.body})
+    })
 }
 
 export function resetSearchCondition(setItemList, setSearchData, obj) {

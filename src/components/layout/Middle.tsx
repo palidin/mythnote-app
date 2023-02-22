@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
 import {useDebounce} from "../../utils/HookUtils";
-import {readContentFrontMatter, resetSearchCondition, writeFile} from "../../utils/FileUtils";
+import {readOnlineFileFrontMatter, resetSearchCondition, writeFile} from "../../utils/FileUtils";
 import {delayRun, getUUid, openContextMenu, selectEnd, selectStart} from "../../utils/utils";
 import {MyContextMenu} from "../MyContextMenu";
 import {myAgent} from "../../agent/agentType";
@@ -147,12 +147,28 @@ export function Middle() {
     }
   }, [onScroll])
 
+  function onCleanData() {
+    showConfirmModal('确认删除笔记文件吗？')
+      .then(() => {
+        console.log(222)
+        myAgent.xxx()
+          .then(() => {
+            alert('删除成功');
+          })
+
+      })
+  }
+
+
   return (
     <div className={"middle flex-col"}>
       <div className={"search-wrapper"}>
         <input type="text" ref={keywordsRef} value={keywords} onChange={onKeywordsChange}/>
         <button onClick={onConfirmKeywordsChange}>Search</button>
         <button onClick={onCreateNewNote} disabled={store.focusTag.startsWith(TAG_TRASH)}>New</button>
+        {store.focusTag.startsWith(TAG_TRASH) ?
+          <button onClick={onCleanData}>cleanup</button>
+          : ''}
       </div>
 
       <div className={"list-item-box auto-stretch"}>
@@ -226,19 +242,22 @@ function ListItem({index, item, refreshNotes}) {
   function updateNotePined(path, pined) {
     myAgent.read(path)
       .then(res => {
-        let matter = readContentFrontMatter(res);
-        sharedVariables.fileDataCache[path] = matter;
+        readOnlineFileFrontMatter(res)
+          .then(matter => {
+            sharedVariables.fileDataCache[path] = matter;
 
-        let props = {
-          ...matter.props,
-          pined
-        };
-        writeFile({props, body: matter.body}, path)
-          .then(() => {
-            let current = itemList.findIndex(v => v.path === path);
-            itemList[current].pined = pined;
-            setItemList([...itemList])
+            let props = {
+              ...matter.props,
+              pined
+            };
+            writeFile({props, body: matter.body}, path)
+              .then(() => {
+                let current = itemList.findIndex(v => v.path === path);
+                itemList[current].pined = pined;
+                setItemList([...itemList])
+              })
           })
+
       })
   }
 

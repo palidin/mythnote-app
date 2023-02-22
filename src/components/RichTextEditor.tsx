@@ -33,6 +33,7 @@ export function RichTextEditor({content, updateBody, seed = 0}) {
             {language: 'css', label: 'CSS'},
             {language: 'java', label: 'Java'},
             {language: 'php', label: 'PHP'},
+            {language: 'html', label: 'HTML'},
             {language: 'xml', label: 'XML'},
             {language: 'sql', label: 'SQL'},
           ]
