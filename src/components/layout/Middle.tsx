@@ -240,24 +240,20 @@ function ListItem({index, item, refreshNotes}) {
   }
 
   function updateNotePined(path, pined) {
-    myAgent.read(path)
-      .then(res => {
-        readOnlineFileFrontMatter(res)
-          .then(matter => {
-            sharedVariables.fileDataCache[path] = matter;
+    readOnlineFileFrontMatter(path)
+      .then(matter => {
+        sharedVariables.fileDataCache[path] = matter;
 
-            let props = {
-              ...matter.props,
-              pined
-            };
-            writeFile({props, body: matter.body}, path)
-              .then(() => {
-                let current = itemList.findIndex(v => v.path === path);
-                itemList[current].pined = pined;
-                setItemList([...itemList])
-              })
+        let props = {
+          ...matter.props,
+          pined
+        };
+        writeFile({props, body: matter.body}, path)
+          .then(() => {
+            let current = itemList.findIndex(v => v.path === path);
+            itemList[current].pined = pined;
+            setItemList([...itemList])
           })
-
       })
   }
 

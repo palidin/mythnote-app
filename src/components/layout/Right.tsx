@@ -12,6 +12,7 @@ import {itemIndexAtom, itemListAtom, searchDataAtom} from "../../store/app";
 import {store} from "../../store/store";
 import {HtmlPainter} from "../HtmlPainter";
 import {getOnlineImages, replaceOnlineImagesMarkdown, restoreOnlineImagesMarkdown} from "../../utils/CkEditorUtils";
+import {markdownConfig} from "../../ckeditor/markdownPlugin";
 
 export function Right() {
 
@@ -144,6 +145,7 @@ export function Right() {
 
 
   function updateBody(text) {
+    text = markdownConfig.beforeSave(text);
     setViewContent(text)
     text = restoreOnlineImagesMarkdown(text, replacedImages)
     updateBody11.current(text);
