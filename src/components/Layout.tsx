@@ -5,7 +5,7 @@ import {useMount} from "../utils/HookUtils";
 import {Left} from "./layout/Left";
 import {Middle} from "./layout/Middle";
 import {Right} from "./layout/Right";
-import {store} from "../store/store";
+import {useAppStore} from "../store/store";
 import {checkStatusTask, isCopyable} from "../utils/utils";
 
 
@@ -19,14 +19,18 @@ export function Layout() {
     }
 
     checkStatusTask()
-      .then(ok => {
-        store.dataRebuilding = !ok;
+      .then((ok) => {
+        if (ok) {
+          useAppStore.getState().setDataRebuilding(false);
+        }
       })
 
     return () => document.oncontextmenu = null;
   });
 
-  if (store.dataRebuilding) {
+  const dataRebuilding = useAppStore(state => state.dataRebuilding)
+
+  if (dataRebuilding) {
     return <div>数据索引中...</div>;
   }
 

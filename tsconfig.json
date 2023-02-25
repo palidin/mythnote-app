@@ -2,22 +2,39 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-//    "strict": true, // 强制检查类型
-//    "allowJs": false, // 允许使用引入js文件
-    "allowJs": true,
-    "strict": false,
-    "skipLibCheck": true, // 忽略外部库的类型检查
-    "esModuleInterop": false,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "outDir": "lib",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "rootDir": ".",
+    "jsx": "react-jsx",
+    "allowJs": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "baseUrl": ".",
+    "paths": {
+      "$source/*": [
+        "./src/*"
+      ]
+    },
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
-  "include": ["src"],
-//  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "./src"
+  ],
+  "compileOnSave": false
 }

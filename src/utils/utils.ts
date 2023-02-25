@@ -2,9 +2,9 @@ import {v4 as uuidv4} from 'uuid';
 import * as debounce1 from "lodash/debounce";
 import * as throttle1 from "lodash/throttle";
 import * as ReactDOM from "react-dom/client";
-import {sharedVariables} from "../store/state";
+import {sharedVariables} from "../store/globalData";
 import moment from "moment";
-import {store} from "../store/store";
+import {useAppStore} from "../store/store";
 import {myAgent} from "../agent/agentType";
 
 export function debounce(fn, wait) {
@@ -81,12 +81,13 @@ export function substrTitle(body) {
 
 
 export function selectStart(i) {
-  store.startIndex = i;
-  store.selectIndexes = [i];
+  sharedVariables.startIndex = i;
+
+  useAppStore.getState().setSelectIndexes([i]);
 }
 
 export function selectEnd(i) {
-  let start = store.startIndex;
+  let start = sharedVariables.startIndex;
   let end = i;
   if (start == -1) {
     return;
@@ -104,12 +105,12 @@ export function selectEnd(i) {
     indexes.push(i);
   }
 
-  store.selectIndexes = indexes;
+  useAppStore.getState().setSelectIndexes(indexes);
 }
 
 export function selectRestore() {
-  store.startIndex = -1;
-  store.selectIndexes = [];
+  sharedVariables.startIndex = -1;
+  useAppStore.getState().setSelectIndexes([]);
 }
 
 export function delayRun(timeout = 1000) {

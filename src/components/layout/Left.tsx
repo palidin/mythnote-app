@@ -1,6 +1,6 @@
 import {TagFolder} from "../TagFolder";
 import React, {useState} from "react";
-import {store} from "../../store/store";
+import {useAppStore} from "../../store/store";
 import {useMount} from "../../utils/HookUtils";
 import {myAgent} from "../../agent/agentType";
 import {checkStatusTask, delayRun} from "../../utils/utils";
@@ -27,20 +27,21 @@ export function Left() {
       }
     }
 
-    if (!(current.fullname == '' && current.expand && !!store.focusTag)) {
+    if (!(current.fullname == '' && current.expand && !!useAppStore.getState().focusTag)) {
       current.expand = !current.expand;
     }
 
-    store.focusTag = current.fullname;
+    useAppStore.getState().setFocusTag(current.fullname)
 
     setFolders([...folders])
   }
+
 
   function cleanup() {
 
     showConfirmModal('确认要重建数据索引吗？')
       .then(() => {
-        store.dataRebuilding = true;
+        useAppStore.getState().setDataRebuilding(true);
         myAgent.cleanup()
           .then(() => {
             return checkStatus();
@@ -52,7 +53,7 @@ export function Left() {
   async function checkStatus() {
     let res = await checkStatusTask();
     if (res) {
-      store.dataRebuilding = false;
+      useAppStore.getState().setDataRebuilding(false);
       return Promise.resolve();
     }
     return delayRun(3000)

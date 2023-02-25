@@ -11,4 +11,7 @@ export const sharedVariables = {
   currentListIndex: -1,
   currentFile: null,
   path: null,
+
+  startIndex: -1,
+  tokenRefreshing: false,
 }

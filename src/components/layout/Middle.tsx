@@ -5,20 +5,23 @@ import {readOnlineFileFrontMatter, resetSearchCondition, writeFile} from "../../
 import {delayRun, getUUid, openContextMenu, selectEnd, selectStart} from "../../utils/utils";
 import {MyContextMenu} from "../MyContextMenu";
 import {myAgent} from "../../agent/agentType";
-import {sharedVariables} from "../../store/state";
-import {isAtBottomAtom, itemIndexAtom, itemListAtom, searchDataAtom} from "../../store/app";
-import {useAtom} from "jotai";
-import {store} from "../../store/store";
+import {sharedVariables} from "../../store/globalData";
+import {useAppStore, useNoteStore} from "../../store/store";
 import {showConfirmModal} from "../../utils/MessageUtils";
 import {TAG_TRASH} from "../../config/app";
 
 export function Middle() {
 
-  const [searchData, setSearchData] = useAtom(searchDataAtom);
-  const [itemList, setItemList] = useAtom(itemListAtom);
-  const [itemIndex, setItemIndex] = useAtom(itemIndexAtom);
-  const [isAtBottom, setIsAtBottom] = useAtom(isAtBottomAtom);
+  const searchData = useAppStore(state => state.searchData);
 
+
+  const itemList = useNoteStore(state => state.itemList)
+  const setItemList = useNoteStore(state => state.setItemList)
+
+  const itemIndex = useNoteStore(state => state.itemIndex)
+  const setItemIndex = useNoteStore(state => state.setItemIndex)
+
+  const [isAtBottom, setIsAtBottom] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
@@ -27,10 +30,12 @@ export function Middle() {
     }
   }, [itemIndex])
 
+  const focusTag = useAppStore(state => state.focusTag);
+
   useEffect(() => {
-    if (store.focusTag == searchData.folder) return;
-    resetSearchCondition(setItemList, setSearchData, {folder: store.focusTag})
-  }, [store.focusTag])
+    if (focusTag == searchData.folder) return;
+    resetSearchCondition(setItemList, {folder: focusTag})
+  }, [focusTag])
 
   useEffect(() => {
     fetchItemList(searchData, itemList);
@@ -73,11 +78,11 @@ export function Middle() {
   }
 
   function loadData(keywords, searchData) {
-    resetSearchCondition(setItemList, setSearchData, {keywords})
+    resetSearchCondition(setItemList, {keywords})
   }
 
   function refreshNotes(keywords, searchData) {
-    resetSearchCondition(setItemList, setSearchData, {})
+    resetSearchCondition(setItemList, {})
   }
 
   function onClickLoadMore(isForce = false) {
@@ -90,7 +95,7 @@ export function Middle() {
     setIsFetching(true);
 
     let page = searchData.page + 1;
-    setSearchData({
+    useAppStore.getState().setSearchData({
       ...searchData,
       page,
     });
@@ -127,9 +132,9 @@ export function Middle() {
       props: null,
     };
 
-    if (store.focusTag) {
+    if (focusTag) {
       newItem.props = {
-        tags: [store.focusTag].filter(v => !v.startsWith('//'))
+        tags: [focusTag].filter(v => !v.startsWith('//'))
       };
     }
 
@@ -150,7 +155,6 @@ export function Middle() {
   function onCleanData() {
     showConfirmModal('确认删除笔记文件吗？')
       .then(() => {
-        console.log(222)
         myAgent.xxx()
           .then(() => {
             alert('删除成功');
@@ -165,8 +169,8 @@ export function Middle() {
       <div className={"search-wrapper"}>
         <input type="text" ref={keywordsRef} value={keywords} onChange={onKeywordsChange}/>
         <button onClick={onConfirmKeywordsChange}>Search</button>
-        <button onClick={onCreateNewNote} disabled={store.focusTag.startsWith(TAG_TRASH)}>New</button>
-        {store.focusTag.startsWith(TAG_TRASH) ?
+        <button onClick={onCreateNewNote} disabled={focusTag.startsWith(TAG_TRASH)}>New</button>
+        {focusTag.startsWith(TAG_TRASH) ?
           <button onClick={onCleanData}>cleanup</button>
           : ''}
       </div>
@@ -194,31 +198,34 @@ function ListItem({index, item, refreshNotes}) {
       selectEnd(i)
     } else {
       selectStart(i)
-      setItemIndex(i);
+      useNoteStore.getState().setItemIndex(i);
     }
   }
 
+  const selectIndexes = useAppStore(state => state.selectIndexes);
 
   function openFileManageContextMenu(e, value, index) {
     e.preventDefault();
     e.stopPropagation();
 
+    let focusTag = useAppStore.getState().focusTag;
+
     let deleted = true;
-    if (store.focusTag && store.focusTag.startsWith(TAG_TRASH)) {
+    if (focusTag && focusTag.startsWith(TAG_TRASH)) {
       deleted = false;
     }
 
     let items = [
       {'title': '置顶/取消置顶', onClick: () => updateNotePined(value.path, !value.pined)},
     ]
-    if (store.selectIndexes.includes(index)) {
+    if (selectIndexes.includes(index)) {
       items.push({'title': deleted ? '删除' : '恢复', onClick: () => deleteSelected(deleted)})
     }
     openContextMenu(<MyContextMenu e={e} items={items}></MyContextMenu>)
   }
 
   function deleteSelected(deleted) {
-    let indexes = store.selectIndexes;
+    let indexes = selectIndexes;
 
     function handle() {
       let paths = indexes.map(v => itemList.at(v)).map(v => v.path);
@@ -252,19 +259,18 @@ function ListItem({index, item, refreshNotes}) {
           .then(() => {
             let current = itemList.findIndex(v => v.path === path);
             itemList[current].pined = pined;
-            setItemList([...itemList])
+            useNoteStore.getState().setItemList([...itemList])
           })
       })
   }
 
-  const [itemList, setItemList] = useAtom(itemListAtom);
-  const [itemIndex, setItemIndex] = useAtom(itemIndexAtom);
-
+  const itemList = useNoteStore(state => state.itemList)
+  const itemIndex = useNoteStore(state => state.itemIndex)
 
   return (
     <div key={index} className={classNames('li', {
       active: itemIndex === index,
-      selected: store.selectIndexes.includes(index),
+      selected: selectIndexes.includes(index),
     })}
          onClick={(e) => onClickItem(e, index)}
          onContextMenu={(e) => openFileManageContextMenu(e, item, index)}>

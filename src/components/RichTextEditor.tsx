@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {markdownConfig} from "../ckeditor/markdownPlugin";
 import LocalFileUploadAdapter from "../ckeditor/localFileUploadAdapter";
 import {replaceRemoteHostImage} from "../utils/CkEditorUtils";
-import {sharedVariables} from "../store/state";
+import {sharedVariables} from "../store/globalData";
 import {useMount} from "../utils/HookUtils";
 
 

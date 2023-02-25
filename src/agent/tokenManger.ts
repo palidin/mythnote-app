@@ -1,6 +1,6 @@
 import {myAgent} from "./agentType";
-import {store} from "../store/store";
 import {delayRun} from "../utils/utils";
+import {sharedVariables} from "../store/globalData";
 
 class TokenManger {
   getToken() {
@@ -8,23 +8,22 @@ class TokenManger {
   }
 
   refreshToken() {
-    if (store.tokenRefreshing) {
+    if (sharedVariables.tokenRefreshing) {
       return Promise.resolve();
     }
-    store.tokenRefreshing = true;
+    sharedVariables.tokenRefreshing = true;
     return myAgent.login('palidin', '123456')
       .then(res => {
         localStorage.setItem('token', res.access_token);
       })
       .catch(e => alert('登录失败'))
       .finally(() => {
-        store.tokenRefreshing = false;
+        sharedVariables.tokenRefreshing = false;
       })
   }
 
-
   tokenTaskLoop() {
-    if (!store.tokenRefreshing) {
+    if (!sharedVariables.tokenRefreshing) {
       return Promise.resolve();
     }
 

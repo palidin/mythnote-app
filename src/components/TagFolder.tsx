@@ -1,8 +1,8 @@
 import classNames from "classnames";
-import {store} from "../store/store";
+import {useAppStore} from "../store/store";
 import {openContextMenu} from "../utils/utils";
 import {MyContextMenu} from "./MyContextMenu";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {showInputModal} from "../utils/MessageUtils";
 import {myAgent} from "../agent/agentType";
 
@@ -28,11 +28,7 @@ export function TagFolder({folders, onTagClick, keys = []}) {
       })
   }
 
-  const [focusTag, setFocusTag] = useState('');
-
-  useEffect(() => {
-    setFocusTag(store.focusTag)
-  }, [store.focusTag])
+  const focusTag = useAppStore(state => state.focusTag);
 
   return (
     <>
@@ -47,8 +43,10 @@ export function TagFolder({folders, onTagClick, keys = []}) {
               onContextMenu={(e) => openFileManageContextMenu(e, v)}
               className='name text-title'
               title={v.name}
-              onClick={() => onTagClick(v.fullname, [...keys, k])}>{v.name} <i
-              className="icon fa-solid fa-chevron-right hide"></i></div>
+              onClick={() => onTagClick(v.fullname, [...keys, k])}>
+              <span>{v.name} </span>
+              <i className="icon fa-solid fa-chevron-right hide"></i>
+            </div>
             {v.children && v.children.length && v.expand ?
               <TagFolder folders={v.children} onTagClick={onTagClick}
                          keys={[...keys, k]}></TagFolder> : ''}

@@ -4,12 +4,10 @@ import React, {useEffect, useMemo, useRef, useState} from "react";
 import {RichTextEditor} from "../RichTextEditor";
 import {diffSecondsFromNow, FileData, readOnlineFileFrontMatter, writeFile} from "../../utils/FileUtils";
 import {useDebounce} from "../../utils/HookUtils";
-import {sharedVariables} from "../../store/state";
+import {sharedVariables} from "../../store/globalData";
 import {showConfirmModal, showInputModal} from "../../utils/MessageUtils";
 import {MyContextMenu} from "../MyContextMenu";
-import {useAtom} from "jotai";
-import {itemIndexAtom, itemListAtom, searchDataAtom} from "../../store/app";
-import {store} from "../../store/store";
+import {useAppStore, useNoteStore} from "../../store/store";
 import {HtmlPainter} from "../HtmlPainter";
 import {getOnlineImages, replaceOnlineImagesMarkdown, restoreOnlineImagesMarkdown} from "../../utils/CkEditorUtils";
 import {markdownConfig} from "../../ckeditor/markdownPlugin";
@@ -25,10 +23,12 @@ export function Right() {
   const [content, setContent] = useState('');
   const [viewContent, setViewContent] = useState('');
 
+  const itemList = useNoteStore(state => state.itemList)
+  const setItemList = useNoteStore(state => state.setItemList)
 
-  const [searchData] = useAtom(searchDataAtom);
-  const [itemList, setItemList] = useAtom(itemListAtom);
-  const [itemIndex] = useAtom(itemIndexAtom);
+  const itemIndex = useNoteStore(state => state.itemIndex)
+
+  const searchData = useAppStore(state => state.searchData);
 
 
   const path = useMemo(() => {
@@ -82,13 +82,12 @@ export function Right() {
     return readOnlineFileFrontMatter(path);
   }
 
-
   const wrapWriteFileProps = useDebounce((...args) => {
 
     const [currentFile, path] = args;
 
     let itemList = sharedVariables.currentListItems;
-    let parentTag = store.focusTag;
+    let parentTag = useAppStore.getState().focusTag;
     let activeIndex = itemList.findIndex(v => v.path == path);
     let activeItem = itemList[activeIndex];
     let isNew = activeItem.isNew;

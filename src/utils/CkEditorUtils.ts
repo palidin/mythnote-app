@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import {isRemoteUrl} from "./utils";
 import imageCrawler from "../ckeditor/imageCrawler";
-import {sharedVariables} from "../store/state";
+import {sharedVariables} from "../store/globalData";
 import {appConfig} from "../config/app";
 import markdown2html from "@ckeditor/ckeditor5-markdown-gfm/src/markdown2html/markdown2html";
 
