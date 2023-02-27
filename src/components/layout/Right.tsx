@@ -7,7 +7,7 @@ import {useDebounce} from "../../utils/HookUtils";
 import {sharedVariables} from "../../store/globalData";
 import {showConfirmModal, showInputModal} from "../../utils/MessageUtils";
 import {MyContextMenu} from "../MyContextMenu";
-import {useAppStore, useNoteStore} from "../../store/store";
+import {useAppStore, useEditorStore, useNoteStore} from "../../store/store";
 import {HtmlPainter} from "../HtmlPainter";
 import {getOnlineImages, replaceOnlineImagesMarkdown, restoreOnlineImagesMarkdown} from "../../utils/CkEditorUtils";
 import {markdownConfig} from "../../ckeditor/markdownPlugin";
@@ -226,6 +226,11 @@ export function Right() {
   const [isView, setIsView] = useState(false);
 
   function onChangeView() {
+    if (useEditorStore.getState().sourceEditing) {
+      alert('请先退出源码模式');
+      return;
+    }
+
     setSeed(isView ? 0 : Math.random())
     if (isView) {
       setContent(viewContent)
@@ -245,9 +250,9 @@ export function Right() {
                    value={itemList[itemIndex]?.title || ''}/>
           </div>
           <div className={'info allow-copy'}>
-            <span
-              title={formatDisplayTime(currentFile.props.created)}>{formatDisplayTime(currentFile.props.modified)}</span>
+            <span>{formatDisplayTime(currentFile.props.modified)}</span>
             <span>{path}</span>
+            <span>{formatDisplayTime(currentFile.props.created)}</span>
             {currentFile.props.source_url ?
               (<span><a href={currentFile.props.source_url} target='_blank'>来源地址</a></span>)
               : ''}

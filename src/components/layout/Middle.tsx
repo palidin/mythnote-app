@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
-import {useDebounce} from "../../utils/HookUtils";
+import {MySelect, useDebounce} from "../../utils/HookUtils";
 import {readOnlineFileFrontMatter, resetSearchCondition, writeFile} from "../../utils/FileUtils";
 import {delayRun, getUUid, openContextMenu, selectEnd, selectStart} from "../../utils/utils";
 import {MyContextMenu} from "../MyContextMenu";
@@ -163,6 +163,28 @@ export function Middle() {
       })
   }
 
+  const [orderColumn, setOrderColumn] = useState('modified');
+  const [orderDirection, setOrderDirection] = useState('desc');
+
+  function onChangeOrderColumn(v) {
+    setOrderColumn(v)
+  }
+
+  function onChangeOrderDirection(v) {
+    setOrderDirection(v)
+  }
+
+  useEffect(() => {
+    if (orderColumn && orderDirection) {
+      resetSearchCondition(setItemList, {
+        order: {
+          column: orderColumn,
+          direction: orderDirection,
+        }
+      })
+    }
+  }, [orderColumn, orderDirection])
+
 
   return (
     <div className={"middle flex-col"}>
@@ -173,6 +195,15 @@ export function Middle() {
         {focusTag.startsWith(TAG_TRASH) ?
           <button onClick={onCleanData}>cleanup</button>
           : ''}
+      </div>
+
+      <div className="order-wrapper flex-row">
+        <div className="order-wrapper-left">
+          <MySelect value={orderColumn} onChange={onChangeOrderColumn} columns={['modified', 'created', 'title']}/>
+        </div>
+        <div className="order-wrapper-left">
+          <MySelect value={orderDirection} onChange={onChangeOrderDirection} columns={['desc', 'asc']}/>
+        </div>
       </div>
 
       <div className={"list-item-box auto-stretch"}>

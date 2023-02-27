@@ -100,6 +100,11 @@ $bg-color: hsl(0deg 0% 98%);
       height: fit-content;
     }
 
+    .order-wrapper {
+      height: fit-content;
+      justify-content: space-between;
+    }
+
     .list-item-box {
       overflow-y: hidden;
       position: relative;

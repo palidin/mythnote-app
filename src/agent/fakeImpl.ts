@@ -16,6 +16,9 @@ export class FakeImpl {
   }
 
   write(path: string, content: string, props: Record<string, any>) {
+    if (!content) {
+      return Promise.resolve();
+    }
     return sendRequest('/file/write', {path, content, props})
   }
 

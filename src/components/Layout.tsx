@@ -5,11 +5,34 @@ import {useMount} from "../utils/HookUtils";
 import {Left} from "./layout/Left";
 import {Middle} from "./layout/Middle";
 import {Right} from "./layout/Right";
-import {useAppStore} from "../store/store";
-import {checkStatusTask, isCopyable} from "../utils/utils";
+import {useAppStore, useNoteStore} from "../store/store";
+import {checkStatusTask, isCopyable, selectStart} from "../utils/utils";
 
 
 export function Layout() {
+
+  function onKeydown(e) {
+    let activeElement = document.activeElement;
+    if (activeElement && activeElement.tagName == 'BODY') {
+      let key = e.key;
+      if (key == 'ArrowDown' || key == 'ArrowUp') {
+        let isDown = key == 'ArrowDown';
+        let itemIndex = useNoteStore.getState().itemIndex;
+        itemIndex = isDown
+          ? itemIndex + 1
+          : itemIndex - 1;
+
+        if (itemIndex < useNoteStore.getState().itemList.length
+          && itemIndex >= 0) {
+          useNoteStore.setState({itemIndex})
+          selectStart(itemIndex)
+        }
+
+        e.preventDefault();
+        return false;
+      }
+    }
+  }
 
   useMount(() => {
     document.oncontextmenu = (e) => {
@@ -18,6 +41,9 @@ export function Layout() {
       }
     }
 
+    window.addEventListener('keydown', onKeydown);
+
+
     checkStatusTask()
       .then((ok) => {
         if (ok) {
@@ -25,7 +51,10 @@ export function Layout() {
         }
       })
 
-    return () => document.oncontextmenu = null;
+    return () => {
+      document.oncontextmenu = null
+      window.removeEventListener('keydown', onKeydown)
+    };
   });
 
   const dataRebuilding = useAppStore(state => state.dataRebuilding)

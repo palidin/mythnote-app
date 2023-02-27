@@ -42,10 +42,15 @@ export const useAppStore = createStore({
     limit: 20,
     keywords: '',
     folder: '',
+    order: {column: '', direction: ''},
   },
 })
 
 export const useNoteStore = createStore({
   itemList: [],
   itemIndex: -1,
+})
+
+export const useEditorStore = createStore({
+  sourceEditing: false,
 })

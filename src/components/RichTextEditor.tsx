@@ -5,12 +5,15 @@ import LocalFileUploadAdapter from "../ckeditor/localFileUploadAdapter";
 import {replaceRemoteHostImage} from "../utils/CkEditorUtils";
 import {sharedVariables} from "../store/globalData";
 import {useMount} from "../utils/HookUtils";
+import {useEditorStore} from "$source/store/store";
 
 
 export function RichTextEditor({content, updateBody, seed = 0}) {
 
   const [editor, setEditor] = useState(null);
-  const [sourceEditing, setSourceEditing] = useState();
+
+  const sourceEditing = useEditorStore(state => state.sourceEditing)
+  const setSourceEditing = useEditorStore(state => state.setSourceEditing)
 
   useMount(() => {
     ClassicEditor
@@ -29,13 +32,22 @@ export function RichTextEditor({content, updateBody, seed = 0}) {
             {language: 'javascript', label: 'Javascript'},
             {language: 'c', label: 'C'},
             {language: 'cpp', label: 'C++'},
-            {language: 'json', label: 'Json'},
-            {language: 'css', label: 'CSS'},
             {language: 'java', label: 'Java'},
             {language: 'php', label: 'PHP'},
-            {language: 'html', label: 'HTML'},
+            {language: 'python', label: 'Python'},
+
+            {language: 'json', label: 'JSON'},
+            {language: 'yaml', label: 'YAML'},
             {language: 'xml', label: 'XML'},
+            {language: 'toml', label: 'TOML'},
+
+
+            {language: 'ini', label: 'INI'},
+            {language: 'html', label: 'HTML'},
+            {language: 'css', label: 'CSS'},
             {language: 'sql', label: 'SQL'},
+            {language: 'bash', label: 'Bash'},
+            {language: 'ps1', label: 'PowerShell'},
           ]
         }
       })

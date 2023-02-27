@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import {debounce} from "./utils";
 
 export function useMount(fn, deps = []) {
@@ -40,3 +40,15 @@ export const useAutoFocusInput = () => {
   return inputRef;
 };
 
+export function MySelect({columns, onChange, value}) {
+  function onChangeOrderColumn(e) {
+    onChange(e.target.value)
+  }
+
+  return (
+    <select onChange={onChangeOrderColumn} value={value}>
+      {columns.map(v => (<option key={v}>{v}</option>))}
+    </select>
+  )
+
+}
