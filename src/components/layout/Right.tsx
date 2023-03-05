@@ -95,16 +95,13 @@ export function Right() {
     let title = activeItem.title;
     let substringTitle = substrTitle(currentFile.body);
 
-
     if (!title ||
       (substringTitle.startsWith(title) && diffSecondsFromNow(currentFile.props.created) < 600)) {
       title = substringTitle;
-
-      currentFile.props.title = title;
-
       titleChangeHandler(itemList, activeIndex, title)
     }
 
+    currentFile.props.title = title;
     setCurrentFile({
       ...currentFile,
     })
