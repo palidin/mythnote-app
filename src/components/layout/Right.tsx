@@ -87,7 +87,7 @@ export function Right() {
     const [currentFile, path] = args;
 
     let itemList = sharedVariables.currentListItems;
-    let parentTag = useAppStore.getState().focusTag;
+    let parentTag = useAppStore.getState().searchData.folder;
     let activeIndex = itemList.findIndex(v => v.path == path);
     let activeItem = itemList[activeIndex];
     let isNew = activeItem.isNew;

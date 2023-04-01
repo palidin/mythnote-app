@@ -1,7 +1,7 @@
 import moment from "moment";
 import {sharedVariables} from "../store/globalData";
 import {myAgent} from "../agent/agentType";
-import {useAppStore} from "../store/store";
+import {useAppStore, useNoteStore} from "../store/store";
 
 
 interface Props {
@@ -124,14 +124,23 @@ export async function readOnlineFileFrontMatter(path: string): Promise<FileData>
     })
 }
 
-export function resetSearchCondition(setItemList, obj) {
+export function resetSearchCondition(obj) {
   let page = 1;
-  setItemList([]);
-  useAppStore.getState().setSearchData ({
-    ...useAppStore.getState().searchData,
+
+  useNoteStore.getState().setItemList([]);
+
+  useAppStore.getState().setSearchData(prev => ({
+    ...prev,
     ...obj,
-    page,
-  });
+    page
+  }));
+}
+
+export function updateKeywords(keywords) {
+  useAppStore.getState().setSearchData(prev => ({
+    ...prev,
+    keywords,
+  }));
 }
 
 export function writeFile(currentFile, path) {

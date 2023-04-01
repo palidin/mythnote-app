@@ -1,37 +1,6 @@
-import {create} from 'zustand'
+import {createMyStore} from "$source/utils/StoreUtils";
 
-type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U]
-
-type AddSetterToObject<T> = {
-  [K in keyof T as `set${Capitalize<string & K>}`]: (v: T[K]) => AtLeastOne<T[K]>
-}
-
-const createStore = <T extends object>(initData: T) => {
-
-  // @ts-ignore
-  return create<T & AddSetterToObject<T>>((set) => {
-    let wrappedMethods2 = {};
-    for (const [k] of Object.entries(initData)) {
-      const v = (newValue) => {
-        return {[k]: newValue}
-      };
-      const warpMethod = (...args: any) => {
-        // @ts-ignore
-        set(() => v(...args));
-      };
-      let setter = "set" + k.charAt(0).toUpperCase() + k.slice(1);
-      wrappedMethods2[setter] = warpMethod;
-    }
-
-    return {
-      ...wrappedMethods2,
-      ...initData,
-    }
-  })
-}
-
-export const useAppStore = createStore({
-  focusTag: '',
+export const useAppStore = createMyStore({
 
   dataRebuilding: true,
 
@@ -46,11 +15,11 @@ export const useAppStore = createStore({
   },
 })
 
-export const useNoteStore = createStore({
+export const useNoteStore = createMyStore({
   itemList: [],
   itemIndex: -1,
 })
 
-export const useEditorStore = createStore({
+export const useEditorStore = createMyStore({
   sourceEditing: false,
 })

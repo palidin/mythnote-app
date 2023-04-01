@@ -5,6 +5,7 @@ import {useMount} from "../../utils/HookUtils";
 import {myAgent} from "../../agent/agentType";
 import {checkStatusTask, delayRun} from "../../utils/utils";
 import {showConfirmModal} from "../../utils/MessageUtils";
+import {resetSearchCondition} from "$source/utils/FileUtils";
 
 export function Left() {
 
@@ -27,13 +28,17 @@ export function Left() {
       }
     }
 
-    if (!(current.fullname == '' && current.expand && !!useAppStore.getState().focusTag)) {
+    if (!(current.fullname == '' && current.expand && !!useAppStore.getState().searchData.folder)) {
       current.expand = !current.expand;
     }
 
-    useAppStore.getState().setFocusTag(current.fullname)
+    setFolders([...folders]);
 
-    setFolders([...folders])
+    resetSearchCondition({
+      folder: current.fullname,
+      keywords: '',
+    })
+
   }
 
 

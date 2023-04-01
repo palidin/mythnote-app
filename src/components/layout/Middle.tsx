@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
 import {MySelect, useDebounce} from "../../utils/HookUtils";
-import {readOnlineFileFrontMatter, resetSearchCondition, writeFile} from "../../utils/FileUtils";
+import {readOnlineFileFrontMatter, resetSearchCondition, updateKeywords, writeFile} from "../../utils/FileUtils";
 import {delayRun, getUUid, openContextMenu, selectEnd, selectStart} from "../../utils/utils";
 import {MyContextMenu} from "../MyContextMenu";
 import {myAgent} from "../../agent/agentType";
@@ -30,12 +30,8 @@ export function Middle() {
     }
   }, [itemIndex])
 
-  const focusTag = useAppStore(state => state.focusTag);
+  const focusTag = useAppStore(state => state.searchData.folder);
 
-  useEffect(() => {
-    if (focusTag == searchData.folder) return;
-    resetSearchCondition(setItemList, {folder: focusTag})
-  }, [focusTag])
 
   useEffect(() => {
     fetchItemList(searchData, itemList);
@@ -63,26 +59,26 @@ export function Middle() {
 
   function onKeywordsChange(e) {
     let keywords = e.target.value;
-    setKeywords(keywords);
+    updateKeywords(keywords);
     onLoadData(keywords, searchData);
   }
 
   const onLoadData = useDebounce(loadData);
 
-  const [keywords, setKeywords] = useState('');
+  const keywords = useAppStore(state => state.searchData.keywords);
 
   function onConfirmKeywordsChange() {
     let keywords = keywordsRef.current.value;
-    setKeywords(keywords);
-    loadData(keywords, searchData);
+    updateKeywords(keywords);
+    loadData(keywords);
   }
 
-  function loadData(keywords, searchData) {
-    resetSearchCondition(setItemList, {keywords})
+  function loadData(keywords) {
+    resetSearchCondition({keywords})
   }
 
-  function refreshNotes(keywords, searchData) {
-    resetSearchCondition(setItemList, {})
+  function refreshNotes() {
+    resetSearchCondition({})
   }
 
   function onClickLoadMore(isForce = false) {
@@ -176,7 +172,7 @@ export function Middle() {
 
   useEffect(() => {
     if (orderColumn && orderDirection) {
-      resetSearchCondition(setItemList, {
+      resetSearchCondition({
         order: {
           column: orderColumn,
           direction: orderDirection,
@@ -209,7 +205,8 @@ export function Middle() {
       <div className={"list-item-box auto-stretch"}>
         <div className="list-item fill-box" ref={listItemBoxRef}>
           {itemList.map((item, index) => {
-            return <ListItem key={item.path} index={index} item={item} refreshNotes={refreshNotes}></ListItem>
+            return <ListItem key={focusTag + '/' + item.path} index={index} item={item}
+                             refreshNotes={refreshNotes}></ListItem>
           })}
           {isAtBottom ? '' : <div onClick={() => onClickLoadMore()} className={'load-more'}>加载更多...</div>}
         </div>
@@ -239,7 +236,7 @@ function ListItem({index, item, refreshNotes}) {
     e.preventDefault();
     e.stopPropagation();
 
-    let focusTag = useAppStore.getState().focusTag;
+    let focusTag = useAppStore.getState().searchData.folder;
 
     let deleted = true;
     if (focusTag && focusTag.startsWith(TAG_TRASH)) {

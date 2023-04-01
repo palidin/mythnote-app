@@ -28,7 +28,7 @@ export function TagFolder({folders, onTagClick, keys = []}) {
       })
   }
 
-  const focusTag = useAppStore(state => state.focusTag);
+  const focusTag = useAppStore(state => state.searchData.folder);
 
   return (
     <>
