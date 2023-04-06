@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
-import {MySelect, useDebounce} from "../../utils/HookUtils";
+import {MySelect} from "../../utils/HookUtils";
 import {
   readOnlineFileFrontMatter,
   resetSearchCondition,
@@ -68,18 +68,13 @@ export function Middle() {
   }
 
   function onKeywordsChange(e) {
-    console.log(e)
     let keywords = e.target.value;
-    updateKeywords(keywords);
-    onLoadData(keywords);
+    loadData(keywords);
   }
-
-  const onLoadData = useDebounce(loadData);
 
   const keywords = useAppStore(state => state.searchData.keywords);
 
   function onConfirmKeywordsChange() {
-    updateKeywords(keywords);
     loadData(keywords);
   }
 
