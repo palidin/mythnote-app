@@ -1,7 +1,13 @@
 import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
 import {MySelect, useDebounce} from "../../utils/HookUtils";
-import {readOnlineFileFrontMatter, resetSearchCondition, updateKeywords, writeFile} from "../../utils/FileUtils";
+import {
+  readOnlineFileFrontMatter,
+  resetSearchCondition,
+  updateKeywords,
+  updateSearchPage,
+  writeFile
+} from "../../utils/FileUtils";
 import {delayRun, getUUid, openContextMenu, selectEnd, selectStart} from "../../utils/utils";
 import {MyContextMenu} from "../MyContextMenu";
 import {myAgent} from "../../agent/agentType";
@@ -9,6 +15,7 @@ import {sharedVariables} from "../../store/globalData";
 import {useAppStore, useNoteStore} from "../../store/store";
 import {showConfirmModal} from "../../utils/MessageUtils";
 import {TAG_TRASH} from "../../config/app";
+import {MyInput} from "$source/components/MyInput";
 
 export function Middle() {
 
@@ -38,6 +45,9 @@ export function Middle() {
   }, [searchData])
 
   function fetchItemList(searchData, itemList) {
+    if (!searchData.order.column) {
+      return;
+    }
     myAgent.fileList(searchData)
       .then(res => {
         let isAtBottom = !res.items.length || res.pages == searchData.page;
@@ -58,9 +68,10 @@ export function Middle() {
   }
 
   function onKeywordsChange(e) {
+    console.log(e)
     let keywords = e.target.value;
     updateKeywords(keywords);
-    onLoadData(keywords, searchData);
+    onLoadData(keywords);
   }
 
   const onLoadData = useDebounce(loadData);
@@ -68,7 +79,6 @@ export function Middle() {
   const keywords = useAppStore(state => state.searchData.keywords);
 
   function onConfirmKeywordsChange() {
-    let keywords = keywordsRef.current.value;
     updateKeywords(keywords);
     loadData(keywords);
   }
@@ -90,11 +100,7 @@ export function Middle() {
     }
     setIsFetching(true);
 
-    let page = searchData.page + 1;
-    useAppStore.getState().setSearchData({
-      ...searchData,
-      page,
-    });
+    updateSearchPage();
   }
 
   function onScroll() {
@@ -117,8 +123,6 @@ export function Middle() {
       onClickLoadMore(true);
     }
   }
-
-  const keywordsRef = useRef(null);
 
   function onCreateNewNote() {
     let newItem = {
@@ -185,7 +189,7 @@ export function Middle() {
   return (
     <div className={"middle flex-col"}>
       <div className={"search-wrapper"}>
-        <input type="text" ref={keywordsRef} value={keywords} onChange={onKeywordsChange}/>
+        <MyInput value={keywords} onChange={onKeywordsChange}/>
         <button onClick={onConfirmKeywordsChange}>Search</button>
         <button onClick={onCreateNewNote} disabled={focusTag.startsWith(TAG_TRASH)}>New</button>
         {focusTag.startsWith(TAG_TRASH) ?
@@ -205,7 +209,7 @@ export function Middle() {
       <div className={"list-item-box auto-stretch"}>
         <div className="list-item fill-box" ref={listItemBoxRef}>
           {itemList.map((item, index) => {
-            return <ListItem key={focusTag + '/' + item.path} index={index} item={item}
+            return <ListItem key={item.path} index={index} item={item}
                              refreshNotes={refreshNotes}></ListItem>
           })}
           {isAtBottom ? '' : <div onClick={() => onClickLoadMore()} className={'load-more'}>加载更多...</div>}

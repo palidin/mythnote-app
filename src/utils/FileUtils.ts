@@ -143,6 +143,13 @@ export function updateKeywords(keywords) {
   }));
 }
 
+export function updateSearchPage() {
+  useAppStore.getState().setSearchData(prev => ({
+    ...prev,
+    page: prev.page + 1,
+  }));
+}
+
 export function writeFile(currentFile, path) {
   return updateFileBodyWithProps(path, currentFile.body, currentFile.props)
 }

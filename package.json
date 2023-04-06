@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@ckeditor/ckeditor5-markdown-gfm": "^36.0.1",
-    "@palidin/ckeditor5-markdown-build": "git+http://palidin@server.palidin.me:8082/palidin/ckeditor5-markdown-build.git",
+    "@palidin/ckeditor5-markdown-build": "git+https://git.palidin.io/palidin/ckeditor5-markdown-build.git",
     "@szhsin/react-menu": "^3.2.0",
     "cheerio": "^1.0.0-rc.12",
     "classnames": "^2.3.2",

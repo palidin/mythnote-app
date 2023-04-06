@@ -11,6 +11,7 @@ import {useAppStore, useEditorStore, useNoteStore} from "../../store/store";
 import {HtmlPainter} from "../HtmlPainter";
 import {getOnlineImages, replaceOnlineImagesMarkdown, restoreOnlineImagesMarkdown} from "../../utils/CkEditorUtils";
 import {markdownConfig} from "../../ckeditor/markdownPlugin";
+import {MyInput} from "$source/components/MyInput";
 
 export function Right() {
 
@@ -95,8 +96,10 @@ export function Right() {
     let title = activeItem.title;
     let substringTitle = substrTitle(currentFile.body);
 
-    if (!title ||
-      (substringTitle.startsWith(title) && diffSecondsFromNow(currentFile.props.created) < 600)) {
+    if (
+      diffSecondsFromNow(currentFile.props.created) < 600
+      && (!title || substringTitle.startsWith(title))
+    ) {
       title = substringTitle;
       titleChangeHandler(itemList, activeIndex, title)
     }
@@ -119,7 +122,6 @@ export function Right() {
           })
           setItemList([...itemList])
         }
-
       })
   });
 
@@ -243,8 +245,7 @@ export function Right() {
 
         <div className={"note-title"}>
           <div>
-            <input type="text" onInput={onTitleChange}
-                   value={itemList[itemIndex]?.title || ''}/>
+            <MyInput onChange={onTitleChange} value={itemList[itemIndex]?.title || ''}/>
           </div>
           <div className={'info allow-copy'}>
             <span>{formatDisplayTime(currentFile.props.modified)}</span>
