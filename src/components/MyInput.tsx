@@ -11,6 +11,7 @@ export function MyInput({value, onChange}) {
 
   function handleComposition(e) {
     if (e.type === 'compositionend') {
+      setIsOnComposition(false)
       onChange(e)
     } else {
       setIsOnComposition(true)
