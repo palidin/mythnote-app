@@ -2,7 +2,7 @@ import classNames from "classnames";
 import {formatDisplayTime, openContextMenu, substrTitle} from "../../utils/utils";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {RichTextEditor} from "../RichTextEditor";
-import {diffSecondsFromNow, FileData, readOnlineFileFrontMatter, writeFile} from "../../utils/FileUtils";
+import {FileData, readOnlineFileFrontMatter, writeFile} from "../../utils/FileUtils";
 import {useDebounce} from "../../utils/HookUtils";
 import {sharedVariables} from "../../store/globalData";
 import {showConfirmModal, showInputModal} from "../../utils/MessageUtils";
@@ -96,10 +96,7 @@ export function Right() {
     let title = activeItem.title;
     let substringTitle = substrTitle(currentFile.body);
 
-    if (
-      diffSecondsFromNow(currentFile.props.created) < 600
-      && (!title || substringTitle.startsWith(title))
-    ) {
+    if (!title) {
       title = substringTitle;
       titleChangeHandler(itemList, activeIndex, title)
     }
@@ -157,25 +154,6 @@ export function Right() {
         ...props
       }
     }, path)
-  }
-
-  function onTitleChange(e) {
-    titleChangeHandler(itemList, itemIndex, e.target.value, !itemList[itemIndex].isNew)
-  }
-
-  function titleChangeHandler(itemList, itemIndex, title, save = false) {
-    if (save) {
-      updateProps({title})
-    }
-
-    itemList.splice(itemIndex, 1, {
-      ...itemList[itemIndex],
-      title,
-    })
-
-    sharedVariables.currentListItems = itemList;
-
-    setItemList([...itemList])
   }
 
 
@@ -237,7 +215,51 @@ export function Right() {
     setIsView(v => !v)
   }
 
+
   const [seed, setSeed] = useState(0);
+
+  const [focusing, setFocusing] = useState(false);
+
+  const [title, setTitle] = useState('');
+
+  const currentItem = useMemo(() => {
+    return itemList[itemIndex];
+  }, [itemList, itemIndex]);
+
+  useEffect(() => {
+    setTitle(currentItem?.title)
+  }, [currentItem])
+
+  useEffect(() => {
+    if (!focusing) {
+      onTitleChange(title)
+    }
+  }, [focusing])
+
+  function onTitleChange(title) {
+    setTitle(title)
+
+    if (focusing || (currentItem && currentItem.isNew)) {
+      titleChangeHandler(itemList, itemIndex, title, false)
+    } else {
+      titleChangeHandler(itemList, itemIndex, title, true)
+    }
+  }
+
+  function titleChangeHandler(itemList, itemIndex, title, save = false) {
+    itemList.splice(itemIndex, 1, {
+      ...itemList[itemIndex],
+      title,
+    })
+
+    sharedVariables.currentListItems = itemList;
+
+    setItemList([...itemList])
+
+    if (save) {
+      updateProps({title})
+    }
+  }
 
   return (
     <div className="right flex-col">
@@ -245,7 +267,7 @@ export function Right() {
 
         <div className={"note-title"}>
           <div>
-            <MyInput onChange={onTitleChange} value={itemList[itemIndex]?.title || ''}/>
+            <MyInput onChange={(e) => onTitleChange(e.target.value)} onToggle={setFocusing} value={title}/>
           </div>
           <div className={'info allow-copy'}>
             <span>{formatDisplayTime(currentFile.props.modified)}</span>

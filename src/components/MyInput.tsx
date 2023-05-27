@@ -1,9 +1,11 @@
 import {useEffect, useState} from "react";
 
-export function MyInput({value, onChange}) {
+export function MyInput({value, onChange,  onToggle = null}) {
 
   const [tempValue, setTempValue] = useState(value);
   const [isOnComposition, setIsOnComposition] = useState(false);
+
+
 
   useEffect(() => {
     setTempValue(value)
@@ -25,8 +27,14 @@ export function MyInput({value, onChange}) {
     }
   }
 
+  function onToggleHandler(isFocusing = false) {
+    onToggle?.(isFocusing)
+  }
+
   return (
     <input
+      onFocus={() => onToggleHandler(true)}
+      onBlur={() => onToggleHandler(false)}
       type="text"
       value={tempValue}
       onCompositionStart={handleComposition}
