@@ -237,6 +237,8 @@ export function Right() {
   }, [focusing])
 
   function onTitleChange(title) {
+    if (!currentItem) return;
+    
     setTitle(title)
 
     if (focusing || (currentItem && currentItem.isNew)) {
