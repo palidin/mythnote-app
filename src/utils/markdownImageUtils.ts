@@ -1,9 +1,8 @@
 import * as cheerio from "cheerio";
 import {isRemoteUrl} from "./utils";
-import imageCrawler from "../ckeditor/imageCrawler";
+import imageCrawler from "./imageCrawler";
 import {sharedVariables} from "../store/globalData";
 import {appConfig} from "../config/app";
-import markdown2html from "@ckeditor/ckeditor5-markdown-gfm/src/markdown2html/markdown2html";
 
 interface ImageModel {
   html: string,
@@ -39,20 +38,20 @@ export function replaceRemoteHostImage(text) {
   }
 }
 
-export function getOnlineImages(text) {
-  let html = markdown2html(text)
-  const $ = cheerio.load(html)
-  let images = {};
-  $('img').each((i, ele) => {
-    let originSrc = ele.attribs.src;
-    if (appConfig.onlineImageUrl && appConfig.offlineImageUrl
-      && originSrc.startsWith(appConfig.onlineImageUrl)) {
-      let replaceSrc = originSrc.replace(appConfig.onlineImageUrl, appConfig.offlineImageUrl);
-      images[replaceSrc] = originSrc;
-    }
-  })
-  return images;
-}
+// export function getOnlineImages(text) {
+//   let html = markdown2html(text)
+//   const $ = cheerio.load(html)
+//   let images = {};
+//   $('img').each((i, ele) => {
+//     let originSrc = ele.attribs.src;
+//     if (appConfig.onlineImageUrl && appConfig.offlineImageUrl
+//       && originSrc.startsWith(appConfig.onlineImageUrl)) {
+//       let replaceSrc = originSrc.replace(appConfig.onlineImageUrl, appConfig.offlineImageUrl);
+//       images[replaceSrc] = originSrc;
+//     }
+//   })
+//   return images;
+// }
 
 export function replaceOnlineImagesMarkdown(text, map: Record<string, any>) {
   for (const [k, v] of Object.entries(map)) {

@@ -11,10 +11,6 @@ export function debounce(fn, wait) {
   return debounce1(fn, wait);
 }
 
-export function throttle(fn, wait) {
-  return throttle1(fn, wait);
-}
-
 export function isRemoteUrl(url) {
   return url && url.startsWith('http');
 }
@@ -132,6 +128,7 @@ export function checkStatusTask() {
 }
 
 export function isCopyable(e: any) {
+  if (!e.path) return;
   for (const paths of e.path) {
     if (paths instanceof HTMLElement) {
       if (paths.classList.contains('allow-copy')) {

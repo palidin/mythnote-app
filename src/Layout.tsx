@@ -1,12 +1,12 @@
-import '../assets/style/layout.scss';
+import './assets/style/layout.scss';
 import React from "react";
-import '../assets/style/contextmenu.css'
-import {useMount} from "../utils/HookUtils";
-import {Left} from "./layout/Left";
-import {Middle} from "./layout/Middle";
-import {Right} from "./layout/Right";
-import {useAppStore, useNoteStore} from "../store/store";
-import {checkStatusTask, isCopyable, selectStart} from "../utils/utils";
+import './assets/style/contextmenu.css'
+import {useMount} from "./utils/HookUtils";
+import {Left} from "$source/layout/Left";
+import {Middle} from "$source/layout/Middle";
+import {Right} from "$source/layout/Right";
+import {useAppStore, useNoteStore} from "./store/store";
+import {checkStatusTask, isCopyable, selectStart} from "./utils/utils";
 
 
 export function Layout() {

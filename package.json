@@ -7,25 +7,23 @@
     "start": "cross-env NODE_ENV=development webpack-dev-server"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-markdown-gfm": "^36.0.1",
-    "@palidin/ckeditor5-markdown-build": "git+https://git.palidin.io/palidin/ckeditor5-markdown-build.git",
     "@szhsin/react-menu": "^3.2.0",
+    "ahooks": "^3.7.8",
     "cheerio": "^1.0.0-rc.12",
     "classnames": "^2.3.2",
-    "highlight.js": "^11.7.0",
-    "highlightjs-badge": "^0.1.9",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "rc-dialog": "^9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "uuid": "^9.0.0",
+    "vditor": "^3.9.4",
     "zustand": "^4.3.3"
   },
   "devDependencies": {
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.5",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.5",
     "clean-webpack-plugin": "^4.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",

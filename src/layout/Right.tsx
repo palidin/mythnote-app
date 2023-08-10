@@ -1,34 +1,28 @@
 import classNames from "classnames";
-import {formatDisplayTime, openContextMenu, substrTitle} from "../../utils/utils";
-import React, {useEffect, useMemo, useRef, useState} from "react";
-import {RichTextEditor} from "../RichTextEditor";
-import {FileData, readOnlineFileFrontMatter, writeFile} from "../../utils/FileUtils";
-import {useDebounce} from "../../utils/HookUtils";
-import {sharedVariables} from "../../store/globalData";
-import {showConfirmModal, showInputModal} from "../../utils/MessageUtils";
-import {MyContextMenu} from "../MyContextMenu";
-import {useAppStore, useEditorStore, useNoteStore} from "../../store/store";
-import {HtmlPainter} from "../HtmlPainter";
-import {getOnlineImages, replaceOnlineImagesMarkdown, restoreOnlineImagesMarkdown} from "../../utils/CkEditorUtils";
-import {markdownConfig} from "../../ckeditor/markdownPlugin";
+import {formatDisplayTime, openContextMenu, substrTitle} from "../utils/utils";
+import React, {useEffect, useMemo, useState} from "react";
+import {readOnlineFileFrontMatter, writeFile} from "../utils/FileUtils";
+import {useDebounce} from "../utils/HookUtils";
+import {sharedVariables} from "../store/globalData";
+import {showConfirmModal, showInputModal} from "../utils/MessageUtils";
+import {MyContextMenu} from "../components/MyContextMenu";
+import {useAppStore, useNoteStore} from "../store/store";
 import {MyInput} from "$source/components/MyInput";
+import {ContentChangeEvent, FileData, NoteChange, NoteItem} from "$source/type/note";
+import {MyEditor} from "$source/MyEditor";
 
 export function Right() {
 
-  const EMPTY_FILE = {
+  const EMPTY_FILE: FileData = {
     body: '',
     props: {},
   }
 
   const [currentFile, setCurrentFile] = useState<FileData>(EMPTY_FILE);
   const [content, setContent] = useState('');
-  const [viewContent, setViewContent] = useState('');
-
-  const itemList = useNoteStore(state => state.itemList)
+  const itemList = useNoteStore<NoteItem[]>(state => state.itemList)
   const setItemList = useNoteStore(state => state.setItemList)
-
   const itemIndex = useNoteStore(state => state.itemIndex)
-
   const searchData = useAppStore(state => state.searchData);
 
 
@@ -40,8 +34,6 @@ export function Right() {
     return itemList.length <= 0;
   }, [itemList])
 
-  const [replacedImages, setReplacedImages] = useState({});
-
 
   useEffect(() => {
     if (!path) {
@@ -50,21 +42,9 @@ export function Right() {
     getPathMatter(path)
       .then((matter) => {
         setCurrentFile(matter)
-
         let content = matter.body;
-        let imgs = getOnlineImages(content);
-        content = replaceOnlineImagesMarkdown(content, imgs);
-
-        setReplacedImages(imgs)
         setContent(content)
-        setViewContent(content)
-
-        sharedVariables.path = path;
-        sharedVariables.currentListItems = itemList
-        sharedVariables.currentListIndex = itemIndex
-        sharedVariables.currentFile = {...matter};
         sharedVariables.fileDataCache[path] = matter;
-        setSeed(0)
       })
   }, [path]);
 
@@ -72,8 +52,6 @@ export function Right() {
   function getPathMatter(path) {
     let item = itemList.find(v => v.path == path);
     if (item.isNew) {
-      setIsView(false)
-
       let matter = {...EMPTY_FILE};
       if (item.props) {
         matter.props = {...item.props};
@@ -83,79 +61,73 @@ export function Right() {
     return readOnlineFileFrontMatter(path);
   }
 
-  const wrapWriteFileProps = useDebounce((...args) => {
+  const saveNoteDelay = useDebounce((currentFile: FileData, path: string) => {
+    writeFile(currentFile, path)
+  });
 
-    const [currentFile, path] = args;
+  function updateCurrentFile(file: Partial<FileData>, action: NoteChange, save = true) {
+    const filedata = {...currentFile};
+    if (action == NoteChange.BODY) {
+      filedata.body = file.body;
+    } else {
+      filedata.props = file.props;
+    }
 
-    let itemList = sharedVariables.currentListItems;
-    let parentTag = useAppStore.getState().searchData.folder;
+    updatePropsSync(filedata);
+
+    if (save) {
+      saveNoteDelay(filedata, path);
+    }
+  }
+
+  function updatePropsSync(filedata: FileData) {
     let activeIndex = itemList.findIndex(v => v.path == path);
     let activeItem = itemList[activeIndex];
+    if (!activeItem) {
+      return;
+    }
+
+    let parentTag = useAppStore.getState().searchData.folder;
     let isNew = activeItem.isNew;
 
     let title = activeItem.title;
-    let substringTitle = substrTitle(currentFile.body);
+    let substringTitle = substrTitle(filedata.body);
 
     if (!title) {
       title = substringTitle;
-      titleChangeHandler(itemList, activeIndex, title)
     }
 
-    currentFile.props.title = title;
-    setCurrentFile({
-      ...currentFile,
-    })
-
+    filedata.props.title = title;
     if (isNew && parentTag) {
-      currentFile.props.tags = [parentTag];
+      filedata.props.tags = [parentTag];
     }
 
-    writeFile(currentFile, path)
-      .then((res) => {
-        if (isNew && res === 0) {
-          itemList.splice(activeIndex, 1, {
-            ...itemList[activeIndex],
-            isNew: false,
-          })
-          setItemList([...itemList])
-        }
-      })
-  });
+    itemList.splice(itemIndex, 1, {
+      ...activeItem,
+      title,
+    })
+    setItemList([...itemList])
 
-  function updateCurrentFile(file, path) {
-    if (!path) return;
-    setCurrentFile(file)
-    wrapWriteFileProps(file, path);
+    setCurrentFile(filedata)
   }
 
-  function updateBodyx(text) {
-    if (!sharedVariables.currentFile) return
+  const updateBody = (event: ContentChangeEvent) => {
+    if (!event.path) return;
+    if (event.path !== path) return;
+    let text = event.content;
     updateCurrentFile({
-      props: {...sharedVariables.currentFile.props},
       body: text
-    }, sharedVariables.path)
-  }
-
-  const updateBody11 = useRef(updateBodyx);
-
-
-  function updateBody(text) {
-    text = markdownConfig.beforeSave(text);
-    setViewContent(text)
-    text = restoreOnlineImagesMarkdown(text, replacedImages)
-    updateBody11.current(text);
+    }, NoteChange.BODY)
   }
 
   function updateProps(props) {
     updateCurrentFile({
-      body: currentFile.body,
       props: {
         ...currentFile.props,
         ...props
       }
-    }, path)
+    }, NoteChange.PROPS)
   }
-
 
   function openAddTagModal() {
     showInputModal('添加标签')
@@ -200,23 +172,6 @@ export function Right() {
     openContextMenu(<MyContextMenu e={e} items={items}></MyContextMenu>)
   }
 
-  const [isView, setIsView] = useState(false);
-
-  function onChangeView() {
-    if (useEditorStore.getState().sourceEditing) {
-      alert('请先退出源码模式');
-      return;
-    }
-
-    setSeed(isView ? 0 : Math.random())
-    if (isView) {
-      setContent(viewContent)
-    }
-    setIsView(v => !v)
-  }
-
-
-  const [seed, setSeed] = useState(0);
 
   const [focusing, setFocusing] = useState(false);
 
@@ -238,28 +193,13 @@ export function Right() {
 
   function onTitleChange(title) {
     if (!currentItem) return;
-    
+
     setTitle(title)
 
     if (focusing || (currentItem && currentItem.isNew)) {
-      titleChangeHandler(itemList, itemIndex, title, false)
+      updateCurrentFile({props: {title}}, NoteChange.TITLE, false)
     } else {
-      titleChangeHandler(itemList, itemIndex, title, true)
-    }
-  }
-
-  function titleChangeHandler(itemList, itemIndex, title, save = false) {
-    itemList.splice(itemIndex, 1, {
-      ...itemList[itemIndex],
-      title,
-    })
-
-    sharedVariables.currentListItems = itemList;
-
-    setItemList([...itemList])
-
-    if (save) {
-      updateProps({title})
+      updateCurrentFile({props: {title}}, NoteChange.TITLE)
     }
   }
 
@@ -302,13 +242,9 @@ export function Right() {
           <button onClick={openAddTagModal}>增加标签</button>
         </div>
 
-        <div className={'note-viewbar'}>
-          <button onClick={onChangeView}>{isView ? '编辑' : '查看'}</button>
-        </div>
-
         <div className={"note-content flex-col auto-stretch"}>
-          {!isView ? <TextEditor {...{content, updateBody, seed}}></TextEditor> :
-            <HtmlPainter content={viewContent}/>}
+
+          <MyEditor content={content} updateBody={updateBody} path={path}/>
         </div>
 
       </div>
@@ -316,9 +252,3 @@ export function Right() {
     </div>
   )
 }
-
-
-const TextEditor = React.memo((props) => {
-  // @ts-ignore
-  return <RichTextEditor {...props}></RichTextEditor>;
-})

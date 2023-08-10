@@ -7,10 +7,6 @@ export const sharedVariables = {
 
   fileDataCache: {},
 
-  currentListItems: [],
-  currentListIndex: -1,
-  currentFile: null,
-  path: null,
 
   startIndex: -1,
   tokenRefreshing: false,

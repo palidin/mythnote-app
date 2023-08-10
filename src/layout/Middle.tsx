@@ -1,21 +1,17 @@
 import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
-import {MySelect} from "../../utils/HookUtils";
-import {
-  readOnlineFileFrontMatter,
-  resetSearchCondition,
-  updateKeywords,
-  updateSearchPage,
-  writeFile
-} from "../../utils/FileUtils";
-import {delayRun, getUUid, openContextMenu, selectEnd, selectStart} from "../../utils/utils";
-import {MyContextMenu} from "../MyContextMenu";
-import {myAgent} from "../../agent/agentType";
-import {sharedVariables} from "../../store/globalData";
-import {useAppStore, useNoteStore} from "../../store/store";
-import {showConfirmModal} from "../../utils/MessageUtils";
-import {TAG_TRASH} from "../../config/app";
+import {MySelect} from "../utils/HookUtils";
+import {readOnlineFileFrontMatter, resetSearchCondition, updateSearchPage, writeFile} from "../utils/FileUtils";
+import {delayRun, getUUid, openContextMenu, selectEnd, selectStart} from "../utils/utils";
+import {MyContextMenu} from "../components/MyContextMenu";
+import {myAgent} from "../agent/agentType";
+import {sharedVariables} from "../store/globalData";
+import {useAppStore, useNoteStore} from "../store/store";
+import {showConfirmModal} from "../utils/MessageUtils";
+import {TAG_TRASH} from "../config/app";
 import {MyInput} from "$source/components/MyInput";
+
+import {NoteItem} from "$source/type/note";
 
 export function Middle() {
 
@@ -48,6 +44,10 @@ export function Middle() {
     if (!searchData.order.column) {
       return;
     }
+
+    if (searchData.page == 1) {
+      setItemList([])
+    }
     myAgent.fileList(searchData)
       .then(res => {
         let isAtBottom = !res.items.length || res.pages == searchData.page;
@@ -55,7 +55,13 @@ export function Middle() {
         if (res.items.length && !itemList.length) {
           setItemIndex(0)
         }
-        setItemList([...itemList, ...res.items])
+
+        if (res.page == 1) {
+          setItemList([...res.items])
+        } else {
+          setItemList([...itemList, ...res.items])
+        }
+
         setIsFetching(false);
 
         if (!isAtBottom) {
@@ -120,7 +126,7 @@ export function Middle() {
   }
 
   function onCreateNewNote() {
-    let newItem = {
+    let newItem: NoteItem = {
       path: getUUid() + '.md',
       name: 'Untitled',
       isNew: true,

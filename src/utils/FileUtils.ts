@@ -1,29 +1,9 @@
 import moment from "moment";
 import {sharedVariables} from "../store/globalData";
 import {myAgent} from "../agent/agentType";
-import {useAppStore, useNoteStore} from "../store/store";
+import {useAppStore} from "../store/store";
 
-
-interface Props {
-  title?: string;
-  tags?: string[];
-  modified?: string;
-  created?: string;
-  source_url?: string;
-  deleted?: boolean;
-  pined?: boolean;
-}
-
-export interface FileData {
-  props: Props;
-  body: string;
-}
-
-interface WaitingWriteFileData {
-  path: string;
-  data: FileData;
-  createTime: number;
-}
+import {FileData, WaitingWriteFileData} from "$source/type/note";
 
 
 function getNowDateString() {
@@ -125,10 +105,7 @@ export async function readOnlineFileFrontMatter(path: string): Promise<FileData>
 }
 
 export function resetSearchCondition(obj) {
-  let page = 1;
-
-  useNoteStore.getState().setItemList([]);
-
+  const page = 1;
   useAppStore.getState().setSearchData(prev => ({
     ...prev,
     ...obj,

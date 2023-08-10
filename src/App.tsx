@@ -1,5 +1,4 @@
-import {Layout} from "./components/Layout";
-import 'highlightjs-badge/highlightjs-badge'
+import {Layout} from "./Layout";
 
 function App() {
   return (

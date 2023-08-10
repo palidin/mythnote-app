@@ -1,10 +1,10 @@
-import {TagFolder} from "../TagFolder";
+import {TagFolder} from "../components/TagFolder";
 import React, {useState} from "react";
-import {useAppStore} from "../../store/store";
-import {useMount} from "../../utils/HookUtils";
-import {myAgent} from "../../agent/agentType";
-import {checkStatusTask, delayRun} from "../../utils/utils";
-import {showConfirmModal} from "../../utils/MessageUtils";
+import {useAppStore} from "../store/store";
+import {useMount} from "../utils/HookUtils";
+import {myAgent} from "../agent/agentType";
+import {checkStatusTask, delayRun} from "../utils/utils";
+import {showConfirmModal} from "../utils/MessageUtils";
 import {resetSearchCondition} from "$source/utils/FileUtils";
 
 export function Left() {
