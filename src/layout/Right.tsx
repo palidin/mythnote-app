@@ -7,9 +7,9 @@ import {sharedVariables} from "../store/globalData";
 import {showConfirmModal, showInputModal} from "../utils/MessageUtils";
 import {MyContextMenu} from "../components/MyContextMenu";
 import {useAppStore, useNoteStore} from "../store/store";
-import {MyInput} from "$source/components/MyInput";
 import {ContentChangeEvent, FileData, NoteChange, NoteItem} from "$source/type/note";
 import {MyEditor} from "$source/MyEditor";
+import {MyInput} from "$source/components/MyInput";
 
 export function Right() {
 
@@ -70,7 +70,7 @@ export function Right() {
     if (action == NoteChange.BODY) {
       filedata.body = file.body;
     } else {
-      filedata.props = file.props;
+      filedata.props = {...file.props};
     }
 
     updatePropsSync(filedata);
@@ -90,7 +90,7 @@ export function Right() {
     let parentTag = useAppStore.getState().searchData.folder;
     let isNew = activeItem.isNew;
 
-    let title = activeItem.title;
+    let title = filedata.props.title;
     let substringTitle = substrTitle(filedata.body);
 
     if (!title) {
@@ -108,7 +108,7 @@ export function Right() {
     })
     setItemList([...itemList])
 
-    setCurrentFile(filedata)
+    setCurrentFile({...filedata})
   }
 
   const updateBody = (event: ContentChangeEvent) => {
@@ -193,9 +193,6 @@ export function Right() {
 
   function onTitleChange(title) {
     if (!currentItem) return;
-
-    setTitle(title)
-
     if (focusing || (currentItem && currentItem.isNew)) {
       updateCurrentFile({props: {title}}, NoteChange.TITLE, false)
     } else {
@@ -209,7 +206,7 @@ export function Right() {
 
         <div className={"note-title"}>
           <div>
-            <MyInput onChange={(e) => onTitleChange(e.target.value)} onToggle={setFocusing} value={title}/>
+            <MyInput onChange={onTitleChange} onToggle={setFocusing} value={title}/>
           </div>
           <div className={'info allow-copy'}>
             <span>{formatDisplayTime(currentFile.props.modified)}</span>

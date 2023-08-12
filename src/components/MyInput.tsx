@@ -1,30 +1,20 @@
 import {useEffect, useState} from "react";
 
-export function MyInput({value, onChange,  onToggle = null}) {
+export function MyInput({value = '', onChange, onToggle = null}) {
 
-  const [tempValue, setTempValue] = useState(value ?? '');
-  const [isOnComposition, setIsOnComposition] = useState(false);
-
-
+  const [tempValue, setTempValue] = useState(value);
 
   useEffect(() => {
-    setTempValue(value)
+    if (tempValue != value) {
+      setTempValue(value)
+    }
   }, [value])
 
-  function handleComposition(e) {
-    if (e.type === 'compositionend') {
-      setIsOnComposition(false)
-      onChange(e)
-    } else {
-      setIsOnComposition(true)
-    }
-  }
 
   function handleOnChange(e) {
-    setTempValue(e.target.value)
-    if (!isOnComposition) {
-      onChange(e)
-    }
+    const value = e.target.value;
+    setTempValue(value)
+    onChange(value)
   }
 
   function onToggleHandler(isFocusing = false) {
@@ -36,10 +26,7 @@ export function MyInput({value, onChange,  onToggle = null}) {
       onFocus={() => onToggleHandler(true)}
       onBlur={() => onToggleHandler(false)}
       type="text"
-      defaultValue={tempValue}
-      onCompositionStart={handleComposition}
-      onCompositionUpdate={handleComposition}
-      onCompositionEnd={handleComposition}
+      value={tempValue}
       onChange={handleOnChange}
     />
   )

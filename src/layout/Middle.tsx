@@ -9,9 +9,10 @@ import {sharedVariables} from "../store/globalData";
 import {useAppStore, useNoteStore} from "../store/store";
 import {showConfirmModal} from "../utils/MessageUtils";
 import {TAG_TRASH} from "../config/app";
-import {MyInput} from "$source/components/MyInput";
 
 import {NoteItem} from "$source/type/note";
+import {MyInput} from "$source/components/MyInput";
+import {useDebounceFn} from "ahooks";
 
 export function Middle() {
 
@@ -73,8 +74,7 @@ export function Middle() {
       })
   }
 
-  function onKeywordsChange(e) {
-    let keywords = e.target.value;
+  function onKeywordsChange(keywords) {
     loadData(keywords);
   }
 
@@ -84,9 +84,11 @@ export function Middle() {
     loadData(keywords);
   }
 
-  function loadData(keywords) {
+  const {run: loadData} = useDebounceFn((keywords) => {
     resetSearchCondition({keywords})
-  }
+  }, {
+    wait: 200,
+  });
 
   function refreshNotes() {
     resetSearchCondition({})
@@ -190,7 +192,7 @@ export function Middle() {
   return (
     <div className={"middle flex-col"}>
       <div className={"search-wrapper"}>
-        <MyInput value={keywords} onChange={onKeywordsChange}/>
+        <MyInput value={keywords} onChange={onKeywordsChange} />
         <button onClick={onConfirmKeywordsChange}>Search</button>
         <button onClick={onCreateNewNote} disabled={focusTag.startsWith(TAG_TRASH)}>New</button>
         {focusTag.startsWith(TAG_TRASH) ?
