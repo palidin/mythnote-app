@@ -36,7 +36,7 @@ $bg-color: hsl(0deg 0% 98%);
   user-select: none;
 
   .left {
-    min-width: 200px;
+    width: 15%;
     background: hsl(200deg 16% 15%);
     color: white;
     height: 100vh;
@@ -137,34 +137,40 @@ $bg-color: hsl(0deg 0% 98%);
     width: 70%;
     background: $bg-color;
 
-    padding: 10px;
     border: 1px solid rgba(0, 0, 0, 0.3);
 
-    .note-title {
-      .info {
+    .note-meta-box {
+      padding: 10px;
+
+      .note-title {
+        .info {
+          display: flex;
+
+          span {
+            padding: 5px;
+          }
+        }
+      }
+
+      .note-toolbar {
         display: flex;
 
+        padding-bottom: 10px;
+
         span {
-          padding: 5px;
+          padding: 0 5px;
+        }
+      }
+
+      .note-tags {
+        flex-wrap: wrap;
+
+        .active {
+          background: lightblue;
         }
       }
     }
 
-    .note-toolbar {
-      display: flex;
-
-      span {
-        padding: 0 5px;
-      }
-    }
-
-    .note-tags {
-      flex-wrap: wrap;
-
-      .active {
-        background: lightblue;
-      }
-    }
   }
 }
 
@@ -243,16 +249,14 @@ html, body, #root, .layout {
   height: 100%;
 }
 
-.note-viewbar, .note-toolbar {
-  padding-bottom: 10px;
-}
-
 .note-title {
   padding-bottom: 10px;
 }
 
 
 .note-content {
+  position: relative;
+  padding-left: 10px;
 
   %no-indent-style {
     margin-block-start: 0;
@@ -267,36 +271,6 @@ html, body, #root, .layout {
     padding-inline-start: 2em;
     @extend %no-indent-style;
   }
-
-  #ckeditor-word-counter {
-    width: fit-content;
-  }
-
-  .ck-editor {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-
-    .ck-editor__main {
-      flex: 1;
-      position: relative;
-
-
-      .ck-content {
-        @extend .fill-box;
-      }
-
-      .ck-source-editing-area {
-        @extend .fill-box;
-
-        textarea {
-          overflow-y: auto;
-        }
-      }
-    }
-  }
-
-  @extend %editor-style;
 }
 
 * {
@@ -309,94 +283,6 @@ button {
 
 body {
   padding: unset !important;
-}
-
-%editor-style {
-
-  position: relative;
-
-
-  .editor-shell {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-
-    .editor-container {
-      flex: 1;
-      height: 200px;
-
-      .editor-scroller {
-        height: 100%;
-      }
-
-      .actions {
-        right: 20px;
-      }
-    }
-
-
-    .tree-view-output {
-      position: fixed;
-      z-index: 3;
-      bottom: 40px;
-      right: 20px;
-      overflow-y: scroll;
-    }
-  }
-
-
-  #viditor-editor {
-
-    %padding-style{
-      padding: 1em 35px !important;
-    }
-    position: absolute;
-    height: 100% !important;
-    width: 100% !important;
-
-    display: flex;
-    flex-direction: column;
-
-    .vditor-toolbar {
-      padding-left: 35px !important;
-
-      .md-toggle-btn{
-        svg{
-          width: 20px;
-          height: 15px;
-          transform: scale(1.3);
-        }
-      }
-
-      .insert-br-btn{
-        svg{
-          width: 15px;
-          height: 15px;
-          transform: scale(1.3);
-        }
-      }
-    }
-
-    .vditor-content {
-      flex: 1;
-      overflow-y: auto;
-      .vditor-ir, .vditor-wysiwyg {
-        .vditor-reset {
-          @extend %padding-style;
-        }
-      }
-
-      .vditor-sv{
-        &.vditor-reset {
-          @extend %padding-style;
-        }
-      }
-    }
-
-  }
 }
 
 

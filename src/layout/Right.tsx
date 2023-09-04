@@ -204,43 +204,42 @@ export function Right() {
     <div className="right flex-col">
       <div className={classNames('note-detail auto-stretch flex-col', {'hide': isEmpty})}>
 
-        <div className={"note-title"}>
-          <div>
-            <MyInput onChange={onTitleChange} onToggle={setFocusing} value={title}/>
+        <div className="note-meta-box">
+          <div className={"note-title"}>
+            <div>
+              <MyInput onChange={onTitleChange} onToggle={setFocusing} value={title}/>
+            </div>
+            <div className={'info allow-copy'}>
+              <span>{formatDisplayTime(currentFile.props.modified)}</span>
+              <span>{path}</span>
+              <span>{formatDisplayTime(currentFile.props.created)}</span>
+              {currentFile.props.source_url ?
+                (<span><a href={currentFile.props.source_url} target='_blank'>来源地址</a></span>)
+                : ''}
+            </div>
+
+
+            <div className={'info note-tags allow-copy'}>
+              {
+                currentFile.props.tags?.length
+                  ? <> {
+                    currentFile.props.tags.map((v, k) => {
+                      return <span key={k}
+                                   onContextMenu={(e) => openTagManageContextMenu(e, v)}
+                                   className={v === searchData.folder ? 'active' : ''}>{v}</span>;
+                    })
+                  }</>
+                  : ''
+              }
+
+            </div>
           </div>
-          <div className={'info allow-copy'}>
-            <span>{formatDisplayTime(currentFile.props.modified)}</span>
-            <span>{path}</span>
-            <span>{formatDisplayTime(currentFile.props.created)}</span>
-            {currentFile.props.source_url ?
-              (<span><a href={currentFile.props.source_url} target='_blank'>来源地址</a></span>)
-              : ''}
+          <div className={"note-toolbar"}>
+            <button onClick={openAddTagModal}>增加标签</button>
           </div>
-
-
-          <div className={'info note-tags allow-copy'}>
-            {
-              currentFile.props.tags?.length
-                ? <> {
-                  currentFile.props.tags.map((v, k) => {
-                    return <span key={k}
-                                 onContextMenu={(e) => openTagManageContextMenu(e, v)}
-                                 className={v === searchData.folder ? 'active' : ''}>{v}</span>;
-                  })
-                }</>
-                : ''
-            }
-
-          </div>
-        </div>
-
-
-        <div className={"note-toolbar"}>
-          <button onClick={openAddTagModal}>增加标签</button>
         </div>
 
         <div className={"note-content flex-col auto-stretch"}>
-
           <MyEditor content={content} updateBody={updateBody} path={path}/>
         </div>
 

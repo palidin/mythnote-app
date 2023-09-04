@@ -1,4 +1,4 @@
-import {FC, useCallback} from 'react'
+import React, {FC, useCallback} from 'react'
 import {Editable, useEditable} from '@editablejs/editor'
 import {Editor, Grid} from '@editablejs/models'
 import {
@@ -28,6 +28,8 @@ import {Translation} from 'react-i18next'
 
 import {languages} from "./codeblock-config";
 import {editorSettings} from "../store";
+import {EMPTY_LINE_WORDS} from "./charlist";
+import {readCopyText} from "../utils/ax";
 
 export const AlignDropdown: FC = () => {
   const editor = useEditable()
@@ -200,10 +202,32 @@ export const createToolbarItems = (editor: Editable) => {
     'separator',
     {
       type: 'button',
+      title: 'Line break',
+      active: false,
+      onToggle: () => {
+        editor.insertText("\n" + EMPTY_LINE_WORDS);
+      },
+      icon: <LinkEnterIcon/>,
+    },
+    'separator',
+    {
+      type: 'button',
       title: <Translation>{t => t('playground.editor.plugin.code-block')}</Translation>,
       active: CodeBlockEditor.isActive(editor),
       onToggle: () => {
-        CodeBlockEditor.insert(editor, {language: editorSettings.defaultLanguage})
+        if (CodeBlockEditor.isActive(editor)) {
+          return;
+        }
+        editor.cut();
+        setTimeout(() => {
+          readCopyText()
+            .then(text => {
+              CodeBlockEditor.insert(editor, {
+                code: text,
+                language: editorSettings.defaultLanguage,
+              })
+            })
+        }, 100)
       },
       icon: <Icon name="codeBlock"/>,
     },
@@ -258,3 +282,14 @@ export const createToolbarItems = (editor: Editable) => {
   return items
 }
 const CODEBLOCK_KEY = 'codeblock'
+
+const LinkEnterIcon = React.memo<JSX.IntrinsicElements['svg']>(function IconRss(props) {
+  return (
+    <svg className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+         width="14" height="14">
+      <path
+        d="M900.181333 385.792v-192a39.978667 39.978667 0 1 0-80 0v192a221.098667 221.098667 0 0 1-65.194666 157.44 221.184 221.184 0 0 1-157.397334 65.152H258.218667l112.384-112.298667a40.106667 40.106667 0 0 0-28.288-68.266666 39.808 39.808 0 0 0-28.330667 11.690666l-178.474667 178.474667a40.021333 40.021333 0 0 0 0 56.618667l183.68 183.808a39.978667 39.978667 0 1 0 56.618667-56.618667L262.4 688.384h335.189333a300.586667 300.586667 0 0 0 214.016-88.576 300.16 300.16 0 0 0 88.576-214.016z"
+        fill="#000000"></path>
+    </svg>
+  )
+})

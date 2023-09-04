@@ -23,7 +23,6 @@
 
     > div:last-child {
       flex: 1;
-      //height: calc(100% - 28px);
 
       display: flex;
       flex-direction: column;
@@ -34,7 +33,7 @@
       }
 
       &>[role="textbox"]{
-        padding-top: 1em;
+        padding: 1em 1em 1em 0;
       }
     }
   }

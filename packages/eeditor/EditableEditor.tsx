@@ -4,9 +4,9 @@ import {createEditor} from '@editablejs/models'
 import {
   ContentEditable,
   EditableProvider,
-  parseDataTransfer,
   useIsomorphicLayoutEffect,
-  withEditable
+  withEditable,
+  writeClipboardData
 } from '@editablejs/editor'
 import {ContextMenu, useContextMenuEffect, withCodeBlock, withPlugins} from '@editablejs/plugins'
 import {Toolbar, ToolbarComponent, useToolbarEffect} from "@editablejs/plugin-toolbar";
@@ -24,6 +24,13 @@ import {
 import {languages} from "./config/codeblock-config";
 import {createContextMenuItems} from "./config/context-menu-items";
 import {withHistory} from "@editablejs/plugin-history";
+import {withHTMLSerializerTransform} from "@editablejs/plugins/serializer/html";
+import {withHTMLDeserializerTransform} from "@editablejs/plugins/deserializer/html";
+import {HTMLDeserializer} from "@editablejs/deserializer/html";
+import {HTMLSerializer} from "@editablejs/serializer/html";
+import {withTitleHTMLDeserializerTransform} from "@editablejs/plugin-title/deserializer/html";
+import {withTitleHTMLSerializerTransform} from "@editablejs/plugin-title/serializer/html";
+import {formatTextFromClipboard} from "./utils/ax";
 
 export default function EditableEditor({markdown, onUpdate}) {
   const editor = React.useMemo(() => {
@@ -32,7 +39,7 @@ export default function EditableEditor({markdown, onUpdate}) {
     editor = withHistory(editor)
 
     editor = withCodeBlock(editor, {
-      languages: languages
+      languages: languages,
     })
 
     return editor;
@@ -44,6 +51,11 @@ export default function EditableEditor({markdown, onUpdate}) {
     withMarkdownDeserializerPlugin(editor)
     withMarkdownDeserializerTransform(editor)
 
+    withHTMLSerializerTransform(editor) // Adds an HTML serializer transform to the editor
+    withHTMLDeserializerTransform(editor) // Adds an HTML deserializer transform to the editor
+    HTMLDeserializer.withEditor(editor, withTitleHTMLDeserializerTransform, {})
+    HTMLSerializer.withEditor(editor, withTitleHTMLSerializerTransform, {})
+
     setValue(1)
   }, [editor])
 
@@ -52,13 +64,10 @@ export default function EditableEditor({markdown, onUpdate}) {
     editor.onCopy = event => {
       const {clipboardData, type} = event
       if (!clipboardData) return;
-      event.preventDefault();
-      const {text} = parseDataTransfer(clipboardData)
-      const textFixed = HTMLDecode(text)
-      navigator.clipboard.writeText(textFixed)
-        .catch(err => {
-          console.error('Could not copy text: ', err);
-        });
+      const textFixed = formatTextFromClipboard(clipboardData)
+      clipboardData.setData('text', textFixed)
+      writeClipboardData(clipboardData)
+      editor.emit('copy', event)
     }
     return () => {
       editor.onPaste = onCopy
@@ -101,12 +110,4 @@ export default function EditableEditor({markdown, onUpdate}) {
       <ContentEditable placeholder="Please enter content..."/>
     </EditableProvider>
   )
-}
-
-function HTMLDecode(text) {
-  var temp = document.createElement("div");
-  temp.innerHTML = text;
-  var output = temp.innerText || temp.textContent;
-  temp = null;
-  return output;
 }
