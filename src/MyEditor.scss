@@ -1,0 +1,53 @@
+.note-content {
+  button {
+    border: unset;
+  }
+
+
+  .ax-editor-wrapper {
+    padding: 0 5px ;
+    flex: 1;
+
+    line-height: 1.6;
+
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+
+    > div:first-child {
+
+    }
+
+    > div:last-child {
+      flex: 1;
+      //height: calc(100% - 28px);
+
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+
+      * {
+        box-sizing: content-box;
+      }
+
+      &>[role="textbox"]{
+        padding-top: 1em;
+      }
+    }
+  }
+
+  // 隐藏代码工具栏
+  .sc-imjvh9-0 {
+    display: none !important;
+  }
+
+  // 语言选择
+  .sc-166qp5y-5{
+    overflow-y: auto;
+    height: 200px;
+  }
+
+}

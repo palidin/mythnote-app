@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-export function MyInput({value = '', onChange, onToggle = null}) {
+export function MyInput({value = '', onChange, onToggle = null, onSearch = null}) {
 
   const [tempValue, setTempValue] = useState(value);
 
@@ -21,6 +21,12 @@ export function MyInput({value = '', onChange, onToggle = null}) {
     onToggle?.(isFocusing)
   }
 
+  function onKeydownHandler(e) {
+    if (e.key === "Enter") {
+      onSearch?.();
+    }
+  }
+
   return (
     <input
       onFocus={() => onToggleHandler(true)}
@@ -28,6 +34,7 @@ export function MyInput({value = '', onChange, onToggle = null}) {
       type="text"
       value={tempValue}
       onChange={handleOnChange}
+      onKeyDown={onKeydownHandler}
     />
   )
 }

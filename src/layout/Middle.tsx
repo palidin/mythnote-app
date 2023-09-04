@@ -75,19 +75,25 @@ export function Middle() {
   }
 
   function onKeywordsChange(keywords) {
+    setKeywords(keywords)
     loadData(keywords);
   }
 
-  const keywords = useAppStore(state => state.searchData.keywords);
+  const state = useAppStore(state => state);
+
+  const [keywords, setKeywords] = useState('');
+  useEffect(() => {
+    setKeywords(state.searchData.keywords)
+  }, [state.searchData.keywords])
 
   function onConfirmKeywordsChange() {
-    loadData(keywords);
+    resetSearchCondition({keywords})
   }
 
   const {run: loadData} = useDebounceFn((keywords) => {
     resetSearchCondition({keywords})
   }, {
-    wait: 200,
+    wait: 1000,
   });
 
   function refreshNotes() {
@@ -192,7 +198,7 @@ export function Middle() {
   return (
     <div className={"middle flex-col"}>
       <div className={"search-wrapper"}>
-        <MyInput value={keywords} onChange={onKeywordsChange} />
+        <MyInput value={keywords} onChange={onKeywordsChange} onSearch={onConfirmKeywordsChange}/>
         <button onClick={onConfirmKeywordsChange}>Search</button>
         <button onClick={onCreateNewNote} disabled={focusTag.startsWith(TAG_TRASH)}>New</button>
         {focusTag.startsWith(TAG_TRASH) ?
