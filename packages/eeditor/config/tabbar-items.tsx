@@ -29,7 +29,7 @@ import {Translation} from 'react-i18next'
 import {languages} from "./codeblock-config";
 import {editorSettings} from "../store";
 import {EMPTY_LINE_WORDS} from "./charlist";
-import {readCopyText} from "../utils/ax";
+import {readCopyText} from "../utils/editorUtils";
 
 export const AlignDropdown: FC = () => {
   const editor = useEditable()
