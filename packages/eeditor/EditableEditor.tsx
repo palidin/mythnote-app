@@ -13,12 +13,15 @@ import {createContextMenuItems} from "./config/context-menu-items";
 import {withHistory} from "@editablejs/plugin-history";
 import {useCopyData, useHtml, useMarkdown} from "./config/editor-serialize";
 import {transformMarkdown2Nodes, transformNodes2Markdown} from "./utils/editorUtils";
+import {SideToolbar, useSideToolbarMenuEffect, withSideToolbar} from "@editablejs/plugin-toolbar/side";
+import {createSideToolbarItems} from "./config/side-toolbar-items";
 
 export default function EditableEditor({markdown, onUpdate}) {
   const editor = React.useMemo(() => {
     let editor = withEditable(createEditor())
     editor = withPlugins(editor)
     editor = withHistory(editor)
+    editor = withSideToolbar(editor)
 
     editor = withCodeBlock(editor, {
       languages: languages,
@@ -34,6 +37,11 @@ export default function EditableEditor({markdown, onUpdate}) {
 
   useToolbarEffect(() => {
     Toolbar.setItems(editor, createToolbarItems(editor))
+  }, editor)
+
+
+  useSideToolbarMenuEffect((...a) => {
+    SideToolbar.setItems(editor, createSideToolbarItems(editor, ...a))
   }, editor)
 
   function onChangeHandler(nodes) {
@@ -52,7 +60,7 @@ export default function EditableEditor({markdown, onUpdate}) {
   useMarkdown(editor, () => {
     setIsReady(true)
   });
-  // useHtml(editor);
+  useHtml(editor);
   useCopyData(editor);
 
   useUpdateEffect(() => {
