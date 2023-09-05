@@ -24,7 +24,10 @@ export const languages = [
   {
     value: 'javascript',
     content: 'JavaScript',
-    plugin: javascript(),
+    plugin: javascript({
+      jsx: true,
+      typescript: true,
+    }),
   },
   {
     value: 'rust',
@@ -49,7 +52,9 @@ export const languages = [
   {
     value: 'php',
     content: 'PHP',
-    plugin: php(),
+    plugin: php({
+      plain: true,
+    }),
   },
   {
     value: 'html',
