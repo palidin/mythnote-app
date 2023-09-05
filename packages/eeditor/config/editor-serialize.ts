@@ -12,11 +12,18 @@ import {
 } from "@editablejs/plugins/deserializer/markdown";
 import {useIsomorphicLayoutEffect, writeClipboardData} from "@editablejs/editor";
 import {formatTextFromClipboard} from "../utils/editorUtils";
+import {withTextSerializerTransform} from "@editablejs/plugins/serializer/text";
+
+export function useText(editor) {
+  useLayoutEffect(() => {
+    withTextSerializerTransform(editor)
+  }, [editor])
+}
 
 export function useHtml(editor) {
   useLayoutEffect(() => {
-    withHTMLSerializerTransform(editor) // Adds an HTML serializer transform to the editor
-    withHTMLDeserializerTransform(editor) // Adds an HTML deserializer transform to the editor
+    withHTMLSerializerTransform(editor)
+    withHTMLDeserializerTransform(editor)
     HTMLDeserializer.withEditor(editor, withTitleHTMLDeserializerTransform, {})
     HTMLSerializer.withEditor(editor, withTitleHTMLSerializerTransform, {})
   }, [editor])
@@ -36,7 +43,7 @@ export function useCopyData(editor) {
   useIsomorphicLayoutEffect(() => {
     const {onCopy} = editor
     editor.onCopy = event => {
-      const {clipboardData, type} = event
+      const {clipboardData} = event
       if (!clipboardData) return;
       const textFixed = formatTextFromClipboard(clipboardData)
       clipboardData.setData('text', textFixed)

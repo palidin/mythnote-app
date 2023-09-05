@@ -1,12 +1,21 @@
 import {parseDataTransfer, readClipboardData} from "@editablejs/editor";
 import {MarkdownDeserializer} from "@editablejs/deserializer/markdown";
 import {MarkdownSerializer} from "@editablejs/serializer/markdown";
+import {Editor} from "@editablejs/models";
+import {TextSerializer} from "@editablejs/serializer/text";
 
 export function readCopyText() {
   return readClipboardData()
     .then(clipboardData => {
       return formatTextFromClipboard(clipboardData);
     })
+}
+
+export function readSelectText(editor) {
+  const elements = Editor.elements(editor)
+  const nodes = elements['paragraph'].map(v => v[0]);
+  const text = nodes.map(node => TextSerializer.transformWithEditor(editor, node)).join('\n')
+  return HTMLDecode(text);
 }
 
 export function formatTextFromClipboard(clipboardData: DataTransfer) {

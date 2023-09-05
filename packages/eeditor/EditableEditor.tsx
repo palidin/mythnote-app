@@ -11,7 +11,7 @@ import {useUpdateEffect} from "ahooks";
 import {languages} from "./config/codeblock-config";
 import {createContextMenuItems} from "./config/context-menu-items";
 import {withHistory} from "@editablejs/plugin-history";
-import {useCopyData, useHtml, useMarkdown} from "./config/editor-serialize";
+import {useCopyData, useHtml, useMarkdown, useText} from "./config/editor-serialize";
 import {transformMarkdown2Nodes, transformNodes2Markdown} from "./utils/editorUtils";
 import {SideToolbar, useSideToolbarMenuEffect, withSideToolbar} from "@editablejs/plugin-toolbar/side";
 import {createSideToolbarItems} from "./config/side-toolbar-items";
@@ -61,6 +61,7 @@ export default function EditableEditor({markdown, onUpdate}) {
     setIsReady(true)
   });
   useHtml(editor);
+  useText(editor);
   useCopyData(editor);
 
   useUpdateEffect(() => {

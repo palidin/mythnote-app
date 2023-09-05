@@ -29,7 +29,7 @@ import {Translation} from 'react-i18next'
 import {languages} from "./codeblock-config";
 import {editorSettings} from "../store";
 import {EMPTY_LINE_WORDS} from "./charlist";
-import {readCopyText} from "../utils/editorUtils";
+import {readSelectText} from "../utils/editorUtils";
 
 export const AlignDropdown: FC = () => {
   const editor = useEditable()
@@ -218,16 +218,12 @@ export const createToolbarItems = (editor: Editable) => {
         if (CodeBlockEditor.isActive(editor)) {
           return;
         }
-        editor.cut();
-        setTimeout(() => {
-          readCopyText()
-            .then(text => {
-              CodeBlockEditor.insert(editor, {
-                code: text,
-                language: editorSettings.defaultLanguage,
-              })
-            })
-        }, 100)
+        const code = readSelectText(editor)
+        editor.deleteFragment();
+        CodeBlockEditor.insert(editor, {
+          code: code,
+          language: editorSettings.defaultLanguage,
+        })
       },
       icon: <Icon name="codeBlock"/>,
     },
