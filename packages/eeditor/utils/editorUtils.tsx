@@ -1,9 +1,10 @@
-import {parseDataTransfer, readClipboardData} from "@editablejs/editor";
+import {Editable, parseDataTransfer, readClipboardData} from "@editablejs/editor";
 import {MarkdownDeserializer} from "@editablejs/deserializer/markdown";
 import {MarkdownSerializer} from "@editablejs/serializer/markdown";
-import {Editor} from "@editablejs/models";
+import {Editor, Transforms} from "@editablejs/models";
 import {TextSerializer} from "@editablejs/serializer/text";
 import {CodeBlock} from "@editablejs/plugins";
+import {tableExtendColumn} from "../table/c";
 
 export function readCopyText() {
   return readClipboardData()
@@ -43,8 +44,30 @@ export function transformNodes2Markdown(nodes, editor) {
   return contents.map(v => MarkdownSerializer.toMarkdownWithEditor(editor, v)).join('\n')
 }
 
-export function getCodeBlockElement(editor){
+export function getCodeBlockElement(editor) {
   const elements = Editor.elements(editor)
   const children = elements['codeblock']
   return children[0][0] as CodeBlock;
+}
+
+export function updateTableElement(editor, element, options) {
+  editor.normalizeSelection(selection => {
+    if (editor.selection !== selection) editor.selection = selection
+    Transforms.setNodes(
+      editor,
+      {
+        ...options,
+      },
+      {
+        at: Editable.findPath(editor, element),
+        hanging: false,
+      },
+    )
+  })
+}
+
+export function isActiveTable(editor) {
+  const elements = Editor.elements(editor)
+  const children = elements['table']
+  return children[0][0][tableExtendColumn];
 }

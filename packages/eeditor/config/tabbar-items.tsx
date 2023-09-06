@@ -28,7 +28,8 @@ import {Translation} from 'react-i18next'
 import {languages} from "./codeblock-config";
 import {editorSettings} from "../store";
 import {EMPTY_LINE_WORDS} from "./charlist";
-import {getCodeBlockElement, readSelectText} from "../utils/editorUtils";
+import {getCodeBlockElement, isActiveTable, readSelectText, updateTableElement} from "../utils/editorUtils";
+import {tableExtendColumn} from "../table/c";
 
 export const AlignDropdown: FC = () => {
   const editor = useEditable()
@@ -271,6 +272,17 @@ export const createToolbarItems = (editor: Editable) => {
           Grid.splitCell(editor, grid)
         },
       },
+      {
+        type: 'button',
+        title: 'Table serializer',
+        icon: <HtmlIcon/>,
+        active: isActiveTable(editor),
+        onToggle: () => {
+          const grid = Grid.above(editor);
+          const aa = grid[0][tableExtendColumn]
+          updateTableElement(editor, grid[0], {[tableExtendColumn]: !aa})
+        },
+      },
     )
   }
   return items
@@ -284,6 +296,18 @@ const LinkEnterIcon = React.memo<JSX.IntrinsicElements['svg']>(function IconRss(
       <path
         d="M900.181333 385.792v-192a39.978667 39.978667 0 1 0-80 0v192a221.098667 221.098667 0 0 1-65.194666 157.44 221.184 221.184 0 0 1-157.397334 65.152H258.218667l112.384-112.298667a40.106667 40.106667 0 0 0-28.288-68.266666 39.808 39.808 0 0 0-28.330667 11.690666l-178.474667 178.474667a40.021333 40.021333 0 0 0 0 56.618667l183.68 183.808a39.978667 39.978667 0 1 0 56.618667-56.618667L262.4 688.384h335.189333a300.586667 300.586667 0 0 0 214.016-88.576 300.16 300.16 0 0 0 88.576-214.016z"
         fill="#000000"></path>
+    </svg>
+  )
+})
+
+const HtmlIcon = React.memo<JSX.IntrinsicElements['svg']>(function IconRss(props) {
+
+  return (
+    <svg className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+         p-id="29803" width="14" height="14">
+      <path
+        d="M288 256 32 512l256 256 128 0L160 512l256-256L288 256zM736 256l-128 0 256 256L608 768l128 0 256-256L736 256z"
+        fill="#000000" p-id="29804"></path>
     </svg>
   )
 })

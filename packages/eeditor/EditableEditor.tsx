@@ -60,7 +60,7 @@ export default function EditableEditor({markdown, onUpdate}) {
   useMarkdown(editor, () => {
     setIsReady(true)
   });
-  useHtml(editor);
+  // useHtml(editor);
   useText(editor);
   useCopyData(editor);
 
