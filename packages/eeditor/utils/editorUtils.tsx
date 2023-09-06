@@ -3,6 +3,7 @@ import {MarkdownDeserializer} from "@editablejs/deserializer/markdown";
 import {MarkdownSerializer} from "@editablejs/serializer/markdown";
 import {Editor} from "@editablejs/models";
 import {TextSerializer} from "@editablejs/serializer/text";
+import {CodeBlock} from "@editablejs/plugins";
 
 export function readCopyText() {
   return readClipboardData()
@@ -40,4 +41,10 @@ export function transformMarkdown2Nodes(markdown, editor) {
 export function transformNodes2Markdown(nodes, editor) {
   const contents = nodes.map(node => MarkdownSerializer.transformWithEditor(editor, node));
   return contents.map(v => MarkdownSerializer.toMarkdownWithEditor(editor, v)).join('\n')
+}
+
+export function getCodeBlockElement(editor){
+  const elements = Editor.elements(editor)
+  const children = elements['codeblock']
+  return children[0][0] as CodeBlock;
 }

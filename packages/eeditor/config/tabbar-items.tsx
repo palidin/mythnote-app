@@ -1,11 +1,10 @@
 import React, {FC, useCallback} from 'react'
 import {Editable, useEditable} from '@editablejs/editor'
-import {Editor, Grid} from '@editablejs/models'
+import {Grid} from '@editablejs/models'
 import {
   AlignEditor,
   BackgroundColorEditor,
   BlockquoteEditor,
-  CodeBlock,
   CodeBlockEditor,
   FontColorEditor,
   FontSizeEditor,
@@ -29,7 +28,7 @@ import {Translation} from 'react-i18next'
 import {languages} from "./codeblock-config";
 import {editorSettings} from "../store";
 import {EMPTY_LINE_WORDS} from "./charlist";
-import {readSelectText} from "../utils/editorUtils";
+import {getCodeBlockElement, readSelectText} from "../utils/editorUtils";
 
 export const AlignDropdown: FC = () => {
   const editor = useEditable()
@@ -216,6 +215,8 @@ export const createToolbarItems = (editor: Editable) => {
       active: CodeBlockEditor.isActive(editor),
       onToggle: () => {
         if (CodeBlockEditor.isActive(editor)) {
+          const element = getCodeBlockElement(editor);
+          CodeBlockEditor.updateCodeBlock(editor, element, {language: editorSettings.defaultLanguage})
           return;
         }
         const code = readSelectText(editor)
@@ -232,10 +233,7 @@ export const createToolbarItems = (editor: Editable) => {
   const isCodeBlock = CodeBlockEditor.isActive(editor);
 
   if (isCodeBlock) {
-    const elements = Editor.elements(editor)
-    const children = elements[CODEBLOCK_KEY]
-    const element = children[0][0] as CodeBlock;
-
+    const element = getCodeBlockElement(editor);
     items.push({
       type: 'dropdown',
       title: <Translation>{t => t('playground.editor.plugin.codeblock-language-type')}</Translation>,
@@ -277,7 +275,7 @@ export const createToolbarItems = (editor: Editable) => {
   }
   return items
 }
-const CODEBLOCK_KEY = 'codeblock'
+
 
 const LinkEnterIcon = React.memo<JSX.IntrinsicElements['svg']>(function IconRss(props) {
   return (

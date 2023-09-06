@@ -15,6 +15,7 @@ import {yaml} from "@codemirror/legacy-modes/mode/yaml";
 import {properties} from "@codemirror/legacy-modes/mode/properties";
 import {standardSQL} from "@codemirror/legacy-modes/mode/sql";
 import {xml} from "@codemirror/legacy-modes/mode/xml";
+import {css} from "@codemirror/legacy-modes/mode/css";
 
 export const languages = [
   {
@@ -85,6 +86,11 @@ export const languages = [
     value: 'sql',
     content: 'SQL',
     plugin: new LanguageSupport(StreamLanguage.define(standardSQL)),
+  },
+  {
+    value: 'css',
+    content: 'Css',
+    plugin: new LanguageSupport(StreamLanguage.define(css)),
   },
   {
     value: 'md',
