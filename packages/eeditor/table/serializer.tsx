@@ -3,36 +3,33 @@ import {Table} from "@editablejs/plugin-table";
 import {HTMLSerializer, HTMLSerializerAttributes, HTMLSerializerStyle} from "@editablejs/serializer/html";
 import {editorSettings} from "../store";
 import {TableEditor} from "@editablejs/plugins";
-import {tableExtendColumn, xtableStarting} from "./c";
+import {xTableColumn, xTableStartWords} from "./embed-table-constant";
 
 
 HTMLSerializer.create = create;
 
 
-// @ts-ignore
-export const aaa: MarkdownSerializerWithTransform = (next,
-                                                     self,
-                                                     editor
+export const withEmbedTableMarkdownSerializerTransform: MarkdownSerializerWithTransform = (
+  next
 ) => {
 
   return (node, options = {}) => {
 
-    if (Table.isTable(node) && node[tableExtendColumn]) {
+    if (Table.isTable(node) && node[xTableColumn]) {
 
       const editor = editorSettings.editorInstance;
 
-      const t = node.children.map(child => HTMLSerializer.transformWithEditor(editor, child)).join('');
-      const tt = xtableStarting + `${t.replaceAll(' colspan="1" rowspan="1"', '')}</table>`
-      const aaa = {
-        type: 'paragraph',
-        children: [{
-          type: 'text',
-          value: tt,
-        }],
-      }
+      const children = node.children.map(child => HTMLSerializer.transformWithEditor(editor, child)).join('');
+      const table = xTableStartWords + `${children.replaceAll(' colspan="1" rowspan="1"', '')}</table>`
 
       return [
-        aaa
+        {
+          type: 'paragraph',
+          children: [{
+            type: 'html',
+            value: table,
+          }],
+        }
       ]
     }
     return next(node, options)

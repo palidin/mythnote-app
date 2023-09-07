@@ -1,17 +1,10 @@
-import {Editable, parseDataTransfer, readClipboardData} from "@editablejs/editor";
+import {Editable, parseDataTransfer} from "@editablejs/editor";
 import {MarkdownDeserializer} from "@editablejs/deserializer/markdown";
 import {MarkdownSerializer} from "@editablejs/serializer/markdown";
 import {Editor, Transforms} from "@editablejs/models";
 import {TextSerializer} from "@editablejs/serializer/text";
 import {CodeBlock} from "@editablejs/plugins";
-import {tableExtendColumn} from "../table/c";
-
-export function readCopyText() {
-  return readClipboardData()
-    .then(clipboardData => {
-      return formatTextFromClipboard(clipboardData);
-    })
-}
+import {xTableColumn} from "../table/embed-table-constant";
 
 export function readSelectText(editor) {
   const elements = Editor.elements(editor)
@@ -69,5 +62,5 @@ export function updateTableElement(editor, element, options) {
 export function isActiveTable(editor) {
   const elements = Editor.elements(editor)
   const children = elements['table']
-  return children[0][0][tableExtendColumn];
+  return children[0][0][xTableColumn];
 }

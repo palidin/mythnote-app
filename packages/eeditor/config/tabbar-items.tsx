@@ -1,8 +1,7 @@
-import React, {FC, useCallback} from 'react'
-import {Editable, useEditable} from '@editablejs/editor'
+import React from 'react'
+import {Editable} from '@editablejs/editor'
 import {Grid} from '@editablejs/models'
 import {
-  AlignEditor,
   BackgroundColorEditor,
   BlockquoteEditor,
   CodeBlockEditor,
@@ -22,35 +21,16 @@ import {
 } from '@editablejs/plugins'
 import {HistoryEditor} from '@editablejs/plugin-history'
 import {ToolbarItem} from '@editablejs/plugin-toolbar'
-import {Icon, IconMap} from '@editablejs/ui'
+import {Icon} from '@editablejs/ui'
 import {Translation} from 'react-i18next'
 
 import {languages} from "./codeblock-config";
 import {editorSettings} from "../store";
-import {EMPTY_LINE_WORDS} from "./charlist";
+import {EMPTY_LINE_WORDS} from "./eeditor-config";
 import {getCodeBlockElement, isActiveTable, readSelectText, updateTableElement} from "../utils/editorUtils";
-import {tableExtendColumn} from "../table/c";
-
-export const AlignDropdown: FC = () => {
-  const editor = useEditable()
-  const getAlign = useCallback(() => {
-    const value = AlignEditor.queryActive(editor)
-    switch (value) {
-      case 'center':
-        return 'alignCenter'
-      case 'right':
-        return 'alignRight'
-      case 'justify':
-        return 'alignJustify'
-    }
-    return 'alignLeft'
-  }, [editor])
-  const name: keyof typeof IconMap = getAlign()
-  return <Icon name={name}/>
-}
+import {xTableColumn} from "../table/embed-table-constant";
 
 const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough', 'code']
-
 
 export const createToolbarItems = (editor: Editable) => {
   const items: ToolbarItem[] = [
@@ -279,8 +259,7 @@ export const createToolbarItems = (editor: Editable) => {
         active: isActiveTable(editor),
         onToggle: () => {
           const grid = Grid.above(editor);
-          const aa = grid[0][tableExtendColumn]
-          updateTableElement(editor, grid[0], {[tableExtendColumn]: !aa})
+          updateTableElement(editor, grid[0], {[xTableColumn]: !grid[0][xTableColumn]})
         },
       },
     )

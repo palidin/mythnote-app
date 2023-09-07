@@ -1,22 +1,17 @@
 import {MarkdownDeserializerWithTransform} from "@editablejs/deserializer/markdown";
 import {editorSettings} from "../store";
 import {HTMLDeserializer} from "@editablejs/deserializer/html";
-import {tableExtendColumn, xtableStarting} from "./c";
+import {xTableColumn, xTableStartWords} from "./embed-table-constant";
 
 
-// @ts-ignore
-export const bbb: MarkdownDeserializerWithTransform = (next, self) => {
+export const withEmbedTableMarkdownDeserializerTransform: MarkdownDeserializerWithTransform = (next, self) => {
   return (node, options = {}) => {
     const {type} = node
-    if (type === 'paragraph') {
-
-      const aa = xtableStarting;
-
-      // @ts-ignore
-      const c = node.children[0].value as string;
+    if (type === 'html') {
+      const c = node.value as string;
       if (c) {
         const editor = editorSettings.editorInstance;
-        if (c.startsWith(aa)) {
+        if (c.startsWith(xTableStartWords)) {
           const domNode = createNode(c);
           const children = []
           for (const child of domNode.childNodes) {
@@ -26,7 +21,7 @@ export const bbb: MarkdownDeserializerWithTransform = (next, self) => {
             {
               type: 'table',
               children: children,
-              [tableExtendColumn]: true,
+              [xTableColumn]: true,
             },
           ]
         }

@@ -14,10 +14,10 @@ import {useIsomorphicLayoutEffect, writeClipboardData} from "@editablejs/editor"
 import {formatTextFromClipboard} from "../utils/editorUtils";
 import {withTextSerializerTransform} from "@editablejs/plugins/serializer/text";
 import {MarkdownSerializer} from "@editablejs/serializer/markdown";
-import {aaa} from "../table/b";
 import {editorSettings} from "../store";
 import {MarkdownDeserializer} from "@editablejs/deserializer/markdown";
-import {bbb} from "../table/a";
+import {withEmbedTableMarkdownSerializerTransform} from "../table/serializer";
+import {withEmbedTableMarkdownDeserializerTransform} from "../table/deserializer";
 
 export function useText(editor) {
   useLayoutEffect(() => {
@@ -41,8 +41,8 @@ export function useMarkdown(editor, fn) {
     withMarkdownDeserializerPlugin(editor)
     withMarkdownDeserializerTransform(editor)
 
-    MarkdownSerializer.withEditor(editor, aaa, {});
-    MarkdownDeserializer.withEditor(editor, bbb, {});
+    MarkdownSerializer.withEditor(editor, withEmbedTableMarkdownSerializerTransform, {});
+    MarkdownDeserializer.withEditor(editor, withEmbedTableMarkdownDeserializerTransform, {});
 
     withHTMLSerializerTransform(editor)
     withHTMLDeserializerTransform(editor)
