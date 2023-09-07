@@ -64,3 +64,17 @@ export function isActiveTable(editor) {
   const children = elements['table']
   return children[0][0][xTableColumn];
 }
+
+export function createHtmlNode(htmlStr) {
+  let div = document.createElement("div");
+  div.innerHTML = htmlStr.trim();
+  return div.childNodes[0];
+}
+
+export function createParagraphWithNodes(nodes) {
+  let div = document.createElement("p");
+  for (const node of nodes) {
+    div.appendChild(node);
+  }
+  return div;
+}

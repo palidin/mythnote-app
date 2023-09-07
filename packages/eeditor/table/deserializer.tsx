@@ -2,6 +2,7 @@ import {MarkdownDeserializerWithTransform} from "@editablejs/deserializer/markdo
 import {editorSettings} from "../store";
 import {HTMLDeserializer} from "@editablejs/deserializer/html";
 import {xTableColumn, xTableStartWords} from "./embed-table-constant";
+import {createHtmlNode} from "../utils/editorUtils";
 
 
 export const withEmbedTableMarkdownDeserializerTransform: MarkdownDeserializerWithTransform = (next, self) => {
@@ -12,7 +13,7 @@ export const withEmbedTableMarkdownDeserializerTransform: MarkdownDeserializerWi
       if (c) {
         const editor = editorSettings.editorInstance;
         if (c.startsWith(xTableStartWords)) {
-          const domNode = createNode(c);
+          const domNode = createHtmlNode(c);
           const children = []
           for (const child of domNode.childNodes) {
             children.push(...(HTMLDeserializer.transformWithEditor(editor, child)));
@@ -31,8 +32,3 @@ export const withEmbedTableMarkdownDeserializerTransform: MarkdownDeserializerWi
   }
 }
 
-function createNode(htmlStr) {
-  var div = document.createElement("div");
-  div.innerHTML = htmlStr.trim();
-  return div.childNodes[0];
-}

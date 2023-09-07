@@ -16,6 +16,7 @@ import {properties} from "@codemirror/legacy-modes/mode/properties";
 import {standardSQL} from "@codemirror/legacy-modes/mode/sql";
 import {xml} from "@codemirror/legacy-modes/mode/xml";
 import {css} from "@codemirror/legacy-modes/mode/css";
+import {dockerFile} from "@codemirror/legacy-modes/mode/dockerfile";
 
 export const languages = [
   {
@@ -116,5 +117,10 @@ export const languages = [
     value: 'go',
     content: 'Golang',
     plugin: new LanguageSupport(StreamLanguage.define(go)),
+  },
+  {
+    value: 'dockerfile',
+    content: 'Docker file',
+    plugin: new LanguageSupport(StreamLanguage.define(dockerFile)),
   },
 ];

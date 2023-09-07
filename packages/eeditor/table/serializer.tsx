@@ -3,7 +3,7 @@ import {Table} from "@editablejs/plugin-table";
 import {HTMLSerializer, HTMLSerializerAttributes, HTMLSerializerStyle} from "@editablejs/serializer/html";
 import {editorSettings} from "../store";
 import {TableEditor} from "@editablejs/plugins";
-import {xTableColumn, xTableStartWords} from "./embed-table-constant";
+import {xEMPTY_TABLE_CELL_WORDS, xTableColumn, xTableStartWords} from "./embed-table-constant";
 
 
 HTMLSerializer.create = create;
@@ -17,10 +17,16 @@ export const withEmbedTableMarkdownSerializerTransform: MarkdownSerializerWithTr
 
     if (Table.isTable(node) && node[xTableColumn]) {
 
+      const regExp = new RegExp('<td>' + xEMPTY_TABLE_CELL_WORDS + '(?!<)', 'g')
+
       const editor = editorSettings.editorInstance;
 
-      const children = node.children.map(child => HTMLSerializer.transformWithEditor(editor, child)).join('');
-      const table = xTableStartWords + `${children.replaceAll(' colspan="1" rowspan="1"', '')}</table>`
+      let children = node.children.map(child => HTMLSerializer.transformWithEditor(editor, child)).join('');
+      children = children.replaceAll(' colspan="1" rowspan="1"', '')
+        .replaceAll('<td >', '<td>')
+        .replace(regExp, '<td>')
+
+      const table = xTableStartWords + children + '</table>'
 
       return [
         {
@@ -45,7 +51,9 @@ function create(
 ) {
   const attributesString = htmlAttributesToString(attributes)
 
-
+  if (!attributesString) {
+    return `<${tag}>${children}</${tag}>`
+  }
   return `<${tag} ${attributesString}>${children}</${tag}>`
 }
 
