@@ -7,9 +7,10 @@ import {sharedVariables} from "../store/globalData";
 import {showConfirmModal, showInputModal} from "../utils/MessageUtils";
 import {MyContextMenu} from "../components/MyContextMenu";
 import {useAppStore, useNoteStore} from "../store/store";
-import {ContentChangeEvent, FileData, NoteChange, NoteItem} from "$source/type/note";
+import {ContentChangeEvent, EditorDataDo, FileData, NoteChange, NoteItem} from "$source/type/note";
 import {MyEditor} from "$source/MyEditor";
 import {MyInput} from "$source/components/MyInput";
+import {useMemoizedFn} from "ahooks";
 
 export function Right() {
 
@@ -19,11 +20,12 @@ export function Right() {
   }
 
   const [currentFile, setCurrentFile] = useState<FileData>(EMPTY_FILE);
-  const [content, setContent] = useState('');
   const itemList = useNoteStore<NoteItem[]>(state => state.itemList)
   const setItemList = useNoteStore(state => state.setItemList)
   const itemIndex = useNoteStore(state => state.itemIndex)
   const searchData = useAppStore(state => state.searchData);
+
+  const [editingData, setEditingData] = useState<EditorDataDo>(null);
 
 
   const path = useMemo(() => {
@@ -42,10 +44,12 @@ export function Right() {
     getPathMatter(path)
       .then((matter) => {
         setCurrentFile(matter)
-        let content = matter.body;
-        setContent(content)
-        sharedVariables.activeFilePath = path;
         sharedVariables.fileDataCache[path] = matter;
+        const content = matter.body;
+        setEditingData({
+          path,
+          content,
+        })
       })
   }, [path]);
 
@@ -67,10 +71,6 @@ export function Right() {
   });
 
   function updateCurrentFile(file: Partial<FileData>, action: NoteChange, save = true) {
-    if (sharedVariables.activeFilePath !== path) {
-      return;
-    }
-
     const filedata = {...currentFile};
     if (action == NoteChange.BODY) {
       filedata.body = file.body;
@@ -116,14 +116,14 @@ export function Right() {
     setCurrentFile({...filedata})
   }
 
-  const updateBody = (event: ContentChangeEvent) => {
+  const updateBody = useMemoizedFn((event: ContentChangeEvent) => {
     if (!event.path) return;
     if (event.path !== path) return;
     let text = event.content;
     updateCurrentFile({
       body: text
     }, NoteChange.BODY)
-  }
+  })
 
   function updateProps(props) {
     updateCurrentFile({
@@ -245,7 +245,7 @@ export function Right() {
         </div>
 
         <div className={"note-content flex-col auto-stretch"}>
-          <MyEditor content={content} updateBody={updateBody} path={path}/>
+          <MyEditor data={editingData} updateBody={updateBody}/>
         </div>
 
       </div>

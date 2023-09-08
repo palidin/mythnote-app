@@ -43,3 +43,13 @@ export enum NoteChange {
   PROPS,
   TITLE,
 }
+
+export interface EditorDataDo {
+  path: string,
+  content: string,
+}
+
+export interface MarkdownEditorDataDo {
+  markdown: string,
+  onUpdate: (md: string) => void,
+}

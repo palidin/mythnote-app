@@ -8,6 +8,9 @@ import {xTableColumn} from "../table/embed-table-constant";
 
 export function readSelectText(editor) {
   const elements = Editor.elements(editor)
+  if (!elements['paragraph']) {
+    return '';
+  }
   const nodes = elements['paragraph'].map(v => v[0]);
   const text = nodes.map(node => TextSerializer.transformWithEditor(editor, node)).join('\n')
   return HTMLDecode(text);

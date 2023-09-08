@@ -1,33 +1,55 @@
-import {useMemoizedFn} from "ahooks";
 import ExEditor from "../packages/eeditor/EditableEditor";
 import React, {useEffect, useState} from "react";
 
 import './MyEditor.scss'
+import {EditorDataDo, MarkdownEditorDataDo} from "$source/type/note";
+import {useUpdateEffect} from "ahooks";
 
 
-export function MyEditor({path, content, updateBody}) {
+interface MyEditorProps {
+  data: EditorDataDo,
+  updateBody
+}
 
-  const onUpdate = useMemoizedFn((value) => {
-    value = value.replace(/(\s*$)/g, "");
-    updateBody({
-      path: path,
-      content: value
-    })
-  });
+export const MyEditor = React.memo(MyEditorInner);
 
-  const [text, setText] = useState(null);
+function MyEditorInner({data, updateBody}: MyEditorProps) {
+
+  const [state, setState] = useState<MarkdownEditorDataDo>(null);
+
+  const [isLoading, setIsLoading] = useState<boolean>(null);
 
   useEffect(() => {
-    setText(null)
-    setTimeout(() => setText(content), 100)
-  }, [content])
+    if (!data) return;
+    setIsLoading(true)
+  }, [data])
 
-  if (text === null) {
+  useUpdateEffect(() => {
+    if (!isLoading) return;
+    const {path, content} = data;
+    const onUpdate = (value) => {
+      value = value.replace(/(\s*$)/g, "");
+      updateBody({
+        path: path,
+        content: value
+      });
+    };
+    setState({
+      markdown: content,
+      onUpdate,
+    })
+
+    setIsLoading(false);
+  }, [isLoading]);
+
+
+  if (isLoading !== false) {
     return <></>;
   }
+
   return (
     <div className={'ax-editor-wrapper'}>
-      <BaseEditor markdown={text} onUpdate={onUpdate}/>
+      <BaseEditor markdown={state.markdown} onUpdate={state.onUpdate}/>
     </div>
   )
 }

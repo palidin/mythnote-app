@@ -4,10 +4,7 @@ export const sharedVariables = {
   contextmenu: null,
   updateTimestamps: {},
 
-
   fileDataCache: {},
-
-  activeFilePath: null,
 
   startIndex: -1,
   tokenRefreshing: false,

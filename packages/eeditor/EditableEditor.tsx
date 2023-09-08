@@ -7,7 +7,7 @@ import {Toolbar, ToolbarComponent, useToolbarEffect} from "@editablejs/plugin-to
 import {createToolbarItems} from "./config/tabbar-items";
 
 import './i18n'
-import {useUpdateEffect} from "ahooks";
+import {useUpdateEffect, useWhyDidYouUpdate} from "ahooks";
 import {languages} from "./config/codeblock-config";
 import {createContextMenuItems} from "./config/context-menu-items";
 import {withHistory} from "@editablejs/plugin-history";

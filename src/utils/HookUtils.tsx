@@ -12,15 +12,7 @@ export function useMount(fn, deps = []) {
   }, deps)
 }
 
-export const useDebounceSingleParameter = (callback, delay = 200) => {
-  const dispatchValue = (value) => callback?.(value)
-
-  const setValueDebounced = useRef(debounce(dispatchValue, delay))
-
-  return (value) => setValueDebounced.current(value)
-}
-
-export const useDebounce = (callback, delay = 800) => {
+export const useDebounce = (callback, delay = 300) => {
   const dispatchValue = (...value) => callback?.(...value)
 
   const setValueDebounced = useRef(debounce(dispatchValue, delay))
