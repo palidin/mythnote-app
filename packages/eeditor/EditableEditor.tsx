@@ -60,7 +60,6 @@ export default function EditableEditor({markdown, onUpdate}) {
   useMarkdown(editor, () => {
     setIsReady(true)
   });
-  // useHtml(editor);
   useText(editor);
   useCopyData(editor);
 
@@ -73,6 +72,9 @@ export default function EditableEditor({markdown, onUpdate}) {
       value = fragment;
     }
 
+    if (value) {
+      onChangeHandler(value)
+    }
     setState({
       initialValue: value,
       isFinished: true,

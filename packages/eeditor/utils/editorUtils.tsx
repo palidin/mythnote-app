@@ -27,7 +27,7 @@ function HTMLDecode(text) {
 }
 
 export function transformMarkdown2Nodes(markdown, editor) {
-  markdown = markdown.replace(/  \n/g, '\n\n')
+  // markdown = markdown.replace(/  \n/g, '\n\n')
   const mdast = MarkdownDeserializer.toMdastWithEditor(editor, markdown)
   return MarkdownDeserializer.transformWithEditor(editor, mdast);
 }

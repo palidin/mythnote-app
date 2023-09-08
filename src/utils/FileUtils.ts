@@ -53,7 +53,11 @@ async function putFileContents(file: WaitingWriteFileData) {
   }
 
   return myAgent.write(file.path, newBody, newData)
-    .then(() => {
+    .then((res) => {
+      if (!res) {
+        alert('保存失败');
+        return Promise.resolve(2);
+      }
       sharedVariables.updateTimestamps[file.path] = file.createTime;
       sharedVariables.fileDataCache[file.path] = {body: newBody, props: newData};
       return Promise.resolve(0);
@@ -70,9 +74,7 @@ export function updateFileBodyWithProps(path: string, body: string, props: objec
     path,
     data: {body, props},
     createTime: new Date().getTime(),
-  })
-    .finally(() => {
-    });
+  });
 }
 
 function getMergedProps(oldAttrs: Record<string, any>, props: Record<string, any>) {
