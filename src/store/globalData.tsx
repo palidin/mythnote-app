@@ -7,6 +7,7 @@ export const sharedVariables = {
 
   fileDataCache: {},
 
+  activeFilePath: null,
 
   startIndex: -1,
   tokenRefreshing: false,

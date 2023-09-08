@@ -44,6 +44,7 @@ export function Right() {
         setCurrentFile(matter)
         let content = matter.body;
         setContent(content)
+        sharedVariables.activeFilePath = path;
         sharedVariables.fileDataCache[path] = matter;
       })
   }, [path]);
@@ -66,6 +67,10 @@ export function Right() {
   });
 
   function updateCurrentFile(file: Partial<FileData>, action: NoteChange, save = true) {
+    if (sharedVariables.activeFilePath !== path) {
+      return;
+    }
+
     const filedata = {...currentFile};
     if (action == NoteChange.BODY) {
       filedata.body = file.body;

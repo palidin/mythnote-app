@@ -273,7 +273,8 @@ function ListItem({index, item, refreshNotes}) {
 
       myAgent.fileDelete(paths, deleted ? 1 : 0)
         .then(() => {
-          refreshNotes();
+          // refreshNotes();
+          alert('删除成功')
         })
     }
 
