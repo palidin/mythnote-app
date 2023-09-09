@@ -5,7 +5,7 @@
 
 
   .ax-editor-wrapper {
-    padding: 0 5px ;
+    padding: 0 5px;
     flex: 1;
 
     line-height: 1.6;
@@ -33,7 +33,7 @@
         box-sizing: content-box;
       }
 
-      &>[role="textbox"]{
+      & > [role="textbox"] {
         box-sizing: border-box;
         padding: 1em 1em 1em 30px;
       }
@@ -46,9 +46,25 @@
   }
 
   // 语言选择
-  .sc-166qp5y-5{
+  .sc-166qp5y-5 {
     overflow-y: auto;
     height: 200px;
   }
 
+  // 行内代码
+  .keiYSq {
+    color: #c7254e;
+    background-color: #f9f2f4;
+    border-radius: 4px;
+  }
+
+  // 超链接
+  //.sc-83nvv9-1 {
+  //  color: rgb(0, 0, 238);
+  //  text-decoration: underline;
+  //}
+
+  button[aria-haspopup="dialog"] {
+    background: none;
+  }
 }
