@@ -3,7 +3,7 @@ import {useAppStore} from "../store/store";
 import {openContextMenu} from "../utils/utils";
 import {MyContextMenu} from "./MyContextMenu";
 import React from "react";
-import {showInputModal} from "../utils/MessageUtils";
+import {showConfirmModal, showInputModal} from "../utils/MessageUtils";
 import {myAgent} from "../agent/agentType";
 
 export function TagFolder({folders, onTagClick, keys = []}) {
@@ -14,6 +14,7 @@ export function TagFolder({folders, onTagClick, keys = []}) {
     if (keys.length == 0) return;
     let items = [
       {'title': '重命名', onClick: () => openAddTagModal(value)},
+      {'title': '删除', onClick: () => openDeleteTagModal(value)},
     ]
     openContextMenu(<MyContextMenu e={e} items={items}></MyContextMenu>)
   }
@@ -22,6 +23,16 @@ export function TagFolder({folders, onTagClick, keys = []}) {
     showInputModal('重命名标签', item.fullname)
       .then(res => {
         return myAgent.categoryRename(item.fullname, res)
+      })
+      .then(() => {
+        location.reload();
+      })
+  }
+
+  function openDeleteTagModal(item) {
+    showConfirmModal(`确认删除标签"${item.fullname}"吗`)
+      .then(() => {
+        return myAgent.categoryDelete(item.fullname)
       })
       .then(() => {
         location.reload();

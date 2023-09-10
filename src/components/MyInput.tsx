@@ -23,7 +23,7 @@ export function MyInput({value = '', onChange, onToggle = null, onSearch = null}
 
   function onKeydownHandler(e) {
     if (e.key === "Enter") {
-      onSearch?.();
+      onSearch?.(tempValue);
     }
   }
 

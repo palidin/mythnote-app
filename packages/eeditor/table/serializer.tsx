@@ -26,7 +26,9 @@ export const withEmbedTableMarkdownSerializerTransform: MarkdownSerializerWithTr
         .replaceAll('<td >', '<td>')
         .replace(regExp, '<td>')
 
-      const table = xTableStartWords + children + '</table>'
+      let table = xTableStartWords + children + '</table>'
+
+      // table = table.replaceAll(EMPTY_LINE_WORDS, xEMPTY_TABLE_CELL_WORDS)
 
       return [
         {

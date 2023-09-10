@@ -4,6 +4,7 @@ import {editorSettings} from "../store";
 import {createParagraphWithNodes} from "../utils/editorUtils";
 import {HTMLSerializerWithTransform} from "@editablejs/serializer/html";
 import {xEMPTY_TABLE_CELL_WORDS} from "./embed-table-constant";
+import {MarkdownSerializerWithTransform} from "@editablejs/serializer/dist/markdown";
 
 export const withTableCellHTMLDeserializerTransform: HTMLDeserializerWithTransform = (next) => {
   return (node, options = {}) => {
@@ -47,6 +48,26 @@ export const withTableCellHTMLSerializerTransform: HTMLSerializerWithTransform =
           {},
           xEMPTY_TABLE_CELL_WORDS,
         )
+      }
+    }
+    return next(node, options)
+  }
+}
+
+export const withTableCellMarkdownSerializerTransform: MarkdownSerializerWithTransform = (next) => {
+  return (node, options = {}) => {
+    if (Element.isElement(node) && node.type === 'table-cell') {
+      // @ts-ignore
+      if (node.children.length == 1 && node.children[0].text === '') {
+        return [
+          {
+            type: 'tableCell',
+            children: [{
+              type: 'text',
+              value: xEMPTY_TABLE_CELL_WORDS,
+            }],
+          }
+        ]
       }
     }
     return next(node, options)

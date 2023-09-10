@@ -42,6 +42,10 @@ export class FakeImpl {
     return sendRequest('/category/rename', {old, 'new': name})
   }
 
+  categoryDelete(name,) {
+    return sendRequest('/category/delete', {name})
+  }
+
   async uploadImage(data: any): Promise<string> {
     let res = await sendRequest('/upload/image', {file: data})
     return res.url;

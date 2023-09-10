@@ -67,4 +67,11 @@
   button[aria-haspopup="dialog"] {
     background: none;
   }
+
+  //// 表格头
+  //.sc-1yra71v-3:first-child {
+  //  font-weight: bold; /*加粗*/
+  //  text-align: center !important; /*内容居中，加上 !important 避免被 Markdown 样式覆盖*/
+  //  //background: rgba(158,188,226,0.2); /*背景色*/
+  //}
 }

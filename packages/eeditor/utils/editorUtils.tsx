@@ -4,7 +4,7 @@ import {MarkdownSerializer} from "@editablejs/serializer/markdown";
 import {Editor, Transforms} from "@editablejs/models";
 import {TextSerializer} from "@editablejs/serializer/text";
 import {CodeBlock} from "@editablejs/plugins";
-import {xTableColumn} from "../table/embed-table-constant";
+import {xEMPTY_TABLE_CELL_WORDS, xTableColumn} from "../table/embed-table-constant";
 
 export function readSelectText(editor) {
   const elements = Editor.elements(editor)
@@ -37,7 +37,14 @@ export function transformMarkdown2Nodes(markdown, editor) {
 
 export function transformNodes2Markdown(nodes, editor) {
   const contents = nodes.map(node => MarkdownSerializer.transformWithEditor(editor, node));
-  return contents.map(v => MarkdownSerializer.toMarkdownWithEditor(editor, v)).join('\n')
+  return contents.map(v => {
+    let line = MarkdownSerializer.toMarkdownWithEditor(editor, v)
+    if (v[0] && v[0].type == 'table') {
+      const regExp = new RegExp(' ' + xEMPTY_TABLE_CELL_WORDS + '([^ ]+)' + ' ', 'g')
+      line = line.replace(regExp, ' $1 ')
+    }
+    return line;
+  }).join('\n')
 }
 
 export function getCodeBlockElement(editor) {

@@ -15,7 +15,11 @@ import {editorSettings} from "../store";
 import {MarkdownDeserializer} from "@editablejs/deserializer/markdown";
 import {withEmbedTableMarkdownSerializerTransform} from "../table/serializer";
 import {withEmbedTableMarkdownDeserializerTransform} from "../table/deserializer";
-import {withTableCellHTMLDeserializerTransform, withTableCellHTMLSerializerTransform} from "../table/table-cell";
+import {
+  withTableCellHTMLDeserializerTransform,
+  withTableCellHTMLSerializerTransform,
+  withTableCellMarkdownSerializerTransform
+} from "../table/table-cell";
 import {HTMLSerializer} from "@editablejs/serializer/html";
 
 export function useText(editor) {
@@ -33,6 +37,7 @@ export function useMarkdown(editor, fn) {
     withMarkdownDeserializerTransform(editor)
 
     MarkdownSerializer.withEditor(editor, withEmbedTableMarkdownSerializerTransform, {});
+    MarkdownSerializer.withEditor(editor, withTableCellMarkdownSerializerTransform, {});
     MarkdownDeserializer.withEditor(editor, withEmbedTableMarkdownDeserializerTransform, {});
 
     withHTMLSerializerTransform(editor)

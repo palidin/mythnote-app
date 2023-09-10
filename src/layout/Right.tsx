@@ -68,6 +68,11 @@ export function Right() {
 
   const saveNoteDelay = useDebounce((currentFile: FileData, path: string) => {
     writeFile(currentFile, path)
+      .then((res) => {
+        if (res === 0) {
+          setCurrentFile({...sharedVariables.fileDataCache[path]})
+        }
+      })
   });
 
   function updateCurrentFile(file: Partial<FileData>, action: NoteChange, save = true) {
@@ -107,13 +112,15 @@ export function Right() {
       filedata.props.tags = [parentTag];
     }
 
-    itemList.splice(itemIndex, 1, {
+    const newFileProps = {
       ...activeItem,
-      title,
-    })
-    setItemList([...itemList])
+      ...filedata.props
+    };
 
-    setCurrentFile({...filedata})
+    setCurrentFile({body: filedata.body, props: newFileProps})
+
+    itemList.splice(itemIndex, 1, newFileProps)
+    setItemList([...itemList])
   }
 
   const updateBody = useMemoizedFn((event: ContentChangeEvent) => {
@@ -205,6 +212,10 @@ export function Right() {
     }
   }
 
+  function onTitleSubmit(title) {
+    updateCurrentFile({props: {title}}, NoteChange.TITLE)
+  }
+
   return (
     <div className="right flex-col">
       <div className={classNames('note-detail flex-col auto-stretch', {'hide': isEmpty})}>
@@ -212,7 +223,7 @@ export function Right() {
         <div className="note-meta-box">
           <div className={"note-title"}>
             <div>
-              <MyInput onChange={onTitleChange} onToggle={setFocusing} value={title}/>
+              <MyInput onChange={onTitleChange} onToggle={setFocusing} onSearch={onTitleSubmit} value={title}/>
             </div>
             <div className={'info allow-copy'}>
               <span>{formatDisplayTime(currentFile.props.modified)}</span>
