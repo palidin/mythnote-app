@@ -113,13 +113,18 @@ export function Right() {
     }
 
     const newFileProps = {
-      ...activeItem,
+      ...activeItem.props,
       ...filedata.props
     };
 
     setCurrentFile({body: filedata.body, props: newFileProps})
 
-    itemList.splice(itemIndex, 1, newFileProps)
+    itemList.splice(itemIndex, 1, {
+      ...activeItem,
+      ['title']: title,
+      props: newFileProps,
+    })
+
     setItemList([...itemList])
   }
 

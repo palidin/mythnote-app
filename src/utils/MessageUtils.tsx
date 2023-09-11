@@ -2,6 +2,7 @@ import {openNewModal} from "./utils";
 import MyControl from "../components/MyControl";
 import {InputModal} from "../components/modal/InputModal";
 import {ConfirmModal} from "../components/modal/ConfirmModal";
+import {toast} from 'react-toastify';
 
 export function showInputModal(title, value = ''): Promise<string> {
   let params: Record<string, any> = {};
@@ -32,4 +33,32 @@ export function showConfirmModal(title) {
       <ConfirmModal title={title}></ConfirmModal>
     </MyControl>)
   })
+}
+
+export function showSuccessMessage(msg) {
+  toast(msg, {
+    position: "top-right",
+    autoClose: 1500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    type: 'success',
+  });
+}
+
+export function showErrorMessage(msg) {
+  toast(msg, {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    type: 'error',
+  });
 }

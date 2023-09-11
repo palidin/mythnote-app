@@ -2,12 +2,12 @@ import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
 import {MySelect} from "../utils/HookUtils";
 import {readOnlineFileFrontMatter, resetSearchCondition, updateSearchPage, writeFile} from "../utils/FileUtils";
-import {delayRun, getUUid, openContextMenu, selectEnd, selectStart} from "../utils/utils";
+import {delayRun, getUUid, openContextMenu, selectEnd, selectSingle, selectStart} from "../utils/utils";
 import {MyContextMenu} from "../components/MyContextMenu";
 import {myAgent} from "../agent/agentType";
 import {sharedVariables} from "../store/globalData";
 import {useAppStore, useNoteStore} from "../store/store";
-import {showConfirmModal} from "../utils/MessageUtils";
+import {showConfirmModal, showInputModal, showSuccessMessage} from "../utils/MessageUtils";
 import {TAG_TRASH} from "../config/app";
 
 import {NoteItem} from "$source/type/note";
@@ -166,7 +166,7 @@ export function Middle() {
       .then(() => {
         myAgent.xxx()
           .then(() => {
-            alert('删除成功');
+            showSuccessMessage('删除成功');
           })
 
       })
@@ -218,8 +218,7 @@ export function Middle() {
       <div className={"list-item-box auto-stretch"}>
         <div className="list-item fill-box" ref={listItemBoxRef}>
           {itemList.map((item, index) => {
-            return <ListItem key={item.path} index={index} item={item}
-                             refreshNotes={refreshNotes}></ListItem>
+            return <ListItem key={item.path} index={index} item={item}></ListItem>
           })}
           {isAtBottom ? '' : <div onClick={() => onClickLoadMore()} className={'load-more'}>加载更多...</div>}
         </div>
@@ -229,7 +228,7 @@ export function Middle() {
   )
 }
 
-function ListItem({index, item, refreshNotes}) {
+function ListItem({index, item}) {
 
   function onClickItem(e, i) {
     if (itemIndex === i) {
@@ -237,6 +236,8 @@ function ListItem({index, item, refreshNotes}) {
     }
     if (e.shiftKey) {
       selectEnd(i)
+    } else if (e.ctrlKey) {
+      selectSingle(i)
     } else {
       selectStart(i)
       useNoteStore.getState().setItemIndex(i);
@@ -258,6 +259,12 @@ function ListItem({index, item, refreshNotes}) {
 
     let items = [
       {'title': '置顶/取消置顶', onClick: () => updateNotePined(value.path, !value.pined)},
+      {'title': '添加标签', onClick: () => addNoteTag(value)},
+      {
+        'title': '打开文件', onClick: () => {
+          window.open("LocalExplorer:" + value.filepath, '_self')
+        }
+      },
     ]
     if (selectIndexes.includes(index)) {
       items.push({'title': deleted ? '删除' : '恢复', onClick: () => deleteSelected(deleted)})
@@ -266,15 +273,13 @@ function ListItem({index, item, refreshNotes}) {
   }
 
   function deleteSelected(deleted) {
-    let indexes = selectIndexes;
+
+    const paths = getSelectedItemPaths();
 
     function handle() {
-      let paths = indexes.map(v => itemList.at(v)).map(v => v.path);
-
       myAgent.fileDelete(paths, deleted ? 1 : 0)
         .then(() => {
-          // refreshNotes();
-          alert('删除成功')
+          showSuccessMessage('删除成功')
         })
     }
 
@@ -304,6 +309,41 @@ function ListItem({index, item, refreshNotes}) {
             useNoteStore.getState().setItemList([...itemList])
           })
       })
+  }
+
+  function addNoteTag(item) {
+    const paths = getSelectedItemPaths();
+
+    showInputModal('批量添加标签', '')
+      .then(tagName => {
+        const ps = [];
+        for (const path of paths) {
+          const p = readOnlineFileFrontMatter(path)
+            .then(matter => {
+              sharedVariables.fileDataCache[path] = matter;
+
+              let tags = matter.props.tags ?? [];
+              tags = [...new Set([...tags, tagName])];
+
+              let props = {
+                ...matter.props,
+                tags,
+              };
+              writeFile({props, body: matter.body}, path)
+            })
+          ps.push(p)
+        }
+
+        Promise.all(ps)
+          .then(res => {
+            showSuccessMessage('操作成功');
+          })
+      })
+
+  }
+
+  function getSelectedItemPaths() {
+    return selectIndexes.map(v => itemList.at(v)).map(v => v.path);
   }
 
   const itemList = useNoteStore(state => state.itemList)

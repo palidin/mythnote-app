@@ -4,19 +4,13 @@ import {myAgent} from "../agent/agentType";
 import {useAppStore} from "../store/store";
 
 import {FileData, WaitingWriteFileData} from "$source/type/note";
+import {showErrorMessage} from "$source/utils/MessageUtils";
 
 
 function getNowDateString() {
   return moment().format();
 }
 
-export function diffSecondsFromNow(target: string) {
-
-  let now = new Date().getTime();
-  let timestamps = moment(target).toDate().getTime();
-  let diff = now - timestamps;
-  return Math.floor(diff / 1000);
-}
 
 function toHash(obj) {
   return JSON.stringify(obj);
@@ -42,7 +36,7 @@ async function putFileContents(file: WaitingWriteFileData) {
   let newData = getMergedProps(fileMatter.props, props);
   let newBody = body ?? fileMatter.body;
 
-  if (isTextEquals(fileMatter.body, newBody) && isPropsEquals(newData, fileMatter.props)) {
+  if (isTextEquals(fileMatter.body, newBody) && isPropsEquals(fileMatter.props, newData)) {
     return Promise.resolve(1);
   }
 
@@ -55,7 +49,7 @@ async function putFileContents(file: WaitingWriteFileData) {
   return myAgent.write(file.path, newBody, newData)
     .then((res) => {
       if (!res) {
-        alert('保存失败');
+        showErrorMessage('保存失败');
         return Promise.resolve(2);
       }
       sharedVariables.updateTimestamps[file.path] = file.createTime;
@@ -63,7 +57,7 @@ async function putFileContents(file: WaitingWriteFileData) {
       return Promise.resolve(0);
     })
     .catch(e => {
-      return Promise.reject(e);
+      showErrorMessage('发生了错误: ' + e.toString());
     })
 }
 
@@ -112,13 +106,6 @@ export function resetSearchCondition(obj) {
     ...prev,
     ...obj,
     page
-  }));
-}
-
-export function updateKeywords(keywords) {
-  useAppStore.getState().setSearchData(prev => ({
-    ...prev,
-    keywords,
   }));
 }
 

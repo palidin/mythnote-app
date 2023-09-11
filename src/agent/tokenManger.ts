@@ -1,6 +1,7 @@
 import {myAgent} from "./agentType";
 import {delayRun} from "../utils/utils";
 import {sharedVariables} from "../store/globalData";
+import {showErrorMessage} from "$source/utils/MessageUtils";
 
 class TokenManger {
   getToken() {
@@ -16,7 +17,7 @@ class TokenManger {
       .then(res => {
         localStorage.setItem('token', res.access_token);
       })
-      .catch(e => alert('登录失败'))
+      .catch(e => showErrorMessage('登录失败'))
       .finally(() => {
         sharedVariables.tokenRefreshing = false;
       })

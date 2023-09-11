@@ -1,6 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
 import * as debounce1 from "lodash/debounce";
-import * as throttle1 from "lodash/throttle";
 import * as ReactDOM from "react-dom/client";
 import {sharedVariables} from "../store/globalData";
 import moment from "moment";
@@ -80,6 +79,18 @@ export function selectStart(i) {
   sharedVariables.startIndex = i;
 
   useAppStore.getState().setSelectIndexes([i]);
+}
+
+export function selectSingle(i) {
+  const indexes = useAppStore.getState().selectIndexes;
+  if (indexes.length > 0) {
+    const pureIndexes = indexes.filter(v => v !== i);
+    if (pureIndexes.length === indexes.length) {
+      useAppStore.getState().setSelectIndexes([...new Set([...pureIndexes, i])]);
+    } else {
+      useAppStore.getState().setSelectIndexes([...pureIndexes]);
+    }
+  }
 }
 
 export function selectEnd(i) {
