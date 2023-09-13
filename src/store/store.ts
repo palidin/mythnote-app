@@ -18,8 +18,5 @@ export const useAppStore = createMyStore({
 export const useNoteStore = createMyStore({
   itemList: [],
   itemIndex: -1,
-})
-
-export const useEditorStore = createMyStore({
-  sourceEditing: false,
+  seed: null,
 })

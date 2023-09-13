@@ -1,7 +1,7 @@
 import moment from "moment";
 import {sharedVariables} from "../store/globalData";
 import {myAgent} from "../agent/agentType";
-import {useAppStore} from "../store/store";
+import {useAppStore, useNoteStore} from "../store/store";
 
 import {FileData, WaitingWriteFileData} from "$source/type/note";
 import {showErrorMessage} from "$source/utils/MessageUtils";
@@ -27,14 +27,18 @@ function isTextEquals(left, right) {
 async function putFileContents(file: WaitingWriteFileData) {
   let lastUpdateTime = sharedVariables.updateTimestamps[file.path];
   if (lastUpdateTime && lastUpdateTime > file.createTime) { // 文件已过期
-    return Promise.resolve(3);
+    return Promise.resolve(-1);
   }
 
   let fileMatter = readFileFrontMatter(file.path);
+  if (!fileMatter) {
+    return Promise.resolve(-2);
+  }
 
   let {props, body} = file.data;
   let newData = getMergedProps(fileMatter.props, props);
   let newBody = body ?? fileMatter.body;
+
 
   if (isTextEquals(fileMatter.body, newBody) && isPropsEquals(fileMatter.props, newData)) {
     return Promise.resolve(1);
@@ -50,7 +54,7 @@ async function putFileContents(file: WaitingWriteFileData) {
     .then((res) => {
       if (!res) {
         showErrorMessage('保存失败');
-        return Promise.resolve(2);
+        return Promise.resolve(-3);
       }
       sharedVariables.updateTimestamps[file.path] = file.createTime;
       sharedVariables.fileDataCache[file.path] = {body: newBody, props: newData};

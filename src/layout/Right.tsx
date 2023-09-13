@@ -1,16 +1,15 @@
 import classNames from "classnames";
-import {formatDisplayTime, openContextMenu, substrTitle} from "../utils/utils";
+import {formatDisplayTime, openContextMenu, saveFile} from "../utils/utils";
 import React, {useEffect, useMemo, useState} from "react";
-import {readOnlineFileFrontMatter, writeFile} from "../utils/FileUtils";
-import {useDebounce} from "../utils/HookUtils";
+import {readOnlineFileFrontMatter} from "../utils/FileUtils";
 import {sharedVariables} from "../store/globalData";
-import {showConfirmModal, showInputModal} from "../utils/MessageUtils";
+import {showConfirmModal, showInputModal, showSuccessMessage} from "../utils/MessageUtils";
 import {MyContextMenu} from "../components/MyContextMenu";
 import {useAppStore, useNoteStore} from "../store/store";
 import {ContentChangeEvent, EditorDataDo, FileData, NoteChange, NoteItem} from "$source/type/note";
 import {MyEditor} from "$source/MyEditor";
 import {MyInput} from "$source/components/MyInput";
-import {useMemoizedFn} from "ahooks";
+import {useDebounceFn, useMemoizedFn} from "ahooks";
 
 export function Right() {
 
@@ -21,7 +20,7 @@ export function Right() {
 
   const [currentFile, setCurrentFile] = useState<FileData>(EMPTY_FILE);
   const itemList = useNoteStore<NoteItem[]>(state => state.itemList)
-  const setItemList = useNoteStore(state => state.setItemList)
+  const seed = useNoteStore(state => state.seed)
   const itemIndex = useNoteStore(state => state.itemIndex)
   const searchData = useAppStore(state => state.searchData);
 
@@ -50,8 +49,15 @@ export function Right() {
           path,
           content,
         })
+        setTitle(matter.props.title)
       })
   }, [path]);
+
+  useEffect(() => {
+    if (path !== sharedVariables.lastEditingFile.path) return;
+    const lastUpdateFile = sharedVariables.fileDataCache[path];
+    setCurrentFile(lastUpdateFile);
+  }, [seed])
 
 
   function getPathMatter(path) {
@@ -66,66 +72,33 @@ export function Right() {
     return readOnlineFileFrontMatter(path);
   }
 
-  const saveNoteDelay = useDebounce((currentFile: FileData, path: string) => {
-    writeFile(currentFile, path)
-      .then((res) => {
-        if (res === 0) {
-          setCurrentFile({...sharedVariables.fileDataCache[path]})
-        }
-      })
+
+  const {run: saveNoteDelay} = useDebounceFn(saveFile, {
+    wait: 300,
   });
 
-  function updateCurrentFile(file: Partial<FileData>, action: NoteChange, save = true) {
+  function updateCurrentFile(file: Partial<FileData>, action: NoteChange, save = true, sync = false) {
     const filedata = {...currentFile};
     if (action == NoteChange.BODY) {
       filedata.body = file.body;
     } else {
-      filedata.props = {...file.props};
+      filedata.props = {...filedata.props, ...file.props};
     }
+    setCurrentFile({...filedata})
 
-    updatePropsSync(filedata);
+    sharedVariables.lastEditingFile = {
+      path,
+      fileData: filedata,
+    }
 
     if (save) {
-      saveNoteDelay(filedata, path);
-    }
-  }
-
-  function updatePropsSync(filedata: FileData) {
-    let activeIndex = itemList.findIndex(v => v.path == path);
-    let activeItem = itemList[activeIndex];
-    if (!activeItem) {
-      return;
+      if (sync) {
+        return saveFile(filedata, path)
+      } else {
+        saveNoteDelay(filedata, path);
+      }
     }
 
-    let parentTag = useAppStore.getState().searchData.folder;
-    let isNew = activeItem.isNew;
-
-    let title = filedata.props.title;
-    let substringTitle = substrTitle(filedata.body);
-
-    if (!title) {
-      title = substringTitle;
-    }
-
-    filedata.props.title = title;
-    if (isNew && parentTag) {
-      filedata.props.tags = [parentTag];
-    }
-
-    const newFileProps = {
-      ...activeItem.props,
-      ...filedata.props
-    };
-
-    setCurrentFile({body: filedata.body, props: newFileProps})
-
-    itemList.splice(itemIndex, 1, {
-      ...activeItem,
-      ['title']: title,
-      props: newFileProps,
-    })
-
-    setItemList([...itemList])
   }
 
   const updateBody = useMemoizedFn((event: ContentChangeEvent) => {
@@ -138,12 +111,12 @@ export function Right() {
   })
 
   function updateProps(props) {
-    updateCurrentFile({
+    return updateCurrentFile({
       props: {
         ...currentFile.props,
         ...props
       }
-    }, NoteChange.PROPS)
+    }, NoteChange.PROPS, true, true)
   }
 
   function openAddTagModal() {
@@ -153,6 +126,10 @@ export function Right() {
         if (!tags.includes(res)) {
           tags = [...tags, res]
           updateProps({tags})
+            .then((res) => {
+              if (res) return;
+              showSuccessMessage('添加成功')
+            })
         }
       })
   }
@@ -163,6 +140,10 @@ export function Right() {
         let tags = currentFile.props.tags ?? [];
         tags = tags.filter(v => v !== tag)
         updateProps({tags})
+          .then((res) => {
+            if (res) return;
+            showSuccessMessage('删除成功')
+          })
       })
   }
 
@@ -175,6 +156,10 @@ export function Right() {
         if (!tags.includes(res)) {
           tags = [...tags, res]
           updateProps({tags})
+            .then((res) => {
+              if (res) return;
+              showSuccessMessage('修改成功')
+            })
         }
       })
   }
@@ -194,31 +179,19 @@ export function Right() {
 
   const [title, setTitle] = useState('');
 
-  const currentItem = useMemo(() => {
-    return itemList[itemIndex];
-  }, [itemList, itemIndex]);
-
-  useEffect(() => {
-    setTitle(currentItem?.title)
-  }, [currentItem])
-
   useEffect(() => {
     if (!focusing) {
-      onTitleChange(title)
+      onTitleSubmit(title)
     }
   }, [focusing])
 
   function onTitleChange(title) {
-    if (!currentItem) return;
-    if (focusing || (currentItem && currentItem.isNew)) {
-      updateCurrentFile({props: {title}}, NoteChange.TITLE, false)
-    } else {
-      updateCurrentFile({props: {title}}, NoteChange.TITLE)
-    }
+    setTitle(title)
   }
 
   function onTitleSubmit(title) {
-    updateCurrentFile({props: {title}}, NoteChange.TITLE)
+    onTitleChange(title)
+    updateCurrentFile({props: {title}}, NoteChange.TITLE, true, true)
   }
 
   return (

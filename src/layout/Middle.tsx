@@ -2,7 +2,16 @@ import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
 import {MySelect} from "../utils/HookUtils";
 import {readOnlineFileFrontMatter, resetSearchCondition, updateSearchPage, writeFile} from "../utils/FileUtils";
-import {delayRun, getUUid, openContextMenu, selectEnd, selectSingle, selectStart} from "../utils/utils";
+import {
+  delayRun,
+  getUUid,
+  openContextMenu,
+  saveFile,
+  selectEnd,
+  selectSingle,
+  selectStart,
+  substrTitle
+} from "../utils/utils";
 import {MyContextMenu} from "../components/MyContextMenu";
 import {myAgent} from "../agent/agentType";
 import {sharedVariables} from "../store/globalData";
@@ -239,6 +248,16 @@ function ListItem({index, item}) {
     } else if (e.ctrlKey) {
       selectSingle(i)
     } else {
+
+      const lastEditingFile = sharedVariables.lastEditingFile;
+      if (lastEditingFile.path) {
+        const currentFile = lastEditingFile.fileData;
+        if (!currentFile.props.title) {
+          currentFile.props.title = substrTitle(currentFile.body)
+        }
+        saveFile(currentFile, lastEditingFile.path)
+      }
+
       selectStart(i)
       useNoteStore.getState().setItemIndex(i);
     }

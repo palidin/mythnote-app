@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
-import {checkStatusTask, debounce, isCopyable, selectStart} from "./utils";
-import {useAppStore, useNoteStore} from "$source/store/store";
+import {selectStart} from "./utils";
+import {useNoteStore} from "$source/store/store";
 
 export function useMount(fn, deps = []) {
   const ref = useRef(false);
@@ -11,14 +11,6 @@ export function useMount(fn, deps = []) {
     ref.current = true;
     return fn();
   }, deps)
-}
-
-export const useDebounce = (callback, delay = 300) => {
-  const dispatchValue = (...value) => callback?.(...value)
-
-  const setValueDebounced = useRef(debounce(dispatchValue, delay))
-
-  return (...value) => setValueDebounced.current(...value)
 }
 
 export const useAutoFocusInput = () => {
@@ -47,8 +39,7 @@ export function MySelect({columns, onChange, value}) {
 }
 
 
-export function useHotkeyMove()
-{
+export function useHotkeyMove() {
   function onKeydown(e) {
     let activeElement = document.activeElement;
 

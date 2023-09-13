@@ -1,14 +1,11 @@
 import {v4 as uuidv4} from 'uuid';
-import * as debounce1 from "lodash/debounce";
 import * as ReactDOM from "react-dom/client";
 import {sharedVariables} from "../store/globalData";
 import moment from "moment";
-import {useAppStore} from "../store/store";
+import {useAppStore, useNoteStore} from "../store/store";
 import {myAgent} from "../agent/agentType";
-
-export function debounce(fn, wait) {
-  return debounce1(fn, wait);
-}
+import {FileData} from "$source/type/note";
+import {writeFile} from "$source/utils/FileUtils";
 
 export function isRemoteUrl(url) {
   return url && url.startsWith('http');
@@ -53,25 +50,17 @@ export function openContextMenu(component) {
 }
 
 export function formatDisplayTime(time: string) {
+  if (!time) {
+    return '';
+  }
   let fmt = 'YYYY/MM/DD HH:mm:ss'
   return moment(time).format(fmt);
 }
 
-export function deepCopy(obj) {
-  return JSON.parse(JSON.stringify(obj));
-}
-
 export function substrTitle(body) {
-  let text = body.substring(0, 30)
-
-  let items = text.split("\n")
-  for (const item of items) {
-    if (!item.match(/^\s*$/)) {
-      return item;
-    }
-  }
-
-  return text;
+  body = body ?? '';
+  let items = body.split("\n")
+  return items[0].substring(0, 30);
 }
 
 
@@ -148,4 +137,32 @@ export function isCopyable(e: any) {
     }
   }
   return false;
+}
+
+export function saveFile(currentFile: FileData, path: string) {
+  if (!currentFile.props.created && (!currentFile.props.title || !currentFile.body)) {
+    return Promise.resolve(1)
+  }
+  return writeFile(currentFile, path)
+    .then((res) => {
+      if (res === 0) {
+
+        const list = useNoteStore.getState().itemList;
+        const index = list.findIndex(v => v.path == path);
+        if (index > -1) {
+          list[index] = {
+            ...list[index],
+            props: currentFile.props,
+            title: currentFile.props.title,
+            isNew: false,
+          }
+          useNoteStore.getState().setItemList([...list])
+          useNoteStore.getState().setSeed(Math.random())
+        }
+
+        return Promise.resolve(0)
+      }
+
+      return Promise.resolve(res)
+    })
 }

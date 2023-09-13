@@ -41,9 +41,8 @@ export function showSuccessMessage(msg) {
     autoClose: 1500,
     hideProgressBar: true,
     closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
+    pauseOnHover: false,
+    draggable: false,
     theme: "colored",
     type: 'success',
   });
@@ -52,12 +51,11 @@ export function showSuccessMessage(msg) {
 export function showErrorMessage(msg) {
   toast(msg, {
     position: "top-right",
-    autoClose: 3000,
+    autoClose: 2000,
     hideProgressBar: true,
     closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
+    pauseOnHover: false,
+    draggable: false,
     theme: "colored",
     type: 'error',
   });
