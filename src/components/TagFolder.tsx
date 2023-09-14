@@ -52,11 +52,14 @@ export function TagFolder({folders, onTagClick, keys = []}) {
           })}>
             <div
               onContextMenu={(e) => openFileManageContextMenu(e, v)}
-              className='name text-title'
+              className='name text-title flex-row align-center'
               title={v.name}
               onClick={() => onTagClick(v.fullname, [...keys, k])}>
-              <span>{v.name} </span>
-              <i className="icon fa-solid fa-chevron-right hide"></i>
+              <div>{v.name}</div>
+              <div className="icon-box flex-row align-center"><i className="icon fa-solid fa-chevron-right hide"></i></div>
+              {keys.length == 0 && (
+                <div className='count-text'>({v.count})</div>
+              )}
             </div>
             {v.children && v.children.length && v.expand ?
               <TagFolder folders={v.children} onTagClick={onTagClick}

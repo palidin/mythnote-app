@@ -195,7 +195,7 @@ export function Right() {
   }
 
   return (
-    <div className="right flex-col">
+    <div className="right flex-col auto-stretch">
       <div className={classNames('note-detail flex-col auto-stretch', {'hide': isEmpty})}>
 
         <div className="note-meta-box">

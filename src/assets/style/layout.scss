@@ -16,11 +16,16 @@
   align-items: end;
 }
 
+.justify-between {
+  justify-content: space-between;
+}
+
 .auto-stretch {
   flex: 1;
 }
 
 $bg-color: hsl(0deg 0% 98%);
+$a-text-color: rgba(255, 255, 255, 0.75);
 
 %active-style {
   background: rgba(0, 0, 0, 0.2);
@@ -34,6 +39,16 @@ $bg-color: hsl(0deg 0% 98%);
   overflow: hidden;
   display: flex;
   user-select: none;
+
+  .divide-line {
+    width: 2px;
+    background: rgba(0, 0, 0, 0);
+
+    &:hover {
+      cursor: col-resize;
+    }
+  }
+
 
   .left {
     width: 15%;
@@ -75,7 +90,7 @@ $bg-color: hsl(0deg 0% 98%);
 
         &.folder {
           & > .name .icon {
-            color: rgba(255, 255, 255, 0.3);
+            color: $a-text-color;
             font-size: 0.5em;
             display: inline-block;
           }
@@ -100,9 +115,15 @@ $bg-color: hsl(0deg 0% 98%);
       height: fit-content;
     }
 
-    .order-wrapper {
-      height: fit-content;
-      justify-content: space-between;
+    .aaaa-x-box {
+      .stats-wrapper {
+        font-size: 13px;
+      }
+
+      .order-wrapper {
+        gap: 3px;
+      }
+
     }
 
     .list-item-box {
@@ -178,6 +199,27 @@ $bg-color: hsl(0deg 0% 98%);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  .icon-box {
+    .icon {
+      height: 2em;
+      width: 2em;
+      position: relative;
+
+      &::before {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+      }
+    }
+  }
+
+  .count-text {
+    font-size: 0.75em;
+    padding: 5px;
+    color: $a-text-color;
+  }
 }
 
 

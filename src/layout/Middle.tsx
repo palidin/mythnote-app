@@ -74,6 +74,8 @@ export function Middle() {
 
         setIsFetching(false);
 
+        setTotalQuantity(res.total)
+
         if (!isAtBottom) {
           delayRun(100)
             .then(() => {
@@ -104,10 +106,6 @@ export function Middle() {
   }, {
     wait: 1000,
   });
-
-  function refreshNotes() {
-    resetSearchCondition({})
-  }
 
   function onClickLoadMore(isForce = false) {
     if (!isForce && isAtBottom) {
@@ -203,6 +201,8 @@ export function Middle() {
     }
   }, [orderColumn, orderDirection])
 
+  const [totalQuantity, setTotalQuantity] = useState(0);
+
 
   return (
     <div className={"middle flex-col"}>
@@ -215,14 +215,24 @@ export function Middle() {
           : ''}
       </div>
 
-      <div className="order-wrapper flex-row">
-        <div className="order-wrapper-left">
-          <MySelect value={orderColumn} onChange={onChangeOrderColumn} columns={['modified', 'created', 'title']}/>
+
+      <div className={'aaaa-x-box flex-row align-center justify-between'}>
+
+        <div className={'flex-row stats-wrapper'}>
+          {totalQuantity}条笔记
         </div>
-        <div className="order-wrapper-left">
-          <MySelect value={orderDirection} onChange={onChangeOrderDirection} columns={['desc', 'asc']}/>
+
+        <div className="order-wrapper flex-row">
+          <div>
+            <MySelect value={orderColumn} onChange={onChangeOrderColumn} columns={['modified', 'created', 'title']}/>
+          </div>
+          <div>
+            <MySelect value={orderDirection} onChange={onChangeOrderDirection} columns={['desc', 'asc']}/>
+          </div>
         </div>
+
       </div>
+
 
       <div className={"list-item-box auto-stretch"}>
         <div className="list-item fill-box" ref={listItemBoxRef}>
