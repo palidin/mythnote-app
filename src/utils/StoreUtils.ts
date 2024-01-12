@@ -16,7 +16,7 @@ export const createMyStore = <T extends object>(initData: T, saveKey: string = n
   // @ts-ignore
   return create<T & AddSetterToObject<T>>(persist(createStoreFn(initData), {
     name: 'zustand:' + saveKey,
-    storage: createJSONStorage(() => sessionStorage),
+    storage: createJSONStorage(() => localStorage),
   }))
 }
 

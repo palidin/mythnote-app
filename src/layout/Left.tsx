@@ -6,6 +6,7 @@ import {myAgent} from "../agent/agentType";
 import {checkStatusTask, delayRun} from "../utils/utils";
 import {showConfirmModal} from "../utils/MessageUtils";
 import {resetSearchCondition} from "$source/utils/FileUtils";
+import {tokenManger} from "$source/agent/tokenManger";
 
 export function Left() {
 
@@ -65,13 +66,18 @@ export function Left() {
       .then(() => checkStatus())
   }
 
+  function logout() {
+    tokenManger.clearToken();
+  }
+
 
   return (
     <div className={"left"}>
       <TagFolder folders={folders} onTagClick={onTagClick}></TagFolder>
 
-      <div className='operation-bar'>
+      <div className='operation-bar flex-col'>
         <button onClick={cleanup}>清空缓存</button>
+        <button onClick={logout}>退出登录</button>
       </div>
     </div>
   );

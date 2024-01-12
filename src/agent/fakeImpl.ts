@@ -125,16 +125,8 @@ function sendRequest(path: string, params, withToken = true): any {
         }
 
         if (data.status == 401) {
-          return tokenManger.refreshToken()
-            .then(() => {
-              return tokenManger.tokenTaskLoop()
-            })
-            .then(() => {
-              return sendRequest(path, params)
-            })
-            .then((proxyData) => {
-              resolve(proxyData)
-            })
+          reject('登录状态已失效')
+          tokenManger.clearToken();
         }
         if (data.status !== 0) {
           reject(data.msg)

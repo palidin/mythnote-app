@@ -1,9 +1,10 @@
-import ExEditor from "../packages/eeditor/EditableEditor";
 import React, {useEffect, useState} from "react";
 
 import './MyEditor.scss'
 import {EditorDataDo, MarkdownEditorDataDo} from "$source/type/note";
 import {useUpdateEffect} from "ahooks";
+
+const ExEditor = React.lazy(() => import("../packages/eeditor/EditableEditor"))
 
 
 interface MyEditorProps {

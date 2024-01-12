@@ -1,18 +1,24 @@
 import './assets/style/layout.scss';
-import React, {useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import './assets/style/contextmenu.css'
 import {useHotkeyMove, useMount} from "./utils/HookUtils";
 import {Left} from "$source/layout/Left";
 import {Middle} from "$source/layout/Middle";
 import {Right} from "$source/layout/Right";
-import {useAppStore} from "./store/store";
+import {useAppStore, useTokenStore} from "./store/store";
 import {checkStatusTask, isCopyable} from "./utils/utils";
 
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {LoginModal} from "$source/components/LoginModal";
 
 
 export function Layout() {
+
+
+  const dataRebuilding = useAppStore(state => state.dataRebuilding)
+  const token = useTokenStore(state => state.token)
+
 
   useMount(() => {
     document.oncontextmenu = (e) => {
@@ -20,18 +26,30 @@ export function Layout() {
         return false;
       }
     }
+  })
 
+  useEffect(() => {
+    if(!token){
+      return;
+    }
     checkStatusTask()
       .then((ok) => {
         if (ok) {
           useAppStore.getState().setDataRebuilding(false);
         }
       })
-  })
+  }, [token]);
 
   useHotkeyMove();
 
-  const dataRebuilding = useAppStore(state => state.dataRebuilding)
+  if (!token) {
+    return (
+      <div className={'login-modal-box'}>
+        <ToastContainer/>
+        <LoginModal />
+      </div>
+    )
+  }
 
   if (dataRebuilding) {
     return <div>数据索引中...</div>;

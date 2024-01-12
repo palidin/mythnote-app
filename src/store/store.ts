@@ -15,6 +15,12 @@ export const useAppStore = createMyStore({
   },
 })
 
+
+export const useTokenStore = createMyStore({
+  token: '',
+}, 'token')
+
+
 export const useNoteStore = createMyStore({
   itemList: [],
   itemIndex: -1,
