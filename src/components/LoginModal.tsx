@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {myAgent} from "$source/agent/agentType";
 import {useTokenStore} from "$source/store/store";
-import {showErrorMessage} from "$source/utils/MessageUtils";
+import {showErrorMessage, showSuccessMessage} from "$source/utils/MessageUtils";
 
 import './LoginModal.scss';
 
@@ -15,7 +15,11 @@ export function LoginModal() {
 
     myAgent.login(username, password)
       .then(res => {
-        useTokenStore.getState().setToken(res.access_token);
+        showSuccessMessage('登录成功')
+
+        setTimeout(() => {
+          useTokenStore.getState().setToken(res.access_token);
+        }, 500)
       })
       .catch(e => {
         showErrorMessage(e)
@@ -24,31 +28,18 @@ export function LoginModal() {
 
   return (
 
-      <div>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email">用户名:</label>
-            <input
-              type="username"
-              id="email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="password">密码:</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div>
-            <button type="submit">登录</button>
-          </div>
-        </form>
-      </div>
+    <div className="container">
+      <label htmlFor="uname"><b>用户名</b></label>
+      <form onSubmit={handleSubmit}>
+        <input type="text" placeholder="输入用户名" name="uname" onChange={e => setUsername(e.target.value)} required/>
+
+        <label htmlFor="psw"><b>密码</b></label>
+        <input type="password" placeholder="输入密码" name="psw" onChange={e => setPassword(e.target.value)} required/>
+
+        <button type="submit">登录</button>
+      </form>
+
+    </div>
 
   );
 }

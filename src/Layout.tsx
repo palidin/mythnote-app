@@ -1,5 +1,5 @@
 import './assets/style/layout.scss';
-import React, {useEffect, useRef} from "react";
+import React, {useCallback, useEffect, useRef} from "react";
 import './assets/style/contextmenu.css'
 import {useHotkeyMove, useMount} from "./utils/HookUtils";
 import {Left} from "$source/layout/Left";
@@ -29,7 +29,7 @@ export function Layout() {
   })
 
   useEffect(() => {
-    if(!token){
+    if (!token) {
       return;
     }
     checkStatusTask()
@@ -42,31 +42,40 @@ export function Layout() {
 
   useHotkeyMove();
 
-  if (!token) {
+  const Page = useCallback(() => {
+
+    if (!token) {
+      return (
+        <div className={'login-modal-box flex-col align-center'}>
+          <LoginModal/>
+        </div>
+      )
+    }
+
+    if (dataRebuilding) {
+      return <div>数据索引中...</div>;
+    }
+
     return (
-      <div className={'login-modal-box'}>
-        <ToastContainer/>
-        <LoginModal />
+      <div className={"layout flex-row"}>
+        <Left/>
+        <DivideLine/>
+        <Middle/>
+        <DivideLine/>
+
+        <Right/>
+        <div id={'popup'}></div>
+        <div id={'contextmenu'}></div>
       </div>
     )
-  }
+  }, [token, dataRebuilding]);
 
-  if (dataRebuilding) {
-    return <div>数据索引中...</div>;
-  }
 
   return (
-    <div className={"layout flex-row"}>
+    <>
       <ToastContainer/>
-      <Left/>
-      <DivideLine/>
-      <Middle/>
-      <DivideLine/>
-
-      <Right/>
-      <div id={'popup'}></div>
-      <div id={'contextmenu'}></div>
-    </div>
+      <Page/>
+    </>
   )
 }
 
