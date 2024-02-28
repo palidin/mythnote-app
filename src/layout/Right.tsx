@@ -204,7 +204,7 @@ export function Right() {
             <div>
               <MyInput onChange={onTitleChange} onToggle={setFocusing} onSearch={onTitleSubmit} value={title}/>
             </div>
-            <div className={'info allow-copy'}>
+            <div className={'info allow-copy flex-row'}>
               <span>{formatDisplayTime(currentFile.props.modified)}</span>
               <span>{path}</span>
               <span>{formatDisplayTime(currentFile.props.created)}</span>

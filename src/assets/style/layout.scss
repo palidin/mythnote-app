@@ -164,10 +164,9 @@ $a-text-color: rgba(255, 255, 255, 0.75);
 
       .note-title {
         .info {
-          display: flex;
-
+          gap: 5px;
           span {
-            padding: 5px;
+            padding-top: 10px;
           }
         }
       }

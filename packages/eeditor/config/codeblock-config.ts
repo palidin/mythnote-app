@@ -17,7 +17,7 @@ import {standardSQL} from "@codemirror/legacy-modes/mode/sql";
 import {xml} from "@codemirror/legacy-modes/mode/xml";
 import {css} from "@codemirror/legacy-modes/mode/css";
 import {dockerFile} from "@codemirror/legacy-modes/mode/dockerfile";
-import {csharp} from "@codemirror/legacy-modes/mode/clike";
+import {csharpLanguage} from "@replit/codemirror-lang-csharp";
 
 export const languages = [
   {
@@ -40,7 +40,7 @@ export const languages = [
   {
     value: 'csharp',
     content: 'C#',
-    plugin: new LanguageSupport(StreamLanguage.define(csharp)),
+    plugin: csharpLanguage,
   },
   {
     value: 'cpp',
