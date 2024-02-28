@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React, {useEffect, useRef, useState} from "react";
 import {MySelect} from "../utils/HookUtils";
 import {readOnlineFileFrontMatter, resetSearchCondition, updateSearchPage, writeFile} from "../utils/FileUtils";
@@ -16,12 +15,19 @@ import {MyContextMenu} from "../components/MyContextMenu";
 import {myAgent} from "../agent/agentType";
 import {sharedVariables} from "../store/globalData";
 import {useAppStore, useNoteStore} from "../store/store";
-import {showConfirmModal, showInputModal, showSuccessMessage} from "../utils/MessageUtils";
+import {
+  showConfirmModal,
+  showEditableMarkdownModal,
+  showErrorMessage,
+  showInputModal,
+  showSuccessMessage
+} from "../utils/MessageUtils";
 import {TAG_TRASH} from "../config/app";
 
 import {NoteItem} from "$source/type/note";
 import {MyInput} from "$source/components/MyInput";
 import {useDebounceFn} from "ahooks";
+import clsx from "clsx";
 
 export function Middle() {
 
@@ -169,7 +175,7 @@ export function Middle() {
   }, [onScroll])
 
   function onCleanData() {
-    showConfirmModal('确认删除笔记文件吗？')
+    showConfirmModal('确认删除笔记吗？')
       .then(() => {
         myAgent.xxx()
           .then(() => {
@@ -290,8 +296,23 @@ function ListItem({index, item}) {
       {'title': '置顶/取消置顶', onClick: () => updateNotePined(value.path, !value.pined)},
       {'title': '添加标签', onClick: () => addNoteTag(value)},
       {
-        'title': '打开文件', onClick: () => {
-          window.open("LocalExplorer:" + value.filepath, '_self')
+        'title': '文本编辑', onClick: () => {
+
+          const path = value.path;
+
+          readOnlineFileFrontMatter(path)
+            .then(res => {
+              return showEditableMarkdownModal(res.props.title, res.body);
+            })
+            .then(body => {
+              return writeFile({body}, path)
+            })
+            .then(() => {
+              showSuccessMessage('保存成功')
+              refreshNoteContent();
+            })
+            .catch(e => showErrorMessage(e))
+
         }
       },
     ]
@@ -299,6 +320,11 @@ function ListItem({index, item}) {
       items.push({'title': deleted ? '删除' : '恢复', onClick: () => deleteSelected(deleted)})
     }
     openContextMenu(<MyContextMenu e={e} items={items}></MyContextMenu>)
+  }
+
+  function refreshNoteContent()
+  {
+    useNoteStore.getState().setRefreshSeed(Math.random());
   }
 
   function deleteSelected(deleted) {
@@ -325,8 +351,6 @@ function ListItem({index, item}) {
   function updateNotePined(path, pined) {
     readOnlineFileFrontMatter(path)
       .then(matter => {
-        sharedVariables.fileDataCache[path] = matter;
-
         let props = {
           ...matter.props,
           pined
@@ -345,12 +369,11 @@ function ListItem({index, item}) {
 
     showInputModal('批量添加标签', '')
       .then(tagName => {
+        console.log(tagName)
         const ps = [];
         for (const path of paths) {
           const p = readOnlineFileFrontMatter(path)
             .then(matter => {
-              sharedVariables.fileDataCache[path] = matter;
-
               let tags = matter.props.tags ?? [];
               tags = [...new Set([...tags, tagName])];
 
@@ -379,7 +402,7 @@ function ListItem({index, item}) {
   const itemIndex = useNoteStore(state => state.itemIndex)
 
   return (
-    <div key={index} className={classNames('li', {
+    <div key={index} className={clsx('li', {
       active: itemIndex === index,
       selected: selectIndexes.includes(index),
     })}
@@ -387,7 +410,7 @@ function ListItem({index, item}) {
          onContextMenu={(e) => openFileManageContextMenu(e, item, index)}>
       {item.pined ? <span>[top]</span> : ''}
       <span
-        className={classNames('list-item-title text-title', {new: item.isNew})}
+        className={clsx('list-item-title text-title', {new: item.isNew})}
         title={item.title}>{item.title || 'Untitled'}</span>
     </div>
   )

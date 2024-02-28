@@ -1,7 +1,7 @@
-import moment from "moment";
+import moment from "dayjs";
 import {sharedVariables} from "../store/globalData";
 import {myAgent} from "../agent/agentType";
-import {useAppStore, useNoteStore} from "../store/store";
+import {useAppStore} from "../store/store";
 
 import {FileData, WaitingWriteFileData} from "$source/type/note";
 import {showErrorMessage} from "$source/utils/MessageUtils";
@@ -100,21 +100,24 @@ function readFileFrontMatter(file: string): FileData {
 export async function readOnlineFileFrontMatter(path: string): Promise<FileData> {
   return myAgent.read(path)
     .then((res: any) => {
-      return Promise.resolve({props: res.props, body: res.body})
+      const matter = {props: res.props, body: res.body};
+      sharedVariables.fileDataCache[path] = matter;
+      return Promise.resolve(matter)
     })
 }
 
 export function resetSearchCondition(obj) {
-  const page = 1;
-  useAppStore.getState().setSearchData(prev => ({
+  const prev = useAppStore.getState().searchData;
+  useAppStore.getState().setSearchData(({
     ...prev,
     ...obj,
-    page
+    page: 1,
   }));
 }
 
 export function updateSearchPage() {
-  useAppStore.getState().setSearchData(prev => ({
+  const prev = useAppStore.getState().searchData;
+  useAppStore.getState().setSearchData(({
     ...prev,
     page: prev.page + 1,
   }));

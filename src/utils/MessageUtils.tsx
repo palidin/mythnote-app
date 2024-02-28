@@ -1,39 +1,40 @@
-import {openNewModal} from "./utils";
-import MyControl from "../components/MyControl";
+import {showModal} from "./utils";
 import {InputModal} from "../components/modal/InputModal";
 import {ConfirmModal} from "../components/modal/ConfirmModal";
 import {toast} from 'react-toastify';
+import {MarkdownEditor} from "$source/components/modal/MarkdownEditModal";
+import React from "react";
+import {FormDialog} from "$source/components/FormDialog";
 
 export function showInputModal(title, value = ''): Promise<string> {
-  let params: Record<string, any> = {};
-
-  return new Promise((resolve, reject) => {
-    function onUpdateValue(ret) {
-      if (ret && params.value) {
-        resolve(params.value)
-      }
-    }
-
-    openNewModal(<MyControl onUpdateValue={onUpdateValue}>
-      <InputModal closeModal={undefined} {...{title, value}} updateValue={v => params.value = v}></InputModal>
-    </MyControl>)
+  return new Promise(resolve => {
+    showModal(<FormDialog>
+      <InputModal title={title} value={value}></InputModal>
+    </FormDialog>)
+      .then(r => {
+        let text = r ?? '';
+        text = text.trim();
+        if (!text) {
+          return;
+        }
+        resolve(text);
+      })
   })
 }
 
 export function showConfirmModal(title) {
-
-  return new Promise((resolve, reject) => {
-    function onUpdateValue(ret) {
-      if (ret) {
-        resolve(ret)
-      }
-    }
-
-    openNewModal(<MyControl onUpdateValue={onUpdateValue}>
-      <ConfirmModal title={title}></ConfirmModal>
-    </MyControl>)
-  })
+  return showModal(<FormDialog>
+    <ConfirmModal title={title}></ConfirmModal>
+  </FormDialog>)
 }
+
+
+export function showEditableMarkdownModal(title, markdown) {
+  return showModal(<FormDialog title={"编辑: " + title}>
+    <MarkdownEditor text={markdown}></MarkdownEditor>
+  </FormDialog>)
+}
+
 
 export function showSuccessMessage(msg) {
   toast(msg, {

@@ -3,8 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack",
-    "start": "cross-env NODE_ENV=development webpack-dev-server"
+    "start": "rsbuild dev --open",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview"
   },
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.2",
@@ -17,6 +18,8 @@
     "@codemirror/lang-rust": "^6.0.1",
     "@codemirror/language": "^6.10.0",
     "@codemirror/legacy-modes": "^6.3.3",
+    "@codemirror/state": "6.4.1",
+    "@codemirror/view": "6.24.1",
     "@editablejs/deserializer": "^1.0.0",
     "@editablejs/editor": "^1.0.2",
     "@editablejs/models": "^1.0.0",
@@ -30,43 +33,32 @@
     "@editablejs/plugins": "^1.0.6",
     "@editablejs/serializer": "^1.0.1",
     "@editablejs/ui": "^1.0.0",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@szhsin/react-menu": "^3.5.3",
     "ahooks": "^3.7.8",
-    "cheerio": "1.0.0-rc.12",
-    "classnames": "^2.5.1",
+    "clsx": "^2.1.0",
     "codemirror": "^6.0.1",
-    "custom-protocol-check": "^1.4.0",
+    "dayjs": "^1.11.10",
     "i18next": "^23.7.16",
-    "lodash": "^4.17.21",
-    "moment": "^2.30.1",
     "rc-dialog": "^9.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-i18next": "^13.5.0",
+    "react-i18next": "^14.0.5",
     "react-toastify": "^9.1.3",
     "uuid": "^9.0.1",
-    "vditor": "^3.9.8",
-    "zustand": "^4.4.7"
+    "zustand": "4.3.3"
   },
   "devDependencies": {
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
+    "@rsbuild/core": "^0.4.7",
+    "@rsbuild/plugin-react": "^0.4.7",
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
-    "clean-webpack-plugin": "^4.0.0",
-    "cross-env": "^7.0.3",
-    "css-loader": "^6.9.0",
-    "html-webpack-plugin": "^5.6.0",
-    "mini-css-extract-plugin": "^2.7.7",
-    "react-refresh": "^0.12.0",
-    "sass": "^1.69.7",
-    "sass-loader": "^13.3.3",
-    "style-loader": "^3.3.4",
-    "terser-webpack-plugin": "^5.3.10",
-    "ts-loader": "^9.5.1",
-    "typescript": "^4.9.5",
-    "webpack": "5.69.0",
-    "webpack-cli": "^4.10.0",
-    "styled-components": "5.3.6",
-    "webpack-dev-server": "^4.15.1"
+    "typescript": "^5.3.0"
+  },
+  "optimizeDeps": {
+    "exclude": [
+      "@codemirror/state"
+    ]
   }
 }

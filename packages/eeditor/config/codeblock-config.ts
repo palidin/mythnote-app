@@ -17,6 +17,7 @@ import {standardSQL} from "@codemirror/legacy-modes/mode/sql";
 import {xml} from "@codemirror/legacy-modes/mode/xml";
 import {css} from "@codemirror/legacy-modes/mode/css";
 import {dockerFile} from "@codemirror/legacy-modes/mode/dockerfile";
+import {csharp} from "@codemirror/legacy-modes/mode/clike";
 
 export const languages = [
   {
@@ -35,6 +36,11 @@ export const languages = [
     value: 'rust',
     content: 'Rust',
     plugin: rust(),
+  },
+  {
+    value: 'csharp',
+    content: 'C#',
+    plugin: new LanguageSupport(StreamLanguage.define(csharp)),
   },
   {
     value: 'cpp',

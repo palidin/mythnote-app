@@ -11,7 +11,7 @@ export interface FolderListRequest {
 
 export class FakeImpl {
 
-  read(path: string): Promise<string> {
+  read(path: string): Promise<any> {
     return sendRequest('/file/read', {path});
   }
 

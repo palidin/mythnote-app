@@ -17,3 +17,8 @@ function isDevelopment() {
   let href = window.location.href;
   return href.includes('localhost') || href.includes('127.0.0.1') || href.includes('192.168.') || href.endsWith('test.cn')
 }
+
+
+export const web = {
+  storeKeyPrefix: 'mythnote-zustand:'
+}

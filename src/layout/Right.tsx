@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import {formatDisplayTime, openContextMenu, saveFile} from "../utils/utils";
 import React, {useEffect, useMemo, useState} from "react";
 import {readOnlineFileFrontMatter} from "../utils/FileUtils";
@@ -10,6 +9,7 @@ import {ContentChangeEvent, EditorDataDo, FileData, NoteChange, NoteItem} from "
 import {MyEditor} from "$source/MyEditor";
 import {MyInput} from "$source/components/MyInput";
 import {useDebounceFn, useMemoizedFn} from "ahooks";
+import clsx from "clsx";
 
 export function Right() {
 
@@ -20,8 +20,9 @@ export function Right() {
 
   const [currentFile, setCurrentFile] = useState<FileData>(EMPTY_FILE);
   const itemList = useNoteStore<NoteItem[]>(state => state.itemList)
-  const seed = useNoteStore(state => state.seed)
+  const fileFingerprint = useNoteStore(state => state.fileFingerprint)
   const itemIndex = useNoteStore(state => state.itemIndex)
+  const refreshSeed = useNoteStore(state => state.refreshSeed)
   const searchData = useAppStore(state => state.searchData);
 
   const [editingData, setEditingData] = useState<EditorDataDo>(null);
@@ -51,13 +52,13 @@ export function Right() {
         })
         setTitle(matter.props.title)
       })
-  }, [path]);
+  }, [path, refreshSeed]);
 
   useEffect(() => {
     if (path !== sharedVariables.lastEditingFile.path) return;
     const lastUpdateFile = sharedVariables.fileDataCache[path];
     setCurrentFile(lastUpdateFile);
-  }, [seed])
+  }, [fileFingerprint])
 
 
   function getPathMatter(path) {
@@ -196,7 +197,7 @@ export function Right() {
 
   return (
     <div className="right flex-col auto-stretch">
-      <div className={classNames('note-detail flex-col auto-stretch', {'hide': isEmpty})}>
+      <div className={clsx('note-detail flex-col auto-stretch', {'hide': isEmpty})}>
 
         <div className="note-meta-box">
           <div className={"note-title"}>
@@ -213,14 +214,14 @@ export function Right() {
             </div>
 
 
-            <div className={'info note-tags allow-copy'}>
+            <div className={'info note-tags allow-copy flex-row'}>
               {
                 currentFile.props.tags?.length
                   ? <> {
                     currentFile.props.tags.map((v, k) => {
-                      return <span key={k}
-                                   onContextMenu={(e) => openTagManageContextMenu(e, v)}
-                                   className={v === searchData.folder ? 'active' : ''}>{v}</span>;
+                      return <div key={k}
+                                  onContextMenu={(e) => openTagManageContextMenu(e, v)}
+                                  className={clsx('note-tag-item', v === searchData.folder ? 'active' : '')}>{v}</div>;
                     })
                   }</>
                   : ''
@@ -238,7 +239,7 @@ export function Right() {
         </div>
 
       </div>
-      <div className={classNames('mask auto-stretch', {'hide': !isEmpty})}></div>
+      <div className={clsx('mask auto-stretch', {'hide': !isEmpty})}></div>
     </div>
   )
 }

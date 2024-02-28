@@ -1,11 +1,12 @@
 import {v4 as uuidv4} from 'uuid';
 import * as ReactDOM from "react-dom/client";
 import {sharedVariables} from "../store/globalData";
-import moment from "moment";
+import moment from "dayjs";
 import {useAppStore, useNoteStore} from "../store/store";
 import {myAgent} from "../agent/agentType";
 import {FileData} from "$source/type/note";
 import {writeFile} from "$source/utils/FileUtils";
+import React from "react";
 
 export function isRemoteUrl(url) {
   return url && url.startsWith('http');
@@ -16,24 +17,33 @@ export function getUUid() {
 }
 
 
-export function openNewModal(component) {
-  let ele = document.getElementById('popup') as HTMLElement;
-  let root;
-  if (!sharedVariables.popup) {
-    root = ReactDOM.createRoot(ele);
-    sharedVariables.popup = root;
-  } else {
-    root = sharedVariables.popup;
-  }
-
-  root.render(
-    component
-  )
+interface ModalProps extends JSX.Element {
+  onSubmit?: (params: any) => void,
 }
 
-export function destroyModal() {
-  sharedVariables.popup.unmount();
-  sharedVariables.popup = null;
+export function showModal(modal: ModalProps): Promise<any> {
+  return new Promise(resolve => {
+
+    if (!sharedVariables.popup) {
+      const container = document.getElementById('popup') as HTMLElement;
+      const root = ReactDOM.createRoot(container);
+      sharedVariables.popup = root;
+    }
+
+
+    setTimeout(() => {
+      const onSubmit = (v) => resolve(v)
+      // @ts-ignore
+      const prompt = React.cloneElement(modal, {
+        onSubmit
+      })
+      sharedVariables.popup.render(null)
+
+      setTimeout(() => {
+        sharedVariables.popup.render(prompt);
+      })
+    }, 50)
+  })
 }
 
 export function openContextMenu(component) {
@@ -157,7 +167,7 @@ export function saveFile(currentFile: FileData, path: string) {
             isNew: false,
           }
           useNoteStore.getState().setItemList([...list])
-          useNoteStore.getState().setSeed(Math.random())
+          useNoteStore.getState().setFileFingerprint(Math.random())
         }
 
         return Promise.resolve(0)

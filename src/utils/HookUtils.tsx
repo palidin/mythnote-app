@@ -1,6 +1,8 @@
 import React, {useEffect, useRef} from "react";
 import {selectStart} from "./utils";
 import {useNoteStore} from "$source/store/store";
+import {useDialogStateStore} from "$source/store/dialog";
+import {useUpdateEffect} from "ahooks";
 
 export function useMount(fn, deps = []) {
   const ref = useRef(false);

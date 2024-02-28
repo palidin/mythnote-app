@@ -1,22 +1,28 @@
 import {useState} from "react";
 import {useAutoFocusInput} from "../../utils/HookUtils";
+import {useDialogStateStore} from "$source/store/dialog";
 
-export function InputModal({title, value, updateValue, closeModal}) {
+export function InputModal({title, value}) {
 
   const [bindValue, setBindValue] = useState(value);
 
   const ref = useAutoFocusInput();
+  const onSubmit = useDialogStateStore(state => state.onSubmit);
+  const onUpdate = useDialogStateStore(state => state.onUpdate);
 
 
   function onChange(e) {
-    let targetValue = e.target.value;
+    const targetValue = e.target.value;
     setBindValue(targetValue)
-    updateValue(targetValue)
+    onUpdate(targetValue)
   }
 
   function onKeyDown(e) {
     if (e.key === 'Enter') {
-      closeModal();
+      const targetValue = e.target.value;
+      if (targetValue.trim()) {
+        onSubmit();
+      }
     }
   }
 

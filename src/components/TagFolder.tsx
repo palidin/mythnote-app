@@ -1,10 +1,14 @@
-import classNames from "classnames";
 import {useAppStore} from "../store/store";
 import {openContextMenu} from "../utils/utils";
 import {MyContextMenu} from "./MyContextMenu";
 import React from "react";
 import {showConfirmModal, showInputModal} from "../utils/MessageUtils";
 import {myAgent} from "../agent/agentType";
+import clsx from "clsx";
+
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faChevronRight} from "@fortawesome/free-solid-svg-icons/faChevronRight";
+
 
 export function TagFolder({folders, onTagClick, keys = []}) {
 
@@ -45,7 +49,7 @@ export function TagFolder({folders, onTagClick, keys = []}) {
     <>
       <ul className={'list-tag'}>
         {folders.map((v, k) => (
-          <li key={k} className={classNames('tag-item', {
+          <li key={k} className={clsx('tag-item', {
             folder: v.children && v.children.length,
             expand: v.expand,
             active: v.fullname == focusTag,
@@ -56,7 +60,11 @@ export function TagFolder({folders, onTagClick, keys = []}) {
               title={v.name}
               onClick={() => onTagClick(v.fullname, [...keys, k])}>
               <div>{v.name}</div>
-              <div className="icon-box flex-row align-center"><i className="icon fa-solid fa-chevron-right hide"></i></div>
+              <div className="icon-box flex-row align-center">
+                <FontAwesomeIcon icon={faChevronRight} className={'icon hide'}/>
+
+                {/*<i className="icon fa-solid fa-chevron-right hide"></i>*/}
+              </div>
               {keys.length == 0 && (
                 <div className='count-text'>({v.count})</div>
               )}

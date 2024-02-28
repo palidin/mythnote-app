@@ -91,7 +91,6 @@ $a-text-color: rgba(255, 255, 255, 0.75);
         &.folder {
           & > .name .icon {
             color: $a-text-color;
-            font-size: 0.5em;
             display: inline-block;
           }
 
@@ -184,10 +183,15 @@ $a-text-color: rgba(255, 255, 255, 0.75);
       }
 
       .note-tags {
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
 
         .active {
           background: lightblue;
+        }
+
+        .note-tag-item{
+          line-height: 31px;
         }
       }
     }
@@ -202,16 +206,9 @@ $a-text-color: rgba(255, 255, 255, 0.75);
 
   .icon-box {
     .icon {
-      height: 2em;
-      width: 2em;
       position: relative;
-
-      &::before {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%);
-      }
+      font-size: 12px;
+      margin-left: 0.35em;
     }
   }
 

@@ -1,6 +1,6 @@
-import {createMyStore} from "$source/utils/StoreUtils";
+import {createEntityStore} from "$source/utils/StoreUtils";
 
-export const useAppStore = createMyStore({
+export const useAppStore = createEntityStore({
 
   dataRebuilding: true,
 
@@ -15,14 +15,13 @@ export const useAppStore = createMyStore({
   },
 })
 
-
-export const useTokenStore = createMyStore({
+export const useTokenStore = createEntityStore({
   token: '',
 }, 'token')
 
-
-export const useNoteStore = createMyStore({
+export const useNoteStore = createEntityStore({
   itemList: [],
   itemIndex: -1,
-  seed: null,
+  fileFingerprint: null,
+  refreshSeed: null,
 })
