@@ -6,7 +6,6 @@ import {html} from "@codemirror/lang-html";
 import {java} from "@codemirror/lang-java";
 import {python} from "@codemirror/lang-python";
 import {LanguageSupport, StreamLanguage} from "@codemirror/language";
-import {shell} from "@codemirror/legacy-modes/mode/shell";
 import {powerShell} from "@codemirror/legacy-modes/mode/powershell";
 import {markdown} from "@codemirror/lang-markdown";
 import {go} from "@codemirror/legacy-modes/mode/go";
@@ -18,6 +17,7 @@ import {xml} from "@codemirror/legacy-modes/mode/xml";
 import {css} from "@codemirror/legacy-modes/mode/css";
 import {dockerFile} from "@codemirror/legacy-modes/mode/dockerfile";
 import {csharpLanguage} from "@replit/codemirror-lang-csharp";
+import {shell} from "../codemirror/shell";
 
 export const languages = [
   {

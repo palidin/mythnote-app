@@ -24,6 +24,7 @@ export default function EditableEditor({markdown, onUpdate}) {
     editor = withSideToolbar(editor)
 
     editor = withCodeBlock(editor, {
+      // @ts-ignore
       languages: languages,
     })
 

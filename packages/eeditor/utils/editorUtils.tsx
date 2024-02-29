@@ -37,7 +37,7 @@ export function transformMarkdown2Nodes(markdown, editor) {
 
 export function transformNodes2Markdown(nodes, editor) {
   const contents = nodes.map(node => MarkdownSerializer.transformWithEditor(editor, node));
-  return contents.map(v => {
+  let data = contents.map(v => {
     let line = MarkdownSerializer.toMarkdownWithEditor(editor, v)
     if (v[0] && v[0].type == 'table') {
       const regExp = new RegExp(' ' + xEMPTY_TABLE_CELL_WORDS + '([^ ]+)' + ' ', 'g')
@@ -45,6 +45,19 @@ export function transformNodes2Markdown(nodes, editor) {
     }
     return line;
   }).join('\n')
+
+  return fixBoldStyle(data);
+}
+
+function fixBoldStyle(text: string) {
+  const regex = /\*\*([^\n]*(?!\*\*))[!-~。，、；：？！“”‘’《》【】—… ]\*\*([^!-~。，、；：？！“”‘’《》【】—…\s\n\r])/g;
+  const matches = text.match(regex)
+  const count = matches ? matches.length : 0;
+  if (count == 0) {
+    return text;
+  }
+  console.log('fix bold: ' + JSON.stringify(matches))
+  return text.replaceAll(regex, '**$1** $2');
 }
 
 export function getCodeBlockElement(editor) {

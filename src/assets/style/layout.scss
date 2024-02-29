@@ -24,6 +24,12 @@
   flex: 1;
 }
 
+.cm-builtin {
+  color: blue; /* 设置内置命令的颜色 */
+  /* 添加其他样式属性，如字体加粗、斜体等 */
+}
+
+
 $bg-color: hsl(0deg 0% 98%);
 $a-text-color: rgba(255, 255, 255, 0.75);
 
