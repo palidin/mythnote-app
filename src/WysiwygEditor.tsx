@@ -1,20 +1,19 @@
 import React, {useEffect, useState} from "react";
 
-import './MyEditor.scss'
+import './WysiwygEditor.scss'
 import {EditorDataDo, MarkdownEditorDataDo} from "$source/type/note";
 import {useUpdateEffect} from "ahooks";
 
-const ExEditor = React.lazy(() => import("../packages/eeditor/EditableEditor"))
-
+const EditableEditor = React.lazy(() => import("@mythnote/editable-wysiwyg-editor/EditableEditor"))
 
 interface MyEditorProps {
   data: EditorDataDo,
-  updateBody
+  updateBody: (data: any) => void
 }
 
-export const MyEditor = React.memo(MyEditorInner);
+export const WysiwygEditor = React.memo(WysiwygEditorInner);
 
-function MyEditorInner({data, updateBody}: MyEditorProps) {
+function WysiwygEditorInner({data, updateBody}: MyEditorProps) {
 
   const [state, setState] = useState<MarkdownEditorDataDo>(null);
 
@@ -55,5 +54,4 @@ function MyEditorInner({data, updateBody}: MyEditorProps) {
   )
 }
 
-
-const BaseEditor = React.memo(ExEditor)
+const BaseEditor = React.memo(EditableEditor)

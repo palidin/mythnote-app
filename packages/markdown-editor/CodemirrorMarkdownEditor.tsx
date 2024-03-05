@@ -1,18 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {EditorState} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
 import {basicSetup} from "codemirror";
 import {markdown} from "@codemirror/lang-markdown";
-import {useDialogStateStore} from "$source/store/dialog";
 
 const id = 'note-md-edit-container';
 
-
-export function MarkdownEditor({text}) {
-  const [editor, setEditor] = useState<EditorView>(null)
-
-  const onUpdate = useDialogStateStore(state => state.onUpdate);
-
+export default function CodemirrorMarkdownEditor({text, onUpdate}) {
 
   const updateListenerExtension = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
@@ -27,10 +21,10 @@ export function MarkdownEditor({text}) {
         doc: text,
         extensions: [updateListenerExtension, basicSetup, markdown()]
       }),
+      // @ts-ignore
       parent: document.getElementById(id)
     })
 
-    setEditor(view)
 
     return () => view.dispatch()
   }, [])

@@ -1,0 +1,16 @@
+{
+  "name": "@mythnote/markdown-editor",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
+    "monaco-editor": "^0.46.0",
+    "@codemirror/lang-markdown": "^6.2.3",
+    "@codemirror/state": "6.4.1",
+    "@codemirror/view": "6.24.1",
+    "codemirror": "^6.0.1"
+  }
+}

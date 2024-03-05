@@ -4,16 +4,18 @@ import 'rc-dialog/assets/index.css';
 import Dialog from "rc-dialog/es/Dialog";
 import {DialogStateProvider} from "$source/store/dialog";
 import {useMemoizedFn} from "ahooks";
+import clsx from "clsx";
 
 
 interface MyControlProps {
   children: any
   onUpdateValue?: any
   title?: string
+  className?: string
   onSubmit?: (any) => void
 }
 
-export function FormDialog({children, onSubmit = null, title = '信息'}: MyControlProps) {
+export function FormDialog({children, onSubmit = null, className = '', title = '信息'}: MyControlProps) {
   const [visible, setVisible] = React.useState(true);
 
 
@@ -31,6 +33,7 @@ export function FormDialog({children, onSubmit = null, title = '信息'}: MyCont
   const dialog = (
     <Dialog
       title={title}
+      className={clsx(className)}
       footer={[
         <button type="button" className="btn btn-default" key="close" onClick={onCancel}>
           取消

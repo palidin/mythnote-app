@@ -9,6 +9,7 @@ export default defineConfig({
     legalComments: 'none',
     polyfill: 'off',
     distPath: {
+      font: 'assets/font',
       js: 'assets/js',
       css: 'assets/css',
     },

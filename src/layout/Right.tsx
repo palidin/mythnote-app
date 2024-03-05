@@ -6,7 +6,7 @@ import {showConfirmModal, showInputModal, showSuccessMessage} from "../utils/Mes
 import {MyContextMenu} from "../components/MyContextMenu";
 import {useAppStore, useNoteStore} from "../store/store";
 import {ContentChangeEvent, EditorDataDo, FileData, NoteChange, NoteItem} from "$source/type/note";
-import {MyEditor} from "$source/MyEditor";
+import {WysiwygEditor} from "$source/WysiwygEditor";
 import {MyInput} from "$source/components/MyInput";
 import {useDebounceFn, useMemoizedFn} from "ahooks";
 import clsx from "clsx";
@@ -200,11 +200,12 @@ export function Right() {
       <div className={clsx('note-detail flex-col auto-stretch', {'hide': isEmpty})}>
 
         <div className="note-meta-box">
+
           <div className={"note-title"}>
             <div>
               <MyInput onChange={onTitleChange} onToggle={setFocusing} onSearch={onTitleSubmit} value={title}/>
             </div>
-            <div className={'info allow-copy flex-row'}>
+            <div className={'info allow-copy flex-row align-center'}>
               <span>{formatDisplayTime(currentFile.props.modified)}</span>
               <span>{path}</span>
               <span>{formatDisplayTime(currentFile.props.created)}</span>
@@ -235,7 +236,7 @@ export function Right() {
         </div>
 
         <div className={"note-content flex-col auto-stretch"}>
-          <MyEditor data={editingData} updateBody={updateBody}/>
+          <WysiwygEditor data={editingData} updateBody={updateBody}/>
         </div>
 
       </div>

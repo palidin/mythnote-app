@@ -2,11 +2,8 @@ import React from 'react'
 import {Editable} from '@editablejs/editor'
 import {Grid} from '@editablejs/models'
 import {
-  BackgroundColorEditor,
   BlockquoteEditor,
   CodeBlockEditor,
-  FontColorEditor,
-  FontSizeEditor,
   HeadingEditor,
   HeadingType,
   HrEditor,
@@ -120,6 +117,9 @@ export const createToolbarItems = (editor: Editable) => {
       title: <Translation>{t => t('playground.editor.plugin.image')}</Translation>,
       active: ImageEditor.isActive(editor),
       onToggle: () => {
+
+        ImageEditor.insert
+        console.log(ImageEditor.getOptions(editor))
         ImageEditor.open(editor)
       },
       icon: <Icon name="image"/>,

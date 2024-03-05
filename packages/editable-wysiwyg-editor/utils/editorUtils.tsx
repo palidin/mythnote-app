@@ -50,7 +50,7 @@ export function transformNodes2Markdown(nodes, editor) {
 }
 
 function fixBoldStyle(text: string) {
-  const regex = /\*\*([^\n]*(?!\*\*))[!-~。，、；：？！“”‘’《》【】—… ]\*\*([^!-~。，、；：？！“”‘’《》【】—…\s\n\r])/g;
+  const regex = /\*\*([^\n]+?[!-~。，、；：？！“”‘’《》【】—… ])\*\*([^!-~。，、；：？！“”‘’《》【】—…\s\n\r])/g;
   const matches = text.match(regex)
   const count = matches ? matches.length : 0;
   if (count == 0) {

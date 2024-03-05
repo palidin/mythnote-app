@@ -1,5 +1,5 @@
 {
-  "name": "myth-note",
+  "name": "mythnote",
   "private": true,
   "version": "1.0.0",
   "scripts": {
@@ -8,46 +8,21 @@
     "preview": "rsbuild preview"
   },
   "dependencies": {
-    "@codemirror/lang-cpp": "^6.0.2",
-    "@codemirror/lang-html": "^6.4.7",
-    "@codemirror/lang-java": "^6.0.1",
-    "@codemirror/lang-javascript": "^6.2.1",
-    "@codemirror/lang-markdown": "^6.2.3",
-    "@codemirror/lang-php": "^6.0.1",
-    "@codemirror/lang-python": "^6.1.3",
-    "@codemirror/lang-rust": "^6.0.1",
-    "@codemirror/language": "^6.10.0",
-    "@codemirror/legacy-modes": "^6.3.3",
-    "@codemirror/state": "6.4.1",
-    "@codemirror/view": "6.24.1",
-    "@editablejs/deserializer": "^1.0.0",
-    "@editablejs/editor": "^1.0.2",
-    "@editablejs/models": "^1.0.0",
-    "@editablejs/plugin-codeblock": "^2.0.1",
-    "@editablejs/plugin-context-menu": "^1.0.2",
-    "@editablejs/plugin-history": "^1.0.2",
-    "@editablejs/plugin-list": "^2.0.1",
-    "@editablejs/plugin-table": "^2.0.2",
-    "@editablejs/plugin-title": "^1.0.2",
-    "@editablejs/plugin-toolbar": "^1.0.2",
-    "@editablejs/plugins": "^1.0.6",
-    "@editablejs/serializer": "^1.0.1",
-    "@editablejs/ui": "^1.0.0",
+    "@mythnote/markdown-editor": "workspace:*",
+    "@mythnote/editable-wysiwyg-editor": "workspace:*",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@replit/codemirror-lang-csharp": "^6.2.0",
     "@szhsin/react-menu": "^3.5.3",
     "ahooks": "^3.7.8",
     "clsx": "^2.1.0",
-    "codemirror": "^6.0.1",
     "dayjs": "^1.11.10",
-    "i18next": "^23.10.0",
     "rc-dialog": "^9.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-i18next": "^14.0.5",
     "react-toastify": "^9.1.3",
     "uuid": "^9.0.1",
+    "styled-components": "5.3.6",
     "zustand": "4.3.3"
   },
   "devDependencies": {
@@ -62,5 +37,10 @@
     "exclude": [
       "@codemirror/state"
     ]
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowAny": ["react", "react-dom", "react-is"]
+    }
   }
 }

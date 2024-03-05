@@ -2,7 +2,7 @@ import * as React from 'react'
 import {useState} from 'react'
 import {createEditor} from '@editablejs/models'
 import {ContentEditable, EditableProvider, withEditable} from '@editablejs/editor'
-import {ContextMenu, useContextMenuEffect, withCodeBlock, withPlugins} from '@editablejs/plugins'
+import {ContextMenu, useContextMenuEffect, withCodeBlock, withImage, withPlugins} from '@editablejs/plugins'
 import {Toolbar, ToolbarComponent, useToolbarEffect} from "@editablejs/plugin-toolbar";
 import {createToolbarItems} from "./config/tabbar-items";
 
@@ -15,6 +15,7 @@ import {useCopyData, useMarkdown, useText} from "./config/editor-serialize";
 import {transformMarkdown2Nodes, transformNodes2Markdown} from "./utils/editorUtils";
 import {SideToolbar, useSideToolbarMenuEffect, withSideToolbar} from "@editablejs/plugin-toolbar/side";
 import {createSideToolbarItems} from "./config/side-toolbar-items";
+import imageCrawler from "$source/utils/imageCrawler";
 
 export default function EditableEditor({markdown, onUpdate}) {
   const editor = React.useMemo(() => {
@@ -22,6 +23,12 @@ export default function EditableEditor({markdown, onUpdate}) {
     editor = withPlugins(editor)
     editor = withHistory(editor)
     editor = withSideToolbar(editor)
+
+    editor = withImage(editor, {
+      onUpload: file => {
+        return imageCrawler.upload(file)
+      }
+    })
 
     editor = withCodeBlock(editor, {
       // @ts-ignore

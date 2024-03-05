@@ -2,9 +2,9 @@ import {showModal} from "./utils";
 import {InputModal} from "../components/modal/InputModal";
 import {ConfirmModal} from "../components/modal/ConfirmModal";
 import {toast} from 'react-toastify';
-import {MarkdownEditor} from "$source/components/modal/MarkdownEditModal";
 import React from "react";
 import {FormDialog} from "$source/components/FormDialog";
+import {MarkdownEditor} from "$source/MarkdownEditor";
 
 export function showInputModal(title, value = ''): Promise<string> {
   return new Promise(resolve => {
@@ -30,8 +30,8 @@ export function showConfirmModal(title) {
 
 
 export function showEditableMarkdownModal(title, markdown) {
-  return showModal(<FormDialog title={"编辑: " + title}>
-    <MarkdownEditor text={markdown}></MarkdownEditor>
+  return showModal(<FormDialog title={"编辑: " + title} className={'markdown-dialog'}>
+    <MarkdownEditor text={markdown}/>
   </FormDialog>)
 }
 
