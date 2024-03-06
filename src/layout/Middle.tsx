@@ -369,7 +369,6 @@ function ListItem({index, item}) {
 
     showInputModal('批量添加标签', '')
       .then(tagName => {
-        console.log(tagName)
         const ps = [];
         for (const path of paths) {
           const p = readOnlineFileFrontMatter(path)

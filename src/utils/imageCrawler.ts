@@ -6,7 +6,8 @@ export class ImageCrawler {
     if (resource instanceof File) {
       picUrl = await myAgent.uploadImage(resource)
     } else {
-      picUrl = await myAgent.uploadImageUrl(resource)
+      picUrl = resource;
+      // picUrl = await myAgent.uploadImageUrl(resource)
     }
     return picUrl;
   }

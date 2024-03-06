@@ -117,9 +117,6 @@ export const createToolbarItems = (editor: Editable) => {
       title: <Translation>{t => t('playground.editor.plugin.image')}</Translation>,
       active: ImageEditor.isActive(editor),
       onToggle: () => {
-
-        ImageEditor.insert
-        console.log(ImageEditor.getOptions(editor))
         ImageEditor.open(editor)
       },
       icon: <Icon name="image"/>,
