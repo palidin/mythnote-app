@@ -37,7 +37,7 @@ export function transformMarkdown2Nodes(markdown, editor) {
 
 export function transformNodes2Markdown(nodes, editor) {
   const contents = nodes.map(node => MarkdownSerializer.transformWithEditor(editor, node));
-  let data = contents.map(v => {
+  return contents.map(v => {
     let line = MarkdownSerializer.toMarkdownWithEditor(editor, v)
     if (v[0] && v[0].type == 'table') {
       const regExp = new RegExp(' ' + xEMPTY_TABLE_CELL_WORDS + '([^ ]+)' + ' ', 'g')
@@ -45,12 +45,10 @@ export function transformNodes2Markdown(nodes, editor) {
     }
     return line;
   }).join('\n')
-
-  return fixBoldStyle(data);
 }
 
 function fixBoldStyle(text: string) {
-  const regex = /\*\*([^\n]+?[!-~。，、；：？！“”‘’《》【】—… ])\*\*([^!-~。，、；：？！“”‘’《》【】—…\s\n\r])/g;
+  const regex = /\*\*([^\n*]+?[!-~。，、；：？！“”‘’《》【】—… ])\*\*([^!-~。，、；：？！“”‘’《》【】—…\s\n\r])/g;
   const matches = text.match(regex)
   const count = matches ? matches.length : 0;
   if (count == 0) {
