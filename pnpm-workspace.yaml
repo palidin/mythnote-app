@@ -1,5 +1,0 @@
-packages:
-  - packages/*
-#  - path: react-image-previewer
-#    dependencies:
-#      styled-components: 5.3.6

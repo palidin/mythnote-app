@@ -1,6 +1,4 @@
-import './assets/style/layout.scss';
 import React, {useCallback, useEffect, useRef} from "react";
-import './assets/style/contextmenu.css'
 import {useHotkeyMove, useMount} from "./utils/HookUtils";
 import {Left} from "$source/layout/Left";
 import {Middle} from "$source/layout/Middle";
@@ -9,8 +7,10 @@ import {useAppStore, useTokenStore} from "./store/store";
 import {checkStatusTask, isCopyable} from "./utils/utils";
 
 import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import {LoginModal} from "$source/components/LoginModal";
+
+import 'react-toastify/dist/ReactToastify.css';
+import MilkdownEditor from "$source/components/MilkdownEditor";
 
 
 export function Layout() {
@@ -46,26 +46,32 @@ export function Layout() {
 
     if (!token) {
       return (
-        <div className={'login-modal-box flex-col align-center'}>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
           <LoginModal/>
         </div>
       )
     }
 
     if (dataRebuilding) {
-      return <div>数据索引中...</div>;
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-[#fafafa]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            <p className="text-slate-600 text-lg">数据索引中...</p>
+          </div>
+        </div>
+      );
     }
 
     return (
-      <div className={"layout flex-row"}>
+      <div className="flex flex-row h-screen overflow-hidden select-none">
         <Left/>
         <DivideLine/>
         <Middle/>
         <DivideLine/>
-
         <Right/>
-        <div id={'popup'}></div>
-        <div id={'contextmenu'}></div>
+        <div id={'popup'} className="absolute"></div>
+        <div id={'contextmenu'} className="absolute"></div>
       </div>
     )
   }, [token, dataRebuilding]);
@@ -117,6 +123,10 @@ function DivideLine() {
     };
   })
   return (
-    <div ref={ref} className="divide-line"></div>
+    <div
+      ref={ref}
+      className="w-0.5 bg-transparent hover:bg-slate-300 transition-colors cursor-col-resize relative z-10"
+      style={{ minWidth: '2px' }}
+    ></div>
   )
 }

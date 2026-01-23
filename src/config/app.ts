@@ -1,7 +1,8 @@
 const devUrl = 'http://api-myth-note.test.cn';
-const onlineUrl = '/api';
+const onlineUrl = 'http://note.palidin.io/api';
 
-const serverUrl = isDevelopment() ? devUrl : onlineUrl;
+// const serverUrl = isDevelopment() ? devUrl : onlineUrl;
+const serverUrl =  onlineUrl;
 
 export const appConfig = {
   // serverUrl: 'http://note.palidin.me',

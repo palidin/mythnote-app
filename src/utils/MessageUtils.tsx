@@ -30,7 +30,7 @@ export function showConfirmModal(title) {
 
 
 export function showEditableMarkdownModal(title, markdown) {
-  return showModal(<FormDialog title={"编辑: " + title} className={'markdown-dialog'}>
+  return showModal(<FormDialog title={"编辑: " + title} className={'markdown-dialog w-1/2'}>
     <MarkdownEditor text={markdown}/>
   </FormDialog>)
 }

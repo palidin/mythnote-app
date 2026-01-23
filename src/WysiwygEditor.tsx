@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from "react";
 
-import './WysiwygEditor.scss'
 import {EditorDataDo, MarkdownEditorDataDo} from "$source/type/note";
 import {useUpdateEffect} from "ahooks";
+import AEditor from "$source/components/MilkdownEditor";
 
-const EditableEditor = React.lazy(() => import("@mythnote/editable-wysiwyg-editor/EditableEditor"))
 
 interface MyEditorProps {
   data: EditorDataDo,
@@ -48,10 +47,11 @@ function WysiwygEditorInner({data, updateBody}: MyEditorProps) {
   }
 
   return (
-    <div className={'ax-editor-wrapper'}>
-      <BaseEditor markdown={state.markdown} onUpdate={state.onUpdate}/>
+    <div className="flex flex-col flex-1 p-3 absolute w-full h-full">
+      <div className="flex-1 overflow-y-auto rounded-xl">
+        <AEditor markdown={state.markdown} updateBody={state.onUpdate}/>
+      </div>
     </div>
   )
 }
 
-const BaseEditor = React.memo(EditableEditor)

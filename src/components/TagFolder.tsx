@@ -47,33 +47,72 @@ export function TagFolder({folders, onTagClick, keys = []}) {
 
   return (
     <>
-      <ul className={'list-tag'}>
-        {folders.map((v, k) => (
-          <li key={k} className={clsx('tag-item', {
-            folder: v.children && v.children.length,
-            expand: v.expand,
-            active: v.fullname == focusTag,
-          })}>
-            <div
-              onContextMenu={(e) => openFileManageContextMenu(e, v)}
-              className='name text-title flex-row align-center'
-              title={v.name}
-              onClick={() => onTagClick(v.fullname, [...keys, k])}>
-              <div>{v.name}</div>
-              <div className="icon-box flex-row align-center">
-                <FontAwesomeIcon icon={faChevronRight} className={'icon hide'}/>
+      <ul className="list-none m-0 p-0">
+        {folders.map((v, k) => {
+          const hasChildren = v.children && v.children.length > 0;
+          const isActive = v.fullname == focusTag;
+          const isExpanded = v.expand;
+          
+          // 判断是否应该显示数量：只有一级目录且count是有效正数
+          const isFirstLevel = keys.length === 0;
+          let shouldShowCount = false;
+          
+          if (isFirstLevel) {
+            const countValue = v.count;
+            if (countValue != null && countValue !== '') {
+              const countNum = Number(countValue);
+              if (Number.isFinite(countNum) && countNum > 0) {
+                shouldShowCount = true;
+              }
+            }
+          }
 
-                {/*<i className="icon fa-solid fa-chevron-right hide"></i>*/}
+          return (
+            <li key={k} className="select-none">
+              <div
+                onContextMenu={(e) => openFileManageContextMenu(e, v)}
+                className={clsx(
+                  'flex flex-row items-center px-3 py-2 rounded-lg cursor-pointer transition-colors text-title',
+                  'hover:bg-[#2d3748]',
+                  {
+                    'bg-[#2d3748]': isActive,
+                  }
+                )}
+                title={v.name}
+                onClick={() => onTagClick(v.fullname, [...keys, k])}
+              >
+                <div className="flex-1 min-w-0">{v.name}</div>
+                {hasChildren && (
+                  <div className="flex items-center ml-2">
+                    <FontAwesomeIcon
+                      icon={faChevronRight}
+                      className={clsx(
+                        'text-xs text-white/75 transition-transform duration-200',
+                        {
+                          'rotate-90': isExpanded,
+                          'rotate-0': !isExpanded,
+                        }
+                      )}
+                    />
+                  </div>
+                )}
+                {shouldShowCount && (
+                  <div className='ml-2 text-xs text-white/60 px-1'>({v.count})</div>
+                )}
               </div>
-              {keys.length == 0 && (
-                <div className='count-text'>({v.count})</div>
+
+              {hasChildren && isExpanded && (
+                <div className="ml-4 mt-1">
+                  <TagFolder
+                    folders={v.children}
+                    onTagClick={onTagClick}
+                    keys={[...keys, k]}
+                  />
+                </div>
               )}
-            </div>
-            {v.children && v.children.length && v.expand ?
-              <TagFolder folders={v.children} onTagClick={onTagClick}
-                         keys={[...keys, k]}></TagFolder> : ''}
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
     </>
   );

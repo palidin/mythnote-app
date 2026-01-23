@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 自定义工具类 */
+@layer utilities {
+  /* 文本截断 */
+  .text-title {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  /* 允许选择文本 */
+  .allow-copy {
+    @apply select-text;
+  }
+
+  /* 隐藏 */
+  .hide {
+    @apply hidden;
+  }
+}
+
+/* 基础样式重置 */
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply m-0 p-0;
+  }
+
+  html, body, #root {
+    @apply h-full;
+  }
+
+  #root {
+    @apply w-full;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  button:hover {
+    @apply cursor-pointer;
+  }
+}
+
+/* 编辑器样式优化 */
+@layer components {
+  .note-content {
+    button {
+      @apply border-0;
+    }
+
+    button[aria-haspopup="dialog"] {
+      @apply bg-transparent;
+    }
+  }
+
+
+  /* 滚动条样式 - 确保内容区域和操作栏宽度一致 */
+  .scrollbar-gutter-stable {
+    scrollbar-gutter: stable;
+  }
+
+  /* rc-dialog 按钮样式（确认 / 取消） */
+  .btn {
+    @apply inline-block font-normal text-center align-middle bg-transparent border border-transparent
+      px-3 py-1.5 text-sm leading-6 rounded;
+    color: #212529;
+  }
+
+  .btn-primary {
+    @apply text-white;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+
+  .rc-dialog-footer .btn + .btn {
+    margin-left: 5px;
+    margin-bottom: 0;
+  }
+
+  /* 右键菜单项样式（中间列表的菜单） */
+  .szh-menu__item {
+    @apply flex items-center relative py-1.5 px-6;
+  }
+}
+
+/* 自定义滚动条样式 */
+@layer utilities {
+  /* 为左侧栏添加滚动条样式，确保宽度一致 */
+  .left-scrollbar-fix::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .left-scrollbar-fix::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .left-scrollbar-fix::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  .left-scrollbar-fix::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+
+
+
+
+#root {
+  .szh-menu__item {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: .375rem 1.5rem;
+  }
+
+
+  .milkdown .ProseMirror {
+    padding:  20px 30px;
+    min-height: 100%;
+    margin-bottom: 30px;
+  }
+
+
+  div[data-milkdown-root]{
+    background: #fff;
+    min-height: 100%;
+  }
+}
+
+
+

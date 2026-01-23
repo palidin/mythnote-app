@@ -33,8 +33,12 @@ export function MySelect({columns, onChange, value}) {
   }
 
   return (
-    <select onChange={onChangeOrderColumn} value={value}>
-      {columns.map(v => (<option key={v}>{v}</option>))}
+    <select 
+      onChange={onChangeOrderColumn} 
+      value={value}
+      className="px-2 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white transition-all"
+    >
+      {columns.map(v => (<option key={v} value={v}>{v}</option>))}
     </select>
   )
 

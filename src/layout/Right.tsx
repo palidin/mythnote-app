@@ -7,7 +7,6 @@ import {MyContextMenu} from "../components/MyContextMenu";
 import {useAppStore, useNoteStore} from "../store/store";
 import {ContentChangeEvent, EditorDataDo, FileData, NoteChange, NoteItem} from "$source/type/note";
 import {WysiwygEditor} from "$source/WysiwygEditor";
-import {MyInput} from "$source/components/MyInput";
 import {useDebounceFn, useMemoizedFn} from "ahooks";
 import clsx from "clsx";
 
@@ -37,6 +36,7 @@ export function Right() {
   }, [itemList])
 
 
+  console.log(path)
   useEffect(() => {
     if (!path) {
       return;
@@ -50,6 +50,7 @@ export function Right() {
           path,
           content,
         })
+
         setTitle(matter.props.title)
       })
   }, [path, refreshSeed]);
@@ -196,51 +197,103 @@ export function Right() {
   }
 
   return (
-    <div className="right flex-col auto-stretch">
-      <div className={clsx('note-detail flex-col auto-stretch', {'hide': isEmpty})}>
-
-        <div className="note-meta-box">
-
-          <div className={"note-title"}>
-            <div>
-              <MyInput onChange={onTitleChange} onToggle={setFocusing} onSearch={onTitleSubmit} value={title}/>
-            </div>
-            <div className={'info allow-copy flex-row align-center'}>
-              <span>{formatDisplayTime(currentFile.props.modified)}</span>
-              <span>{path}</span>
-              <span>{formatDisplayTime(currentFile.props.created)}</span>
-              {currentFile.props.source_url ?
-                (<span><a href={currentFile.props.source_url} target='_blank'>来源地址</a></span>)
-                : ''}
-            </div>
-
-
-            <div className={'info note-tags allow-copy flex-row'}>
-              {
-                currentFile.props.tags?.length
-                  ? <> {
-                    currentFile.props.tags.map((v, k) => {
-                      return <div key={k}
-                                  onContextMenu={(e) => openTagManageContextMenu(e, v)}
-                                  className={clsx('note-tag-item', v === searchData.folder ? 'active' : '')}>{v}</div>;
-                    })
-                  }</>
-                  : ''
-              }
-
-            </div>
+    <div className="flex flex-col flex-1 w-[70%] bg-[#fafafa] border border-slate-300">
+      <div className={clsx('flex flex-col flex-1', {'hidden': isEmpty})}>
+        {/* 笔记元信息 */}
+        <div className="p-4 border-b border-slate-200 bg-white">
+          {/* 标题 */}
+          <div className="mb-4">
+            <input
+              type="text"
+              data-title={title}
+              value={title || ""}
+              onChange={(e) => onTitleChange(e.target.value)}
+              onFocus={() => setFocusing(true)}
+              onBlur={() => setFocusing(false)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  onTitleSubmit(title);
+                }
+              }}
+              className="w-full px-0 py-2 border-0 border-b-2 border-transparent focus:border-primary-500 focus:outline-none transition-all text-2xl font-bold text-slate-800 bg-transparent"
+              placeholder="无标题"
+            />
           </div>
-          <div className={"note-toolbar"}>
-            <button onClick={openAddTagModal}>增加标签</button>
+
+          {/* 元信息 */}
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 mb-3 allow-copy">
+            <span className="px-2 py-1 bg-slate-100 rounded">
+              修改: {formatDisplayTime(currentFile.props.modified)}
+            </span>
+            <span className="px-2 py-1 bg-slate-100 rounded font-mono text-xs">
+              {path}
+            </span>
+            <span className="px-2 py-1 bg-slate-100 rounded">
+              创建: {formatDisplayTime(currentFile.props.created)}
+            </span>
+            {currentFile.props.source_url && (
+              <a
+                href={currentFile.props.source_url}
+                target='_blank'
+                rel="noopener noreferrer"
+                className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+              >
+                来源地址
+              </a>
+            )}
+          </div>
+
+          {/* 标签 */}
+          <div className="flex flex-wrap items-center gap-2 mb-3 allow-copy">
+            {currentFile.props.tags?.length ? (
+              currentFile.props.tags.map((v, k) => {
+                const isActive = v === searchData.folder;
+                return (
+                  <div
+                    key={k}
+                    onContextMenu={(e) => openTagManageContextMenu(e, v)}
+                    className={clsx(
+                      'px-3 py-1 rounded-full text-sm cursor-pointer transition-colors',
+                      {
+                        'bg-primary-100 text-primary-700 border-2 border-primary-300': isActive,
+                        'bg-slate-100 text-slate-700 hover:bg-slate-200 border-2 border-transparent': !isActive,
+                      }
+                    )}
+                  >
+                    {v}
+                  </div>
+                );
+              })
+            ) : (
+              <span className="text-xs text-slate-400">暂无标签</span>
+            )}
+          </div>
+
+          {/* 工具栏 */}
+          <div className="flex gap-2">
+            <button
+              onClick={openAddTagModal}
+              className="px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors text-sm font-medium"
+            >
+              增加标签
+            </button>
           </div>
         </div>
 
-        <div className={"note-content flex-col auto-stretch"}>
+        {/* 编辑器内容 */}
+        <div className="flex flex-col flex-1 relative overflow-hidden">
+
           <WysiwygEditor data={editingData} updateBody={updateBody}/>
         </div>
-
       </div>
-      <div className={clsx('mask auto-stretch', {'hide': !isEmpty})}></div>
+
+      {/* 空状态遮罩 */}
+      <div className={clsx('flex-1 flex items-center justify-center bg-slate-50', {'hidden': !isEmpty})}>
+        <div className="text-center text-slate-400">
+          <p className="text-lg mb-2">选择一个笔记开始编辑</p>
+          <p className="text-sm">或点击"新建"创建新笔记</p>
+        </div>
+      </div>
     </div>
   )
 }

@@ -211,44 +211,89 @@ export function Middle() {
 
 
   return (
-    <div className={"middle flex-col"}>
-      <div className={"search-wrapper"}>
-        <MyInput value={keywords} onChange={onKeywordsChange} onSearch={onConfirmKeywordsChange}/>
-        <button onClick={onConfirmKeywordsChange}>Search</button>
-        <button onClick={onCreateNewNote} disabled={focusTag.startsWith(TAG_TRASH)}>New</button>
-        {focusTag.startsWith(TAG_TRASH) ?
-          <button onClick={onCleanData}>cleanup</button>
-          : ''}
+    <div className="flex flex-col relative w-[15%] min-w-[200px] bg-[#fafafa] p-2">
+      {/* 搜索栏 */}
+      <div className="flex flex-col gap-2 mb-3">
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <MyInput 
+              value={keywords} 
+              onChange={onKeywordsChange} 
+              onSearch={onConfirmKeywordsChange}
+            />
+          </div>
+          <button 
+            onClick={onConfirmKeywordsChange}
+            className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors text-sm font-medium"
+          >
+            搜索
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <button 
+            onClick={onCreateNewNote} 
+            disabled={focusTag.startsWith(TAG_TRASH)}
+            className="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm font-medium"
+          >
+            新建
+          </button>
+          {focusTag.startsWith(TAG_TRASH) && (
+            <button 
+              onClick={onCleanData}
+              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
+            >
+              清空
+            </button>
+          )}
+        </div>
       </div>
 
-
-      <div className={'aaaa-x-box flex-row align-center justify-between'}>
-
-        <div className={'flex-row stats-wrapper'}>
+      {/* 统计和排序 */}
+      <div className="flex flex-row items-center justify-between mb-2 pb-2 border-b border-slate-200">
+        <div className="text-xs text-slate-600">
           {totalQuantity}条笔记
         </div>
-
-        <div className="order-wrapper flex-row">
-          <div>
-            <MySelect value={orderColumn} onChange={onChangeOrderColumn} columns={['modified', 'created', 'title']}/>
-          </div>
-          <div>
-            <MySelect value={orderDirection} onChange={onChangeOrderDirection} columns={['desc', 'asc']}/>
-          </div>
-        </div>
-
-      </div>
-
-
-      <div className={"list-item-box auto-stretch"}>
-        <div className="list-item fill-box" ref={listItemBoxRef}>
-          {itemList.map((item, index) => {
-            return <ListItem key={item.path} index={index} item={item}></ListItem>
-          })}
-          {isAtBottom ? '' : <div onClick={() => onClickLoadMore()} className={'load-more'}>加载更多...</div>}
+        <div className="flex gap-1">
+          <MySelect 
+            value={orderColumn} 
+            onChange={onChangeOrderColumn} 
+            columns={['modified', 'created', 'title']}
+          />
+          <MySelect 
+            value={orderDirection} 
+            onChange={onChangeOrderDirection} 
+            columns={['desc', 'asc']}
+          />
         </div>
       </div>
 
+      {/* 笔记列表 */}
+      <div className="flex-1 overflow-hidden relative">
+        <div 
+          className="absolute inset-0 overflow-y-auto"
+          ref={listItemBoxRef}
+        >
+          {itemList.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-slate-400 text-sm">
+              暂无笔记
+            </div>
+          ) : (
+            <>
+              {itemList.map((item, index) => {
+                return <ListItem key={item.path} index={index} item={item}></ListItem>
+              })}
+              {!isAtBottom && (
+                <div 
+                  onClick={() => onClickLoadMore()} 
+                  className="text-center py-3 text-sm text-primary-600 hover:text-primary-700 cursor-pointer hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  {isFetching ? '加载中...' : '加载更多...'}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
@@ -400,17 +445,45 @@ function ListItem({index, item}) {
   const itemList = useNoteStore(state => state.itemList)
   const itemIndex = useNoteStore(state => state.itemIndex)
 
+  const isActive = itemIndex === index;
+  const isSelected = selectIndexes.includes(index);
+  const isNew = item.isNew;
+
   return (
-    <div key={index} className={clsx('li', {
-      active: itemIndex === index,
-      selected: selectIndexes.includes(index),
-    })}
-         onClick={(e) => onClickItem(e, index)}
-         onContextMenu={(e) => openFileManageContextMenu(e, item, index)}>
-      {item.pined ? <span>[top]</span> : ''}
-      <span
-        className={clsx('list-item-title text-title', {new: item.isNew})}
-        title={item.title}>{item.title || 'Untitled'}</span>
+    <div 
+      key={index} 
+      className={clsx(
+        'px-3 py-2 mb-1 rounded-lg cursor-pointer transition-all duration-150',
+        'hover:bg-slate-100 border border-transparent',
+        {
+          'bg-primary-50 border-primary-200 hover:bg-primary-100': isActive,
+          'bg-slate-200 border-slate-300': isSelected && !isActive,
+        }
+      )}
+      onClick={(e) => onClickItem(e, index)}
+      onContextMenu={(e) => openFileManageContextMenu(e, item, index)}
+    >
+      <div className="flex items-center gap-2">
+        {item.pined && (
+          <span className="text-xs bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded font-medium">
+            置顶
+          </span>
+        )}
+        <span
+          className={clsx(
+            'text-title flex-1 text-sm',
+            {
+              'text-primary-700 font-semibold': isActive,
+              'text-slate-700': !isActive,
+              'text-red-600': isNew,
+            }
+          )}
+          title={item.title || 'Untitled'}
+        >
+          {item.title || 'Untitled'}
+          {isNew && <span className="ml-1 text-red-500">*</span>}
+        </span>
+      </div>
     </div>
   )
 }

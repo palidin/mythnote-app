@@ -1,8 +1,8 @@
-import {Layout} from "./Layout";
+import {Layout} from "$source/Layout";
 
 function App() {
   return (
-    <Layout></Layout>
+    <Layout />
   )
 }
 

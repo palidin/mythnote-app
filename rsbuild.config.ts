@@ -1,5 +1,6 @@
 import {defineConfig} from '@rsbuild/core';
 import {pluginReact} from '@rsbuild/plugin-react';
+import {pluginSass} from '@rsbuild/plugin-sass';
 
 export default defineConfig({
   html: {
@@ -14,5 +15,5 @@ export default defineConfig({
       css: 'assets/css',
     },
   },
-  plugins: [pluginReact()],
+  plugins: [pluginReact(), pluginSass()],
 });

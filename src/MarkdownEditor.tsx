@@ -1,25 +1,34 @@
-import React, {Suspense} from "react";
+import React, {useEffect, useRef} from "react";
 import {useDialogStateStore} from "$source/store/dialog";
 
-const MonacoMarkdownEditor = React.lazy(() => import('@mythnote/markdown-editor/MonacoMarkdownEditor'));
-const CodemirrorMarkdownEditor = React.lazy(() => import('@mythnote/markdown-editor/CodemirrorMarkdownEditor'));
 
-
-interface MarkdownEditorProps {
-  text: string;
-  onUpdate: (data: string) => void;
-}
-
-export function MarkdownEditor({text, isVscode = false}) {
-
+export function MarkdownEditor({text}) {
+  const editorRef = useRef<HTMLDivElement>(null);
   const onUpdate = useDialogStateStore(state => state.onUpdate);
 
-  let Editor: React.FC<MarkdownEditorProps> = isVscode ? MonacoMarkdownEditor : CodemirrorMarkdownEditor;
-
+  // 外部 text 更新 → 同步到编辑器
+  useEffect(() => {
+    if (!editorRef.current) return;
+    if (editorRef.current.innerText !== text) {
+      editorRef.current.innerText = text ?? "";
+    }
+  }, [text]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Editor onUpdate={onUpdate} text={text}/>
-    </Suspense>
+    <div
+      ref={editorRef}
+      contentEditable
+      suppressContentEditableWarning
+      onInput={e => {
+        onUpdate((e.target as HTMLDivElement).innerText);
+      }}
+      className="w-full min-h-[300px] p-3 rounded-md border border-slate-200
+                 focus:outline-none focus:ring-2 focus:ring-blue-500
+                 whitespace-pre-wrap break-words"
+      style={{
+        fontFamily:
+          "Consolas, Monaco, monospace"
+      }}
+    />
   );
 }

@@ -1,7 +1,7 @@
 import {ControlledMenu, MenuItem, useMenuState} from "@szhsin/react-menu";
 import '@szhsin/react-menu/dist/core.css'
 import {useEffect} from "react";
-
+import './MyContextMenu.css';
 
 export function MyContextMenu({e, items}) {
   const [menuProps, toggleMenu] = useMenuState();
