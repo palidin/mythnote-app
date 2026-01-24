@@ -1,0 +1,90 @@
+/* Eclipse Light Theme for Highlight.js */
+/* Converted from CodeMirror (@lezer/highlight) theme */
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.75em;
+  background: #f7f7f7;
+  color: #000000;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ===== Comments ===== */
+.hljs-comment,
+.hljs-quote {
+  color: #3F7F5F;
+  font-style: italic;
+}
+
+/* ===== Keywords / Atoms ===== */
+.hljs-keyword,
+.hljs-literal {
+  color: #7F0055;
+  font-weight: bold;
+}
+
+/* ===== Numbers ===== */
+.hljs-number {
+  color: #0000FF;
+}
+
+/* ===== Strings ===== */
+.hljs-string,
+.hljs-template-string {
+  color: #2A00FF;
+}
+
+/* ===== Variables ===== */
+.hljs-variable,
+.hljs-params {
+  color: #0000C0;
+}
+
+/* ===== Functions ===== */
+.hljs-function .hljs-title,
+.hljs-title.function_ {
+  color: #0000C0;
+}
+
+/* ===== Properties / Fields ===== */
+.hljs-property {
+  color: #000000;
+}
+
+/* ===== Operators ===== */
+.hljs-operator {
+  color: #000000;
+}
+
+/* ===== HTML / XML ===== */
+.hljs-tag {
+  color: #7F0055;
+}
+.hljs-name {
+  color: #7F0055;
+}
+.hljs-attr {
+  color: #0000C0;
+}
+
+/* ===== Meta / Annotations ===== */
+.hljs-meta {
+  color: #646464;
+}
+
+/* ===== Links ===== */
+.hljs-link {
+  color: #0219B3;
+  text-decoration: underline;
+}
+
+/* ===== Emphasis ===== */
+.hljs-strong {
+  font-weight: bold;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
