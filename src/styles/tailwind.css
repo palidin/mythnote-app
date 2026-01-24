@@ -139,6 +139,7 @@
 
 /* Tiptap 根元素 */
 .tiptap {
+  font-family: Helvetica, "Microsoft YaHei", Arial, sans-serif;
   line-height: 1.6;
   outline: none;
   color: #1f2328;
