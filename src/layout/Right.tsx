@@ -36,7 +36,6 @@ export function Right() {
   }, [itemList])
 
 
-  console.log(path)
   useEffect(() => {
     if (!path) {
       return;

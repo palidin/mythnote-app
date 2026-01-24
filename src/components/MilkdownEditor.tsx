@@ -1,12 +1,11 @@
 import React from "react";
 import {Crepe} from "@milkdown/crepe";
 import {Milkdown, MilkdownProvider, useEditor} from "@milkdown/react";
-import { eclipse } from "@uiw/codemirror-theme-eclipse";
+import {eclipse} from "@uiw/codemirror-theme-eclipse";
 
 
 import "@milkdown/crepe/theme/common/style.css";
 import "../../node_modules/@milkdown/crepe/lib/theme/frame/style.css";
-import {showSuccessMessage} from "$source/utils/MessageUtils";
 
 interface EditorProps {
   markdown?: string;
