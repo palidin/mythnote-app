@@ -236,6 +236,15 @@
     color: #0969da;
     text-decoration: underline;
   }
+
+  /* 行内代码样式 */
+  code:not(pre code) {
+    background-color: #f3f4f6;
+    color: #eb5757;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 85%;
+  }
 }
 
 /* 任务列表 */
