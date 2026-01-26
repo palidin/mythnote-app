@@ -52,8 +52,22 @@ const ImageExtended = Image.extend({
   },
 });
 
+
 const TiptapEditor: React.FC<EditorProps> = ({markdown = '', updateBody}) => {
   const editor = useEditor({
+    editorProps: {
+      clipboardTextSerializer: (slice) => {
+        const {content} = slice;
+        if (content.childCount > 0) {
+          return content.textBetween(
+            0,
+            content.size,
+            '\n'
+          );
+        }
+        return null;
+      },
+    },
     extensions: [
       StarterKit.configure({
         // 禁用默认 codeBlock 以配合 lowlight
@@ -72,6 +86,7 @@ const TiptapEditor: React.FC<EditorProps> = ({markdown = '', updateBody}) => {
         defaultLanguage: 'plaintext',
         HTMLAttributes: {class: 'hljs shadow-sm border rounded-md my-5'},
       }),
+      // CodeBlockPlainCopy,
       // 2. 表格系统 (GFM)
       Table.configure({resizable: true}),
       TableRow,
