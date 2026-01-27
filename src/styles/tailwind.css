@@ -118,14 +118,6 @@
     padding: .375rem 1.5rem;
   }
 
-
-  .milkdown .ProseMirror {
-    padding:  20px 30px;
-    min-height: 100%;
-    margin-bottom: 30px;
-  }
-
-
   div[data-milkdown-root]{
     background: #fff;
     min-height: 100%;
