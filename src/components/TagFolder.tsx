@@ -10,7 +10,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight} from "@fortawesome/free-solid-svg-icons/faChevronRight";
 
 
-export function TagFolder({folders, onTagClick, keys = []}) {
+export function TagFolder({folders, onTagClick, keys = [], keyword = ''}) {
 
   function openFileManageContextMenu(e, value) {
     e.preventDefault();
@@ -45,6 +45,18 @@ export function TagFolder({folders, onTagClick, keys = []}) {
 
   const focusTag = useAppStore(state => state.searchData.folder);
 
+  const renderHighlightedText = (text, highlight) => {
+    if (!highlight) return text;
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    return parts.map((part, index) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <span key={index} className="text-yellow-400 font-bold">{part}</span>
+      ) : (
+        part
+      )
+    );
+  };
+
   return (
     <>
       <ul className="list-none m-0 p-0">
@@ -55,7 +67,7 @@ export function TagFolder({folders, onTagClick, keys = []}) {
           
           // 判断是否应该显示数量：只有一级目录且count是有效正数
           const isFirstLevel = keys.length === 0;
-          let shouldShowCount = false;
+          let shouldShowCount = true;
           
           if (isFirstLevel) {
             const countValue = v.count;
@@ -81,7 +93,12 @@ export function TagFolder({folders, onTagClick, keys = []}) {
                 title={v.name}
                 onClick={() => onTagClick(v.fullname, [...keys, k])}
               >
-                <div className="flex-1 min-w-0">{v.name}</div>
+                <div className="flex-1 min-w-0 flex items-center">
+                  <span>{renderHighlightedText(v.name, keyword)}</span>
+                  {shouldShowCount && (
+                    <span className='ml-1 text-xs text-white/60'>({v.count})</span>
+                  )}
+                </div>
                 {hasChildren && (
                   <div className="flex items-center ml-2">
                     <FontAwesomeIcon
@@ -96,9 +113,6 @@ export function TagFolder({folders, onTagClick, keys = []}) {
                     />
                   </div>
                 )}
-                {shouldShowCount && (
-                  <div className='ml-2 text-xs text-white/60 px-1'>({v.count})</div>
-                )}
               </div>
 
               {hasChildren && isExpanded && (
@@ -107,6 +121,7 @@ export function TagFolder({folders, onTagClick, keys = []}) {
                     folders={v.children}
                     onTagClick={onTagClick}
                     keys={[...keys, k]}
+                    keyword={keyword}
                   />
                 </div>
               )}

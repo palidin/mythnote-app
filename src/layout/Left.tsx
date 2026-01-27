@@ -11,36 +11,77 @@ import {tokenManger} from "$source/agent/tokenManger";
 export function Left() {
 
   const [folders, setFolders] = useState([]);
+  const [keyword, setKeyword] = useState('');
 
   useMount(() => {
     myAgent.categoryList()
       .then(res => setFolders(res))
   })
 
-  function onTagClick(folder, keys) {
-    let current: any = folders;
-
-    let index = 0;
-    for (let key of keys) {
-      if (index++ == 0) {
-        current = current[key];
-      } else {
-        current = current.children[key];
+  // Helper to find node by fullname
+  function findNode(nodes, fullname) {
+    for (const node of nodes) {
+      if (node.fullname === fullname) return node;
+      if (node.children) {
+        const found = findNode(node.children, fullname);
+        if (found) return found;
       }
     }
-
-    if (!(current.fullname == '' && current.expand && !!useAppStore.getState().searchData.folder)) {
-      current.expand = !current.expand;
-    }
-
-    setFolders([...folders]);
-
-    resetSearchCondition({
-      folder: current.fullname,
-      keywords: '',
-    })
-
+    return null;
   }
+
+  function onTagClick(fullname, keys) {
+    // Find the node in the original folders tree using fullname
+    // We ignore 'keys' because they might be incorrect when filtering
+    const current = findNode(folders, fullname);
+
+    if (current) {
+      if (!(current.fullname == '' && current.expand && !!useAppStore.getState().searchData.folder)) {
+        current.expand = !current.expand;
+      }
+      setFolders([...folders]);
+      
+      resetSearchCondition({
+        folder: current.fullname,
+        keywords: '',
+      })
+    }
+  }
+
+  const filteredFolders = React.useMemo(() => {
+    if (!keyword) return folders;
+
+    const filterTree = (nodes) => {
+      let anyChildMatch = false;
+      const result = nodes.map(node => {
+        const matchSelf = node.name.toLowerCase().includes(keyword.toLowerCase());
+        
+        if (matchSelf) {
+          anyChildMatch = true;
+          return {
+            ...node,
+            children: node.children
+          };
+        }
+
+        const { filteredChildren, hasMatch: childrenMatch } = filterTree(node.children || []);
+        
+        if (childrenMatch) {
+          anyChildMatch = true;
+          return {
+            ...node,
+            children: filteredChildren,
+            expand: true // Expand only if children match (path to match)
+          };
+        }
+        return null;
+      }).filter(Boolean);
+
+      return { filteredChildren: result, hasMatch: anyChildMatch };
+    };
+
+    return filterTree(folders).filteredChildren;
+  }, [folders, keyword]);
 
 
   function cleanup() {
@@ -73,8 +114,16 @@ export function Left() {
 
   return (
     <div className="w-[15%] bg-[#1e293b] text-white h-screen flex flex-col overflow-hidden">
+      <div className="p-4 pb-0">
+        <input 
+          value={keyword}
+          onChange={e => setKeyword(e.target.value)}
+          className="w-full px-3 py-1.5 bg-[#2d3748] border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500 placeholder-slate-400"
+          placeholder="搜索..."
+        />
+      </div>
       <div className="flex-1 overflow-y-auto p-4 scrollbar-gutter-stable left-scrollbar-fix">
-        <TagFolder folders={folders} onTagClick={onTagClick}></TagFolder>
+        <TagFolder folders={filteredFolders} onTagClick={onTagClick} keyword={keyword}></TagFolder>
       </div>
 
       <div className='flex-shrink-0 p-4 pt-3 flex flex-col gap-2 bg-[#1e293b] border-t border-slate-700'>
