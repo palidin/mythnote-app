@@ -255,3 +255,13 @@ ul[data-type="taskList"] {
     user-select: none;
   }
 }
+
+/* 引用 */
+blockquote {
+  margin: 1em 0;
+  padding: 0.5em 1.5em;
+  color: #6a737d;
+  background-color: #f6f8fa;
+  border-left: 0.25em solid #dfe2e5; /* 左侧粗边框 */
+  font-style: italic;
+}
