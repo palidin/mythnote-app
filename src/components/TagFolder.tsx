@@ -8,9 +8,9 @@ import clsx from "clsx";
 
 
 const ChevronRightIcon = ({ className, ...props }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 320 512" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 320 512"
     fill="currentColor"
     className={className}
     {...props}
@@ -75,11 +75,11 @@ export function TagFolder({folders, onTagClick, keys = [], keyword = ''}) {
           const hasChildren = v.children && v.children.length > 0;
           const isActive = v.fullname == focusTag;
           const isExpanded = v.expand;
-          
+
           // 判断是否应该显示数量：只有一级目录且count是有效正数
           const isFirstLevel = keys.length === 0;
           let shouldShowCount = true;
-          
+
           if (isFirstLevel) {
             const countValue = v.count;
             if (countValue != null && countValue !== '') {

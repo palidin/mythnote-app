@@ -25,3 +25,8 @@ export const useNoteStore = createEntityStore({
   fileFingerprint: null,
   refreshSeed: null,
 })
+
+
+export const useServerStore = createEntityStore({
+  url: null,
+})

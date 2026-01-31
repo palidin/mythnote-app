@@ -1,8 +1,13 @@
-const devUrl = 'http://api-myth-note.test.cn';
+const devUrl = 'http://localhost:5112';
 const onlineUrl = 'https://note.palidin.io/api';
 
-// const serverUrl = isDevelopment() ? devUrl : onlineUrl;
-const serverUrl =  onlineUrl;
+let serverUrl = isDevelopment() ? devUrl : onlineUrl;
+
+//@ts-ignore
+const isPacked = import.meta.env.IS_Packed
+if(isPacked){
+  serverUrl = '';
+}
 
 export const appConfig = {
   // serverUrl: 'http://note.palidin.me',
@@ -18,6 +23,7 @@ function isDevelopment() {
   let href = window.location.href;
   return href.includes('localhost') || href.includes('127.0.0.1') || href.includes('192.168.') || href.endsWith('test.cn')
 }
+
 
 
 export const web = {

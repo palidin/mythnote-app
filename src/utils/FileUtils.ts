@@ -5,24 +5,20 @@ import {useAppStore} from "../store/store";
 
 import {FileData, WaitingWriteFileData} from "$source/type/note";
 import {showErrorMessage} from "$source/utils/MessageUtils";
+import {isEqual, cloneDeep} from 'lodash-es';
 
 
 function getNowDateString() {
   return moment().format();
 }
 
-
-function toHash(obj) {
-  return JSON.stringify(obj);
-}
-
-function isPropsEquals(left, right) {
-  return toHash(left) === toHash(right);
-}
-
-function isTextEquals(left, right) {
-  return left === right;
-}
+// 解决跨平台的换行问题
+const normalizeContent = (str: string) => {
+  if (!str) return '';
+  return str
+    .replace(/\r\n/g, '\n') // 统一将 CRLF 转为 LF
+    .trim();                // 去除首尾多余的换行和空格
+};
 
 async function putFileContents(file: WaitingWriteFileData) {
   let lastUpdateTime = sharedVariables.updateTimestamps[file.path];
@@ -36,28 +32,29 @@ async function putFileContents(file: WaitingWriteFileData) {
   }
 
   let {props, body} = file.data;
-  let newData = getMergedProps(fileMatter.props, props);
+  let newData = cloneDeep({...fileMatter.props, ...props});
   let newBody = body ?? fileMatter.body;
 
 
-  if (isTextEquals(fileMatter.body, newBody) && isPropsEquals(fileMatter.props, newData)) {
+  if (isEqual(normalizeContent(fileMatter.body), normalizeContent(newBody)) && isEqual(fileMatter.props, newData)) {
     return Promise.resolve(1);
   }
 
+  const saveNewData = newData;
   let now = getNowDateString();
-  newData['modified'] = now;
-  if (!newData['created']) {
-    newData['created'] = now;
+  saveNewData['modified'] = now;
+  if (!saveNewData['created']) {
+    saveNewData['created'] = now;
   }
 
-  return myAgent.write(file.path, newBody, newData)
+  return myAgent.write(file.path, newBody, saveNewData)
     .then((res) => {
       if (!res) {
         showErrorMessage('保存失败');
         return Promise.resolve(-3);
       }
       sharedVariables.updateTimestamps[file.path] = file.createTime;
-      sharedVariables.fileDataCache[file.path] = {body: newBody, props: newData};
+      sharedVariables.fileDataCache[file.path] = {body: newBody, props: saveNewData};
       return Promise.resolve(0);
     })
     .catch(e => {
@@ -75,23 +72,6 @@ export function updateFileBodyWithProps(path: string, body: string, props: objec
   });
 }
 
-function getMergedProps(oldAttrs: Record<string, any>, props: Record<string, any>) {
-  let newAttrs = {...oldAttrs, ...props};
-  let newData = {};
-  for (const [key, values] of Object.entries(newAttrs)) {
-    let flag = false;
-    if (Array.isArray(values) && values.length == 0) {
-      flag = false;
-    } else if (values) {
-      flag = true;
-    }
-    if (flag) {
-      newData[key] = values;
-    }
-  }
-
-  return newData;
-}
 
 function readFileFrontMatter(file: string): FileData {
   return sharedVariables.fileDataCache[file];

@@ -24,7 +24,7 @@ import {
 } from "../utils/MessageUtils";
 import {TAG_TRASH} from "../config/app";
 
-import {NoteItem} from "$source/type/note";
+import {FileItem, NoteItem} from "$source/type/note";
 import {MyInput} from "$source/components/MyInput";
 import {useDebounceFn} from "ahooks";
 import clsx from "clsx";
@@ -175,11 +175,12 @@ export function Middle() {
   }, [onScroll])
 
   function onCleanData() {
-    showConfirmModal('确认删除笔记吗？')
+    showConfirmModal('将删除回收站所有的原文件，确认继续吗？')
       .then(() => {
         myAgent.xxx()
           .then(() => {
             showSuccessMessage('删除成功');
+            location.reload();
           })
 
       })
@@ -216,13 +217,13 @@ export function Middle() {
       <div className="flex flex-col gap-2 mb-3">
         <div className="flex gap-2">
           <div className="flex-1">
-            <MyInput 
-              value={keywords} 
-              onChange={onKeywordsChange} 
+            <MyInput
+              value={keywords}
+              onChange={onKeywordsChange}
               onSearch={onConfirmKeywordsChange}
             />
           </div>
-          <button 
+          <button
             onClick={onConfirmKeywordsChange}
             className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors text-sm font-medium"
           >
@@ -230,15 +231,15 @@ export function Middle() {
           </button>
         </div>
         <div className="flex gap-2">
-          <button 
-            onClick={onCreateNewNote} 
+          <button
+            onClick={onCreateNewNote}
             disabled={focusTag.startsWith(TAG_TRASH)}
             className="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm font-medium"
           >
             新建
           </button>
           {focusTag.startsWith(TAG_TRASH) && (
-            <button 
+            <button
               onClick={onCleanData}
               className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
             >
@@ -254,14 +255,14 @@ export function Middle() {
           {totalQuantity}条笔记
         </div>
         <div className="flex gap-1">
-          <MySelect 
-            value={orderColumn} 
-            onChange={onChangeOrderColumn} 
+          <MySelect
+            value={orderColumn}
+            onChange={onChangeOrderColumn}
             columns={['modified', 'created', 'title']}
           />
-          <MySelect 
-            value={orderDirection} 
-            onChange={onChangeOrderDirection} 
+          <MySelect
+            value={orderDirection}
+            onChange={onChangeOrderDirection}
             columns={['desc', 'asc']}
           />
         </div>
@@ -269,7 +270,7 @@ export function Middle() {
 
       {/* 笔记列表 */}
       <div className="flex-1 overflow-hidden relative">
-        <div 
+        <div
           className="absolute inset-0 overflow-y-auto"
           ref={listItemBoxRef}
         >
@@ -283,8 +284,8 @@ export function Middle() {
                 return <ListItem key={item.path} index={index} item={item}></ListItem>
               })}
               {!isAtBottom && (
-                <div 
-                  onClick={() => onClickLoadMore()} 
+                <div
+                  onClick={() => onClickLoadMore()}
                   className="text-center py-3 text-sm text-primary-600 hover:text-primary-700 cursor-pointer hover:bg-slate-50 rounded-lg transition-colors"
                 >
                   {isFetching ? '加载中...' : '加载更多...'}
@@ -298,7 +299,7 @@ export function Middle() {
   )
 }
 
-function ListItem({index, item}) {
+function ListItem({index, item}:{index:number, item:FileItem}) {
 
   function onClickItem(e, i) {
     if (itemIndex === i) {
@@ -338,9 +339,12 @@ function ListItem({index, item}) {
     }
 
     let items = [
-      {'title': '置顶/取消置顶', onClick: () => updateNotePined(value.path, !value.pined)},
+      {'title': '置顶/取消置顶', onClick: () => updateNotePinned(value.path, !value.pinned)},
       {'title': '添加标签', onClick: () => addNoteTag(value)},
-      {
+    ]
+
+    if (selectIndexes.length == 1) {
+      items.push({
         'title': '文本编辑', onClick: () => {
 
           const path = value.path;
@@ -359,16 +363,15 @@ function ListItem({index, item}) {
             .catch(e => showErrorMessage(e))
 
         }
-      },
-    ]
+      },)
+    }
     if (selectIndexes.includes(index)) {
       items.push({'title': deleted ? '删除' : '恢复', onClick: () => deleteSelected(deleted)})
     }
     openContextMenu(<MyContextMenu e={e} items={items}></MyContextMenu>)
   }
 
-  function refreshNoteContent()
-  {
+  function refreshNoteContent() {
     useNoteStore.getState().setRefreshSeed(Math.random());
   }
 
@@ -393,17 +396,17 @@ function ListItem({index, item}) {
     }
   }
 
-  function updateNotePined(path, pined) {
+  function updateNotePinned(path, pinned) {
     readOnlineFileFrontMatter(path)
       .then(matter => {
         let props = {
           ...matter.props,
-          pined
+          pinned: pinned
         };
         writeFile({props, body: matter.body}, path)
           .then(() => {
             let current = itemList.findIndex(v => v.path === path);
-            itemList[current].pined = pined;
+            itemList[current].pinned = pinned;
             useNoteStore.getState().setItemList([...itemList])
           })
       })
@@ -450,8 +453,8 @@ function ListItem({index, item}) {
   const isNew = item.isNew;
 
   return (
-    <div 
-      key={index} 
+    <div
+      key={index}
       className={clsx(
         'px-3 py-2 mb-1 rounded-lg cursor-pointer transition-all duration-150',
         'hover:bg-slate-100 border border-transparent',
@@ -464,7 +467,7 @@ function ListItem({index, item}) {
       onContextMenu={(e) => openFileManageContextMenu(e, item, index)}
     >
       <div className="flex items-center gap-2">
-        {item.pined && (
+        {item.pinned && (
           <span className="text-xs bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded font-medium">
             置顶
           </span>
@@ -487,3 +490,4 @@ function ListItem({index, item}) {
     </div>
   )
 }
+

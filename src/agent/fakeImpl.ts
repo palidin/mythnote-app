@@ -106,10 +106,10 @@ function sendRequest(path: string, params, withToken = true): any {
       'Authorization': token
     })
   } else {
-    formdata = getFormData(params)
+    formdata = JSON.stringify(params)
     headers = new Headers({
-      'Authorization': token,
-      'content-type': 'application/x-www-form-urlencoded'
+      'Authorization': 'Bearer '+ token,
+      'content-type': 'application/json'
     })
   }
   return new Promise((resolve, reject) => {

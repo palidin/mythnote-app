@@ -40,7 +40,7 @@ export function Left() {
         current.expand = !current.expand;
       }
       setFolders([...folders]);
-      
+
       resetSearchCondition({
         folder: current.fullname,
         keywords: '',
@@ -55,7 +55,7 @@ export function Left() {
       let anyChildMatch = false;
       const result = nodes.map(node => {
         const matchSelf = node.name.toLowerCase().includes(keyword.toLowerCase());
-        
+
         if (matchSelf) {
           anyChildMatch = true;
           return {
@@ -65,7 +65,7 @@ export function Left() {
         }
 
         const { filteredChildren, hasMatch: childrenMatch } = filterTree(node.children || []);
-        
+
         if (childrenMatch) {
           anyChildMatch = true;
           return {
@@ -115,7 +115,7 @@ export function Left() {
   return (
     <div className="w-[15%] bg-[#1e293b] text-white h-screen flex flex-col overflow-hidden">
       <div className="p-4 pb-0">
-        <input 
+        <input
           value={keyword}
           onChange={e => setKeyword(e.target.value)}
           className="w-full px-3 py-1.5 bg-[#2d3748] border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500 placeholder-slate-400"
@@ -127,13 +127,13 @@ export function Left() {
       </div>
 
       <div className='flex-shrink-0 p-4 pt-3 flex flex-col gap-2 bg-[#1e293b] border-t border-slate-700'>
-        <button 
+        <button
           onClick={cleanup}
           className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors text-sm font-medium"
         >
-          清空缓存
+          重建索引
         </button>
-        <button 
+        <button
           onClick={logout}
           className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
         >

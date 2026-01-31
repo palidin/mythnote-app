@@ -5,12 +5,20 @@ export interface Props {
   created?: string;
   source_url?: string;
   deleted?: boolean;
-  pined?: boolean;
+  pinned?: boolean;
 }
 
 export interface FileData {
   props: Props;
   body: string;
+}
+
+export interface FileItem {
+  title: string;
+  path: string;
+  pinned: boolean;
+  filepath: string;
+  isNew?: boolean,
 }
 
 export interface NoteItem {
@@ -33,10 +41,6 @@ export interface ContentChangeEvent {
   content: string
 }
 
-export interface TitleChangeEvent {
-  path: string;
-  title: string
-}
 
 export enum NoteChange {
   BODY,
