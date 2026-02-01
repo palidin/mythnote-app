@@ -12,7 +12,7 @@ export default defineConfig({
     define: {
       // 注意：值必须经过 JSON.stringify，否则会被当做变量名执行
       'import.meta.env': {
-        'IS_Packed': process.argv.slice(2).find(arg => arg.includes('--pack')) ? 1 : 0,
+        'IS_Packed': process.argv.slice(2).find(arg => arg.includes('--dotnet')) ? 1 : 0,
       }
     },
   },
