@@ -30,7 +30,7 @@ import {MyInput} from "$source/components/MyInput";
 import {useDebounceFn} from "ahooks";
 import clsx from "clsx";
 
-export function Middle() {
+export function Middle({width}: { width: string }) {
 
   const searchData = useAppStore(state => state.searchData);
 
@@ -139,6 +139,9 @@ export function Middle() {
 
   function autoScroll() {
     const scrollDiv = listItemBoxRef.current;
+    if(!scrollDiv){
+      return;
+    }
     const clientHeight = scrollDiv.clientHeight;
     let totalHeight = scrollDiv.scrollHeight;
     let hasScrollBar = totalHeight > clientHeight;
@@ -214,7 +217,7 @@ export function Middle() {
 
 
   return (
-    <div className="flex flex-col relative w-[15%] min-w-[200px] bg-[#fafafa] p-2">
+    <div className="flex flex-col relative min-w-[200px] bg-[#fafafa] p-2" style={{width}}>
       {/* 搜索栏 */}
       <div className="flex flex-col gap-2 mb-3">
         <div className="flex gap-2">
@@ -283,7 +286,8 @@ export function Middle() {
           ) : (
             <>
               {itemList.map((item, index) => {
-                return <ListItem key={item.path} index={index} item={item} setGitHistoryPath={setGitHistoryPath}></ListItem>
+                return <ListItem key={item.path} index={index} item={item}
+                                 setGitHistoryPath={setGitHistoryPath}></ListItem>
               })}
               {!isAtBottom && (
                 <div
@@ -308,7 +312,7 @@ export function Middle() {
   )
 }
 
-function ListItem({index, item,setGitHistoryPath}:{index:number, item:FileItem,setGitHistoryPath}) {
+function ListItem({index, item, setGitHistoryPath}: { index: number, item: FileItem, setGitHistoryPath }) {
 
   function onClickItem(e, i) {
     if (itemIndex === i) {

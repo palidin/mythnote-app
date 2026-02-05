@@ -75,20 +75,28 @@ export class FakeImpl {
   getGitCommitDetail(path: string, commitId: string) {
     return sendRequest('/git/history/detail', {path, commitId});
   }
+
+  // 保存Git配置
+  saveGitConfig(config: any) {
+    return sendRequest('/git/config/save', config);
+  }
+
+  // 获取Git配置
+  getGitConfig() {
+    return sendRequest('/git/config/get', {});
+  }
+
+  // 同步Git仓库
+  syncGitRepo() {
+    return sendRequest('/git/sync', {});
+  }
+
+  // 获取Git同步状态
+  getGitSyncStatus() {
+    return sendRequest('/git/sync/status', {});
+  }
 }
 
-function getFormData(obj) {
-  let formData = [];
-  for (const [k, v] of Object.entries(obj)) {
-    let value = v;
-    if (typeof v == 'object') {
-      value = JSON.stringify(v);
-    }
-    // @ts-ignore
-    formData.push(k + '=' + encodeURIComponent(value));
-  }
-  return formData.join('&');
-}
 
 function getUploadData(obj) {
   let formData = new FormData();

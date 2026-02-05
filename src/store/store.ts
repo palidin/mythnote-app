@@ -27,6 +27,10 @@ export const useNoteStore = createEntityStore({
 })
 
 
-export const useServerStore = createEntityStore({
-  url: null,
-})
+export const useGitConfigStore = createEntityStore({
+  repoUrl: '',
+  authToken: '',
+  syncInterval: 60, // 同步间隔（分钟）
+  lastSyncTime: null, // 最后同步时间
+  isSyncing: false, // 是否正在同步
+}, 'gitConfig')
