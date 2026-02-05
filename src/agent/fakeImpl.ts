@@ -67,6 +67,14 @@ export class FakeImpl {
   status() {
     return sendRequest('/system/status', {});
   }
+
+  getGitCommitList(path: string, page: number = 1, limit: number = 20) {
+    return sendRequest('/git/history/list', {path, page, limit});
+  }
+
+  getGitCommitDetail(path: string, commitId: string) {
+    return sendRequest('/git/history/detail', {path, commitId});
+  }
 }
 
 function getFormData(obj) {

@@ -12,6 +12,7 @@ import {
   substrTitle
 } from "../utils/utils";
 import {MyContextMenu} from "../components/MyContextMenu";
+import {GitHistoryModal} from "../components/GitHistoryModal";
 import {myAgent} from "../agent/agentType";
 import {sharedVariables} from "../store/globalData";
 import {useAppStore, useNoteStore} from "../store/store";
@@ -42,6 +43,7 @@ export function Middle() {
 
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const [gitHistoryPath, setGitHistoryPath] = useState<string | null>(null);
 
   useEffect(() => {
     if (itemIndex == 0) {
@@ -281,7 +283,7 @@ export function Middle() {
           ) : (
             <>
               {itemList.map((item, index) => {
-                return <ListItem key={item.path} index={index} item={item}></ListItem>
+                return <ListItem key={item.path} index={index} item={item} setGitHistoryPath={setGitHistoryPath}></ListItem>
               })}
               {!isAtBottom && (
                 <div
@@ -295,11 +297,18 @@ export function Middle() {
           )}
         </div>
       </div>
+
+      {gitHistoryPath && (
+        <GitHistoryModal
+          path={gitHistoryPath}
+          onClose={() => setGitHistoryPath(null)}
+        />
+      )}
     </div>
   )
 }
 
-function ListItem({index, item}:{index:number, item:FileItem}) {
+function ListItem({index, item,setGitHistoryPath}:{index:number, item:FileItem,setGitHistoryPath}) {
 
   function onClickItem(e, i) {
     if (itemIndex === i) {
@@ -341,6 +350,7 @@ function ListItem({index, item}:{index:number, item:FileItem}) {
     let items = [
       {'title': '置顶/取消置顶', onClick: () => updateNotePinned(value.path, !value.pinned)},
       {'title': '添加标签', onClick: () => addNoteTag(value)},
+      {'title': '查看历史', onClick: () => setGitHistoryPath(value.path)},
     ]
 
     if (selectIndexes.length == 1) {
