@@ -19,7 +19,6 @@ export function Layout() {
 
   const dataRebuilding = useAppStore(state => state.dataRebuilding)
   const access_token = useTokenStore(state => state.access_token)
-  const refresh_token = useTokenStore(state => state.refresh_token)
   const [showGitConfigModal, setShowGitConfigModal] = useState(false)
   const [_, setGitConfigChecked] = useState(false)
 
@@ -143,9 +142,10 @@ export function Layout() {
   // 1. 未登录状态
   if (!access_token) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <LoginModal />
-        <ToastContainer />
+      <div
+        className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <LoginModal/>
+        <ToastContainer/>
       </div>
     );
   }
@@ -158,7 +158,7 @@ export function Layout() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           <p className="text-slate-600 text-lg">数据索引中...</p>
         </div>
-        <ToastContainer />
+        <ToastContainer/>
       </div>
     );
   }
@@ -167,28 +167,28 @@ export function Layout() {
 // 3. 标准布局状态
   return (
     <div className="flex flex-row h-screen overflow-hidden select-none">
-      <ToastContainer />
+      <ToastContainer/>
       {/* 侧边栏组件 - 现在的 width 变化只会触发子组件更新，而不会导致子组件重装 */}
-      <Left width={leftWidth} />
+      <Left width={leftWidth}/>
 
-      <DivideLine index={0} onWidthChange={handleWidthChange} />
+      <DivideLine index={0} onWidthChange={handleWidthChange}/>
 
-      <Middle width={middleWidth} />
+      <Middle width={middleWidth}/>
 
-      <DivideLine index={1} onWidthChange={handleWidthChange} />
+      <DivideLine index={1} onWidthChange={handleWidthChange}/>
 
-      <Right />
+      <Right/>
 
       {/* 挂载点 */}
       <div id="popup" className="absolute"></div>
       <div id="contextmenu" className="absolute"></div>
 
       {/* Git 配置弹窗（如果需要） */}
-      {/*{showGitConfigModal && (*/}
-      {/*  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">*/}
-      {/*    <GitConfig onClose={() => setShowGitConfigModal(false)} />*/}
-      {/*  </div>*/}
-      {/*)}*/}
+      {showGitConfigModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <GitConfig onClose={() => setShowGitConfigModal(false)}/>
+        </div>
+      )}
     </div>
   );
 }
@@ -201,7 +201,7 @@ interface AxDom {
   }
 }
 
-function DivideLine({index, onWidthChange}: {index: number, onWidthChange: (index: number, width: string) => void}) {
+function DivideLine({index, onWidthChange}: { index: number, onWidthChange: (index: number, width: string) => void }) {
 
   const ref = useRef();
 
