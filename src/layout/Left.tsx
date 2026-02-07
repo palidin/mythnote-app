@@ -1,10 +1,9 @@
 import {TagFolder} from "../components/TagFolder";
 import React, {useEffect, useState} from "react";
-import {useAppStore, useGitConfigStore} from "../store/store";
+import {useAppStore, useGitConfigStore, useTokenStore} from "../store/store";
 import {useMount} from "../utils/HookUtils";
 import {myAgent} from "../agent/agentType";
 import {resetSearchCondition} from "$source/utils/FileUtils";
-import {tokenManger} from "$source/agent/tokenManger";
 import {GitConfig} from "../components/GitConfig";
 import {syncGitRepo} from "$source/utils/GitSyncUtils";
 import {LogOut, RefreshCw, Search, Settings} from "lucide-react";
@@ -66,7 +65,7 @@ export function Left({width}: { width: string }) {
     fetchGitSyncStatus();
 
     // 定期检查同步状态
-    const interval = setInterval(fetchGitSyncStatus, 30000); // 每30秒检查一次
+    const interval = setInterval(fetchGitSyncStatus, 15000); // 每30秒检查一次
     return () => clearInterval(interval);
   }, []);
 
@@ -142,7 +141,10 @@ export function Left({width}: { width: string }) {
 
 
   function logout() {
-    tokenManger.clearToken();
+    useTokenStore.getState().updateState({
+      refresh_token: "",
+      access_token: ""
+    })
   }
 
 

@@ -18,7 +18,8 @@ export function Layout() {
 
 
   const dataRebuilding = useAppStore(state => state.dataRebuilding)
-  const token = useTokenStore(state => state.token)
+  const access_token = useTokenStore(state => state.access_token)
+  const refresh_token = useTokenStore(state => state.refresh_token)
   const [showGitConfigModal, setShowGitConfigModal] = useState(false)
   const [_, setGitConfigChecked] = useState(false)
 
@@ -43,7 +44,7 @@ export function Layout() {
   })
 
   useEffect(() => {
-    if (!token) {
+    if (!access_token) {
       setGitConfigChecked(false);
       return;
     }
@@ -81,7 +82,7 @@ export function Layout() {
     };
 
     checkGitConfig();
-  }, [token]);
+  }, [access_token]);
 
   // 保存列宽到本地存储
   useEffect(() => {
@@ -106,7 +107,7 @@ export function Layout() {
 
   const Page = useCallback(() => {
 
-    if (!token) {
+    if (!access_token) {
       return (
         <div
           className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -137,21 +138,61 @@ export function Layout() {
         <div id={'contextmenu'} className="absolute"></div>
       </div>
     )
-  }, [token, dataRebuilding, leftWidth, middleWidth, handleWidthChange]);
+  }, [access_token, dataRebuilding, leftWidth, middleWidth, handleWidthChange]);
 
+  // 1. 未登录状态
+  if (!access_token) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <LoginModal />
+        <ToastContainer />
+      </div>
+    );
+  }
 
-  return (
-    <>
-      <ToastContainer/>
-      <Page/>
-      {showGitConfigModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <GitConfig onClose={() => setShowGitConfigModal(false)}/>
+  // 2. 数据索引状态
+  if (dataRebuilding) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#fafafa]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          <p className="text-slate-600 text-lg">数据索引中...</p>
         </div>
-      )}
-    </>
-  )
+        <ToastContainer />
+      </div>
+    );
+  }
+
+
+// 3. 标准布局状态
+  return (
+    <div className="flex flex-row h-screen overflow-hidden select-none">
+      <ToastContainer />
+      {/* 侧边栏组件 - 现在的 width 变化只会触发子组件更新，而不会导致子组件重装 */}
+      <Left width={leftWidth} />
+
+      <DivideLine index={0} onWidthChange={handleWidthChange} />
+
+      <Middle width={middleWidth} />
+
+      <DivideLine index={1} onWidthChange={handleWidthChange} />
+
+      <Right />
+
+      {/* 挂载点 */}
+      <div id="popup" className="absolute"></div>
+      <div id="contextmenu" className="absolute"></div>
+
+      {/* Git 配置弹窗（如果需要） */}
+      {/*{showGitConfigModal && (*/}
+      {/*  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">*/}
+      {/*    <GitConfig onClose={() => setShowGitConfigModal(false)} />*/}
+      {/*  </div>*/}
+      {/*)}*/}
+    </div>
+  );
 }
+
 
 interface AxDom {
   left: number

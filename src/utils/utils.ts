@@ -176,3 +176,4 @@ export function saveFile(currentFile: FileData, path: string) {
       return Promise.resolve(res)
     })
 }
+

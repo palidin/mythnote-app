@@ -16,7 +16,8 @@ export const useAppStore = createEntityStore({
 })
 
 export const useTokenStore = createEntityStore({
-  token: '',
+  access_token: '',
+  refresh_token: '',
 }, 'token')
 
 export const useNoteStore = createEntityStore({

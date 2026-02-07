@@ -17,7 +17,7 @@ export function LoginModal() {
         showSuccessMessage('登录成功')
 
         setTimeout(() => {
-          useTokenStore.getState().setToken(res.access_token);
+          useTokenStore.getState().updateState({...res});
         }, 500)
       })
       .catch(e => {
@@ -31,7 +31,7 @@ export function LoginModal() {
         <h1 className="text-3xl font-bold text-slate-800 mb-2">MythNote</h1>
         <p className="text-slate-600">欢迎回来，请登录您的账户</p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="uname" className="block text-sm font-medium text-slate-700 mb-2">

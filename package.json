@@ -5,7 +5,6 @@
   "scripts": {
     "start": "rsbuild dev --open",
     "build": "rsbuild build",
-    "build:dotnet": "rsbuild build -- --dotnet",
     "preview": "rsbuild preview"
   },
   "dependencies": {
