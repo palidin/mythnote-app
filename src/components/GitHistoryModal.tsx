@@ -281,13 +281,13 @@ function DiffViewer({diff}: { diff: string }) {
             }`}
           >
             {/* 行号栏 */}
-            <span className={`w-12 pr-3 text-right text-[10px] select-none border-r opacity-60 ${
+            <span className={`w-12 pr-3 text-right text-[10px]  border-r opacity-60 ${
               added ? 'border-emerald-200' : removed ? 'border-rose-200' : 'border-slate-100'
             }`}>
               {i + 1}
             </span>
             {/* 内容 */}
-            <pre className="pl-4 whitespace-pre-wrap break-all">{line}</pre>
+            <pre className="pl-4 whitespace-pre-wrap break-all select-text">{line}</pre>
           </div>
         );
       })}
@@ -300,10 +300,10 @@ function CodeBlock({content}: { content: string }) {
     <div className="font-mono text-[12px] text-slate-600 py-3">
       {content.split('\n').map((line, i) => (
         <div key={i} className="flex hover:bg-slate-100">
-          <span className="w-12 pr-3 text-right text-slate-300 border-r border-slate-200 select-none">
+          <span className="w-12 pr-3 text-right text-slate-300 border-r border-slate-200">
             {i + 1}
           </span>
-          <pre className="pl-4 whitespace-pre-wrap">{line || ' '}</pre>
+          <pre className="pl-4 whitespace-pre-wrap select-text">{line || ' '}</pre>
         </div>
       ))}
     </div>
