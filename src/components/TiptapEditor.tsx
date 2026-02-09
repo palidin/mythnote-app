@@ -69,6 +69,7 @@ const TiptapEditor: React.FC<EditorProps> = ({markdown = '', updateBody}) => {
       },
     },
     extensions: [
+      //@ts-ignore
       StarterKit.configure({
         // 禁用默认 codeBlock 以配合 lowlight
         codeBlock: false,

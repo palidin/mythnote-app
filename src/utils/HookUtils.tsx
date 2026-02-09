@@ -1,8 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import {selectStart} from "./utils";
 import {useNoteStore} from "$source/store/store";
-import {useDialogStateStore} from "$source/store/dialog";
-import {useUpdateEffect} from "ahooks";
 
 export function useMount(fn, deps = []) {
   const ref = useRef(false);
@@ -33,8 +31,8 @@ export function MySelect({columns, onChange, value}) {
   }
 
   return (
-    <select 
-      onChange={onChangeOrderColumn} 
+    <select
+      onChange={onChangeOrderColumn}
       value={value}
       className="px-2 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white transition-all"
     >

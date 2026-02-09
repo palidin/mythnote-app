@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 
 import {EditorDataDo, MarkdownEditorDataDo} from "$source/type/note";
 import {useUpdateEffect} from "ahooks";
-import AEditor from "$source/components/MilkdownEditor";
 import TiptapEditor from "$source/components/TiptapEditor";
 
 

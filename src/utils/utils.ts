@@ -8,14 +8,9 @@ import {FileData} from "$source/type/note";
 import {writeFile} from "$source/utils/FileUtils";
 import React from "react";
 
-export function isRemoteUrl(url) {
-  return url && url.startsWith('http');
-}
-
 export function getUUid() {
   return uuidv4();
 }
-
 
 interface ModalProps extends JSX.Element {
   onSubmit?: (params: any) => void,
