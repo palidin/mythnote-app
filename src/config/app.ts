@@ -8,10 +8,7 @@ if (import.meta.env.IS_Dev) {
 }
 
 export const appConfig = {
-  // serverUrl: 'http://note.palidin.me',
   serverUrl: serverUrl,
-  onlineImageUrl: 'https://image.palidin.io',
-  offlineImageUrl: 'https://image.palidin.me',
 }
 
 export const TAG_TRASH = '//trash';
